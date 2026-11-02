@@ -3,16 +3,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "node --env-file=.env --import tsx --watch src/server.ts",
     "db:new": "dbmate --migrations-dir ./db/migrations new",
     "db:up": "dbmate --migrations-dir ./db/migrations up",
     "db:down": "dbmate --migrations-dir ./db/migrations down",
     "db:status": "dbmate --migrations-dir ./db/migrations status",
     "build": "tsup src/server.ts --format esm --platform node --target node22 --out-dir dist --clean",
-    "start": "node dist/server.js",
+    "start": "node --env-file=.env dist/server.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.5",
+    "argon2": "^0.45.1",
     "fastify": "^5.12.8",
     "mariadb": "^3.5.4"
   },

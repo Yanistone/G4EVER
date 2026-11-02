@@ -6,6 +6,7 @@
     "apps/*"
   ],
   "scripts": {
+    "dev": "concurrently -k -n WEB,API -c cyan,green \"npm run dev:web\" \"npm run dev:api\"",
     "dev:web": "npm run dev -w @g4ever/web",
     "dev:api": "npm run dev -w @g4ever/api",
     "build": "npm run build --workspaces",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "concurrently": "^10.0.6",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "^10.0.0",
     "globals": "^16.0.0",
