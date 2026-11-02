@@ -11,12 +11,14 @@ body {
 }
 
 body {
-  background: #141620;
+  background: #111827;
 }
 
 #game {
-  display: block;
   width: 100%;
   height: 100%;
-  outline: none;
+}
+
+#game canvas {
+  display: block;
 }

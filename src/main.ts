@@ -1,10 +1,7 @@
-import { Game } from "./game/Game";
-import "./style.css";
+import Phaser from "phaser"
 
-const canvas = document.querySelector<HTMLCanvasElement>("#game");
+import { gameConfig } from "./game/config"
 
-if (!canvas) {
-  throw new Error("Game canvas not found");
-}
+import "./style.css"
 
-new Game(canvas);
+new Phaser.Game(gameConfig)
