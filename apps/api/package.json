@@ -1,0 +1,25 @@
+{
+  "name": "@g4ever/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "db:new": "dbmate --migrations-dir ./db/migrations new",
+    "db:up": "dbmate --migrations-dir ./db/migrations up",
+    "db:down": "dbmate --migrations-dir ./db/migrations down",
+    "db:status": "dbmate --migrations-dir ./db/migrations status",
+    "build": "tsup src/server.ts --format esm --platform node --target node22 --out-dir dist --clean",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "fastify": "^5.12.8",
+    "mariadb": "^3.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "dbmate": "^2.37.0",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15"
+  }
+}
