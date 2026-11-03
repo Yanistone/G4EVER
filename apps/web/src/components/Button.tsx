@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react"
 import { Link, type LinkProps } from "react-router-dom"
+import { playSound } from "../services/audio"
 
 type ButtonVariant = "primary" | "secondary" | "tertiary"
 type ButtonSize = "sm" | "md" | "lg"
@@ -56,16 +57,35 @@ export function Button({
   const styles = [baseStyles, variants[variant], sizes[size], className].join(" ")
 
   if (props.to !== undefined) {
-    const { to, ...linkProps } = props
+    const { to, onMouseEnter, onClick, ...linkProps } = props
 
     return (
-      <Link {...linkProps} to={to} className={styles}>
+      <Link
+        {...linkProps}
+        to={to}
+        className={styles}
+        onMouseEnter={(event) => {
+          playSound("hover")
+          onMouseEnter?.(event)
+        }}
+        onClick={(event) => {
+          playSound("click")
+          onClick?.(event)
+        }}
+      >
         {children}
       </Link>
     )
   }
 
-  const { loading = false, disabled, type = "button", ...buttonProps } = props
+  const {
+    loading = false,
+    disabled,
+    type = "button",
+    onMouseEnter,
+    onClick,
+    ...buttonProps
+  } = props
 
   return (
     <button
@@ -74,6 +94,20 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={styles}
+      onMouseEnter={(event) => {
+        if (!disabled && !loading) {
+          playSound("hover")
+        }
+
+        onMouseEnter?.(event)
+      }}
+      onClick={(event) => {
+        if (!disabled && !loading) {
+          playSound("click")
+        }
+
+        onClick?.(event)
+      }}
     >
       {loading ? "Chargement..." : children}
     </button>
