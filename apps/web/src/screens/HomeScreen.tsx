@@ -4,7 +4,7 @@ import { Button } from "../components/Button"
 export function HomeScreen() {
   return (
     <BurstBackground className="flex min-h-dvh items-center justify-center p-6">
-      <main className="flex w-full max-w-md flex-col items-center gap-6">
+      <main className="relative z-10 flex w-full max-w-md flex-col items-center gap-6">
         <div className="flex w-full flex-col gap-6">
           <Button to="/game" variant="primary" size="lg">
             NOUVELLE PARTIE

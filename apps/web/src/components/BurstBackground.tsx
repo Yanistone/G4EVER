@@ -7,7 +7,7 @@ export function BurstBackground({ children, className = "", ...props }: BurstBac
     <div {...props} className={`relative isolate overflow-hidden bg-primary ${className}`}>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -inset-full -z-10"
+        className="pointer-events-none absolute -inset-full z-0 animate-[spin_120s_linear_infinite] motion-reduce:animate-none"
         style={{
           background: `repeating-conic-gradient(
             from 0deg at 50% 50%,
