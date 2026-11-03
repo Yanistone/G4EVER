@@ -2,7 +2,6 @@ import Phaser from "phaser"
 
 import { BootScene } from "./scenes/BootScene"
 import { PreloadScene } from "./scenes/PreloadScene"
-import { MenuScene } from "./scenes/MenuScene"
 import { GameScene } from "./scenes/GameScene"
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
@@ -27,5 +26,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     },
   },
 
-  scene: [BootScene, PreloadScene, MenuScene, GameScene],
+  scene: [BootScene, PreloadScene, GameScene],
 }

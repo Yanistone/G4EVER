@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@fastify/cookie": "^11.1.5",
-    "argon2": "^0.45.1",
+    "argon2": "^0.45.2",
     "fastify": "^5.12.8",
     "mariadb": "^3.5.4"
   },
