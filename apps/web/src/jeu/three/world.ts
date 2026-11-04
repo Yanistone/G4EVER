@@ -1,5 +1,7 @@
 import { addFurniture } from "./furniture"
 import { addCampusIdentity } from "./campusIdentity"
+import { fitDoorPart } from "./slidingDoor"
+import type { SlidingDoorPart } from "./slidingDoor"
 import { DOCUMENT_HEIGHTS } from "../game/escape"
 import { photographicMaterial, addRealism } from "./realism"
 import type { EscapeDocument } from "../game/escape"
@@ -57,7 +59,8 @@ export interface DoorState extends DoorCollider {
   id: string
   roomId: string
   desired: number
-  leaves: Mesh[]
+  leaves: TransformNode[]
+  parts: SlidingDoorPart[][]
   width: number
   bases: Vector3[]
 }
@@ -542,7 +545,8 @@ export function buildWorld(
       width = (to - from) * SCALE
     const x = (horizontal ? (from + to) / 2 : axis) * SCALE,
       z = (horizontal ? axis : (from + to) / 2) * SCALE
-    box(
+    const interaction: Interaction = { id: d.id, kind: "door", label: r.label, roomId: r.id }
+    const lintel = box(
       "door-lintel",
       x,
       2.98,
@@ -552,8 +556,9 @@ export function buildWorld(
       horizontal ? 0.32 : width + 0.3,
       "#D8DCDA",
     )
-    for (const side of [-1, 1])
-      box(
+    lintel.metadata = { interaction }
+    for (const side of [-1, 1]) {
+      const jamb = box(
         "door-jamb",
         x + (horizontal ? side * (width / 2 + 0.06) : 0),
         1.33,
@@ -563,18 +568,44 @@ export function buildWorld(
         horizontal ? 0.32 : 0.16,
         "#475760",
       )
-    const leaves = [-1, 1].map((side) => {
-      const leaf = box(
-        "sliding-door-" + d.id,
+      jamb.metadata = { interaction }
+    }
+    const leafData = [-1, 1].map((side) => {
+      const leaf = new TransformNode("sliding-door-" + d.id, scene)
+      leaf.position.set(
         x + (horizontal ? (side * width) / 4 : 0),
         1.31,
         z + (horizontal ? 0 : (side * width) / 4),
+      )
+      const parts: SlidingDoorPart[] = []
+      const part = (
+        name: string,
+        px: number,
+        py: number,
+        pz: number,
+        w: number,
+        h: number,
+        depth: number,
+        color: string,
+        emissive = false,
+      ) => {
+        const mesh = box(name, px, py, pz, w, h, depth, color, emissive)
+        mesh.parent = leaf
+        mesh.metadata = { interaction }
+        parts.push({ mesh, offset: horizontal ? px : pz, width: horizontal ? w : depth })
+        return mesh
+      }
+      part(
+        "door-body",
+        0,
+        0,
+        0,
         horizontal ? width / 2 : 0.14,
         2.6,
         horizontal ? 0.14 : width / 2,
         "#657274",
       )
-      const panel = box(
+      part(
         "door-inlay",
         0,
         0,
@@ -584,12 +615,10 @@ export function buildWorld(
         horizontal ? 0.17 : width / 2 - 0.2,
         "#A9B5B4",
       )
-      panel.parent = leaf
-      panel.position.set(0, 0, 0)
-      const strip = box(
+      part(
         "door-lit-edge",
         0,
-        0,
+        0.95,
         0,
         horizontal ? 0.028 : 0.185,
         0.11,
@@ -597,9 +626,7 @@ export function buildWorld(
         "#8FB49B",
         true,
       )
-      strip.parent = leaf
-      strip.position.set(0, 0.95, 0)
-      const handle = box(
+      part(
         "door-handle",
         horizontal ? side * width * 0.12 : 0.12,
         0,
@@ -609,8 +636,7 @@ export function buildWorld(
         horizontal ? 0.12 : 0.028,
         "#A7AEAE",
       )
-      handle.parent = leaf
-      const plaque = box(
+      part(
         "door-inspection-window",
         0,
         0.35,
@@ -620,18 +646,9 @@ export function buildWorld(
         horizontal ? 0.185 : 0.24,
         "#35454E",
       )
-      plaque.parent = leaf
-      for (const mesh of [leaf, panel, strip, handle, plaque])
-        mesh.metadata = {
-          interaction: {
-            id: d.id,
-            kind: "door",
-            label: r.label,
-            roomId: r.id,
-          } satisfies Interaction,
-        }
-      return leaf
+      return { leaf, parts }
     })
+    const leaves = leafData.map((data) => data.leaf)
     return {
       id: d.id,
       roomId: d.roomId,
@@ -642,6 +659,7 @@ export function buildWorld(
       openness: 0,
       desired: 0,
       leaves,
+      parts: leafData.map((data) => data.parts),
       width,
       bases: leaves.map((l) => l.position.clone()),
     }
@@ -832,6 +850,14 @@ export function buildWorld(
           const slide = (i === 0 ? -1 : 1) * d.width * 0.52 * d.openness
           if (d.horizontal) l.position.x += slide
           else l.position.z += slide
+          for (const part of d.parts[i])
+            fitDoorPart(
+              part,
+              d.horizontal,
+              d.horizontal ? l.position.x : l.position.z,
+              d.from * SCALE,
+              d.to * SCALE,
+            )
         })
       }
       for (const [id, core] of stations) {

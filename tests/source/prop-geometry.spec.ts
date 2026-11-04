@@ -5,6 +5,58 @@ import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData.js"
 import { Ray } from "@babylonjs/core/Culling/ray.js"
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js"
 import { bevelBox } from "../../apps/web/src/jeu/three/props"
+import { MeshBuilder } from "@babylonjs/core/Meshes/meshBuilder.js"
+import { TransformNode } from "@babylonjs/core/Meshes/transformNode.js"
+import { fitDoorPart } from "../../apps/web/src/jeu/three/slidingDoor"
+
+test("les panneaux restent dans l’encadrement pendant l’ouverture et retrouvent leur forme à la fermeture", () => {
+  const engine = new NullEngine(),
+    scene = new Scene(engine)
+  try {
+    for (const horizontal of [true, false]) {
+      const axis = horizontal ? "x" : "z"
+      const width = 2.8,
+        from = 8,
+        to = from + width
+      const leaves = [-1, 1].map((side) => {
+        const root = new TransformNode("leaf", scene)
+        const parts = [
+          { width: width / 2, offset: 0 },
+          { width: width / 2 - 0.2, offset: 0 },
+          { width: 0.028, offset: side * width * 0.12 },
+        ].map(({ width, offset }) => {
+          const mesh = MeshBuilder.CreateBox(
+            "part",
+            { width: horizontal ? width : 0.14, height: 2.6, depth: horizontal ? 0.14 : width },
+            scene,
+          )
+          mesh.parent = root
+          return { mesh, width, offset }
+        })
+        return { root, side, parts }
+      })
+      for (const openness of [0, 0.25, 0.5, 0.75, 1, 0.75, 0.5, 0]) {
+        let visible = 0
+        for (const leaf of leaves) {
+          leaf.root.position[axis] = (from + to) / 2 + leaf.side * width * (0.25 + 0.52 * openness)
+          for (const part of leaf.parts) {
+            fitDoorPart(part, horizontal, leaf.root.position[axis], from, to)
+            if (!part.mesh.isEnabled()) continue
+            visible++
+            part.mesh.computeWorldMatrix(true)
+            const bounds = part.mesh.getBoundingInfo().boundingBox
+            expect(bounds.minimumWorld[axis]).toBeGreaterThanOrEqual(from - 0.00001)
+            expect(bounds.maximumWorld[axis]).toBeLessThanOrEqual(to + 0.00001)
+            if (openness === 0) expect(part.mesh.scaling[axis]).toBeCloseTo(1)
+          }
+        }
+        expect(visible > 0).toBe(openness < 1)
+      }
+    }
+  } finally {
+    engine.dispose()
+  }
+})
 
 test("bevelled furniture has outward faces and can be targeted from all six sides", () => {
   const engine = new NullEngine(),

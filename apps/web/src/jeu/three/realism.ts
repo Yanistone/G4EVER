@@ -105,6 +105,7 @@ export function addRealism(scene: Scene, shadow: ShadowGenerator) {
         const root = new TransformNode("modern-chair-scan", scene)
         root.position.set(chair.x, 0, chair.z)
         root.scaling.set(0.75 / 0.82, 1, 0.8 / 0.987)
+        if (chair.room === "cafeteria") root.rotation.y = Math.PI
         if (chair.id === "lounge") root.rotation.y = -0.8
         for (const n of instance.rootNodes) n.parent = root
         for (const m of root.getChildMeshes()) {
