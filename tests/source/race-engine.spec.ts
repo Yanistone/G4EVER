@@ -1,5 +1,12 @@
 import { test, expect } from "@playwright/test"
 import { createRoom, transact, GameError } from "../../server/engine"
+import {
+  GAME_DURATION_MS,
+  CAMPUS_MINUTES_PER_SECOND,
+  campusMinuteAt,
+  formatCampusClock,
+  remainingMilliseconds,
+} from "../../shared/clock"
 import type { Repository, Room } from "../../server/engine"
 import { canWalkAt, getNearbyInteraction, WORLD_ROOMS } from "../../apps/web/src/jeu/game/world"
 class Memory implements Repository {
@@ -37,6 +44,128 @@ function near(roomId: string) {
     }
   throw Error("Unreachable station")
 }
+test("le serveur impose quinze minutes, de 09:00 à 16:00, quelle que soit la durée envoyée", async () => {
+  for (const durationMinutes of [undefined, 5, 10, 15, 60, -1]) {
+    const repo = new Memory(),
+      now = 500000
+    const game = await createRoom(repo, { nickname: "Horloge", mode: "solo", durationMinutes }, now)
+    expect(game.snapshot.durationMinutes).toBe(15)
+    const a = auth(game.credentials)
+    await transact(repo, game.credentials.code, "ready", { ready: true }, a, now)
+    const start = await transact(repo, game.credentials.code, "start", {}, a, now)
+    expect(start.snapshot.endsAt! - start.snapshot.startsAt!).toBe(GAME_DURATION_MS)
+    expect(
+      formatCampusClock(campusMinuteAt(start.snapshot.startsAt!, start.snapshot.startsAt!)),
+    ).toBe("09:00")
+    const end = await transact(repo, game.credentials.code, "state", {}, a, start.snapshot.endsAt!)
+    expect(end.snapshot.phase).toBe("finished")
+    expect(end.snapshot.players[0].timedOut).toBe(true)
+    expect(
+      formatCampusClock(campusMinuteAt(start.snapshot.startsAt!, start.snapshot.endsAt!)),
+    ).toBe("16:00")
+  }
+})
+test("une erreur fait passer de 09:10 à 09:20 sans pénaliser l’autre joueur", async () => {
+  const repo = new Memory(),
+    initial = 600000
+  const game = await createRoom(repo, { nickname: "Alice", mode: "friends" }, initial)
+  const code = game.credentials.code,
+    a = auth(game.credentials)
+  const join = await transact(
+    repo,
+    code,
+    "join",
+    { nickname: "Bob" },
+    { id: "", token: "" },
+    initial,
+  )
+  const b = auth(join.credentials!)
+  await transact(repo, code, "ready", { ready: true }, a, initial)
+  await transact(repo, code, "ready", { ready: true }, b, initial)
+  const start = await transact(repo, code, "start", {}, a, initial)
+  const now = start.snapshot.startsAt! + 22000
+  const room = repo.rows.get(code)!.room,
+    q = room.deck[0]
+  room.players[0].position = near(q.roomId)
+  await transact(repo, code, "open", { questionId: q.id }, a, now)
+  const bad = await transact(repo, code, "answer", { questionId: q.id, answerText: "FAUX" }, a, now)
+  expect(formatCampusClock(bad.snapshot.lastResult!.timeBefore!)).toBe("09:10")
+  expect(formatCampusClock(bad.snapshot.lastResult!.timeAfter!)).toBe("09:20")
+  expect(bad.snapshot.lastResult!.penaltyMinutes).toBe(10)
+  expect(bad.snapshot.players[0].penaltyMinutes).toBe(10)
+  expect(bad.snapshot.players[1].penaltyMinutes).toBe(0)
+  expect(
+    remainingMilliseconds(start.snapshot.startsAt!, now, 0) -
+      remainingMilliseconds(start.snapshot.startsAt!, now, 10),
+  ).toBeCloseTo((10 / CAMPUS_MINUTES_PER_SECOND) * 1000)
+})
+test("trois erreurs verrouillent le même terminal trente secondes et une erreur peut provoquer le crash", async () => {
+  const repo = new Memory(),
+    initial = 700000
+  const game = await createRoom(repo, { nickname: "Boucle", mode: "solo" }, initial)
+  const code = game.credentials.code,
+    a = auth(game.credentials)
+  await transact(repo, code, "ready", { ready: true }, a, initial)
+  const start = await transact(repo, code, "start", {}, a, initial)
+  let now = start.snapshot.startsAt! + 1000
+  const q = repo.rows.get(code)!.room.deck[0]
+  repo.rows.get(code)!.room.players[0].position = near(q.roomId)
+  await transact(repo, code, "open", { questionId: q.id }, a, now)
+  for (let i = 0; i < 3; i++) {
+    now += 1100
+    await transact(repo, code, "answer", { questionId: q.id, answerText: "FAUX" }, a, now)
+  }
+  const lock = await transact(repo, code, "state", {}, a, now)
+  expect(lock.snapshot.questions.find((p) => p.id === q.id)?.lockedUntil).toBe(now + 30000)
+  await expect(
+    transact(
+      repo,
+      code,
+      "answer",
+      { questionId: q.id, answerText: q.answers[q.correct] },
+      a,
+      now + 1100,
+    ),
+  ).rejects.toThrow(/bloqué/)
+  expect(repo.rows.get(code)!.room.players[0].penaltyMinutes).toBe(30)
+  now += 30001
+  const good = await transact(
+    repo,
+    code,
+    "answer",
+    { questionId: q.id, answerText: q.answers[q.correct] },
+    a,
+    now,
+  )
+  expect(good.snapshot.lastResult!.correct).toBe(true)
+  expect(good.snapshot.players[0].penaltyMinutes).toBe(30)
+  const next = repo.rows.get(code)!.room.deck.find((p) => p.roomId === q.roomId && p.id !== q.id)!
+  now = start.snapshot.startsAt! + ((420 - 35) / CAMPUS_MINUTES_PER_SECOND) * 1000
+  await transact(repo, code, "open", { questionId: next.id }, a, now)
+  const failure = await transact(
+    repo,
+    code,
+    "answer",
+    { questionId: next.id, answerId: String((next.correct + 1) % 4) },
+    a,
+    now,
+  )
+  expect(failure.snapshot.players[0].timedOut).toBe(true)
+  expect(failure.snapshot.phase).toBe("finished")
+  await expect(
+    transact(
+      repo,
+      code,
+      "answer",
+      { questionId: next.id, answerId: String(next.correct) },
+      a,
+      now + 1100,
+    ),
+  ).rejects.toThrow(/plus de réponses/)
+  const again = await transact(repo, code, "rematch", {}, a, now + 1100)
+  expect(again.snapshot.players[0].penaltyMinutes).toBe(0)
+  expect(again.snapshot.players[0].timedOut).toBe(false)
+})
 test("two-player authoritative race: common deck, authentication, scoring, finish and fresh rematch", async () => {
   const repo = new Memory()
   let now = 1000000
@@ -101,8 +230,8 @@ test("two-player authoritative race: common deck, authentication, scoring, finis
   repo.rows.get(code)!.room.players[0].position = near("sormiou")
   const finish = await transact(repo, code, "finish", {}, auth(host.credentials), now)
   expect(finish.snapshot.winnerId).toBe(host.credentials.playerId)
-  expect(finish.snapshot.endsAt).toBe(now + 60000)
-  now += 60001
+  expect(finish.snapshot.endsAt).toBe(start.snapshot.startsAt! + GAME_DURATION_MS)
+  now = finish.snapshot.endsAt! + 1
   const final = await transact(repo, code, "state", {}, auth(bob), now)
   expect(final.snapshot.phase).toBe("finished")
   expect(final.snapshot.ranking[0].nickname).toBe("Alice")

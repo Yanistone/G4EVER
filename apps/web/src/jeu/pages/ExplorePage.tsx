@@ -1,6 +1,7 @@
 import type { EscapeDocument } from "../game/escape"
 import { useEffect, useRef, useState } from "react"
 import { WORLD_ROOMS, getRoomAt } from "../game/world"
+import { isMapKey } from "../game/shortcuts"
 import type { PlayerPosition } from "../types/game"
 import type { CampusRuntime } from "../three/runtime"
 import type { Interaction } from "../three/world"
@@ -24,6 +25,7 @@ export interface ExplorePageProps {
   unlockedRoomIds?: readonly string[]
   progress?: { solved: number; total: number }
   active: boolean
+  mapOpen?: boolean
   gameTime: string
   loopNumber: number
   hintCount: number
@@ -42,6 +44,7 @@ export function ExplorePage(p: ExplorePageProps) {
     runtime = useRef<CampusRuntime | null>(null),
     latest = useRef(p)
   latest.current = p
+  const resumeAfterMap = useRef(false)
   const [ready, setReady] = useState(false),
     [error, setError] = useState(""),
     [locked, setLocked] = useState(false),
@@ -68,6 +71,35 @@ export function ExplorePage(p: ExplorePageProps) {
   const blocked = inventory || settings || !!talk || !!error
   const blockedRef = useRef(blocked)
   blockedRef.current = blocked
+  const openMap = () => {
+    if (runtime.current) runtime.current.openMap()
+    else latest.current.onOpenMap()
+  }
+  useEffect(() => {
+    const handleMap = (event: KeyboardEvent) => {
+      if (
+        !latest.current.active ||
+        blockedRef.current ||
+        event.defaultPrevented ||
+        event.repeat ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.metaKey ||
+        !isMapKey(event)
+      )
+        return
+      if (
+        event.target instanceof HTMLElement &&
+        event.target.closest("input,textarea,select,[contenteditable]:not([contenteditable=false])")
+      )
+        return
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      openMap()
+    }
+    window.addEventListener("keydown", handleMap, true)
+    return () => window.removeEventListener("keydown", handleMap, true)
+  }, [])
   useEffect(() => {
     setItems(readInventory(key))
   }, [key])
@@ -98,7 +130,10 @@ export function ExplorePage(p: ExplorePageProps) {
               map: () => latest.current.onOpenMap(),
               inventory: () => setInventory(true),
               target: setTarget,
-              lock: setLocked,
+              lock: (value) => {
+                if (value) resumeAfterMap.current = false
+                setLocked(value)
+              },
               toast: setToast,
               talk: (name, text, roomId) => setTalk({ name, text, roomId }),
               pickup: (id) => {
@@ -147,6 +182,10 @@ export function ExplorePage(p: ExplorePageProps) {
     })
   }, [p.active, p.playerPosition, p.solvedRoomIds, items, blocked, ready])
   useEffect(() => {
+    if (p.mapOpen) resumeAfterMap.current = true
+    else if (resumeAfterMap.current && p.active && ready && !blocked) runtime.current?.enter()
+  }, [p.mapOpen, p.active, ready, blocked])
+  useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(""), 4200)
     return () => clearTimeout(t)
@@ -192,8 +231,9 @@ export function ExplorePage(p: ExplorePageProps) {
         </div>
         <div className="fps-clock">
           <span className="live-dot" />
-          <small>{p.raceInfo ? "TEMPS RESTANT" : "HORLOGE DU CAMPUS"}</small>
-          <b>{p.raceInfo?.remaining ?? p.gameTime}</b>
+          <small>HORLOGE DU CAMPUS</small>
+          <b>{p.gameTime}</b>
+          {p.raceInfo && <small>{p.raceInfo.remaining} restantes</small>}
         </div>
       </header>
       <div className="fps-objective">
@@ -246,7 +286,7 @@ export function ExplorePage(p: ExplorePageProps) {
           </div>
         </div>
       )}
-      {!locked && p.active && !blocked && ready && (
+      {!locked && p.active && !blocked && ready && !resumeAfterMap.current && (
         <button className="fps-enter" onClick={() => runtime.current?.enter()}>
           <span className="enter-arrow">↗</span>
           <div>
@@ -264,12 +304,7 @@ export function ExplorePage(p: ExplorePageProps) {
       )}
       <footer className="fps-bottom">
         <div className="fps-shortcuts">
-          <button
-            onClick={() => {
-              runtime.current?.unlock()
-              p.onOpenMap()
-            }}
-          >
+          <button onClick={openMap}>
             <kbd>M</kbd>Plan
           </button>
           <button

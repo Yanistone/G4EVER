@@ -1,4 +1,13 @@
 import { QUESTION_BANK, RACE_ROOM_IDS } from "../shared/questions.ts"
+import {
+  GAME_DURATION_MINUTES,
+  GAME_DURATION_MS,
+  DAY_END,
+  WRONG_ANSWER_MINUTES,
+  PUZZLE_LOCK_MS,
+  campusMinuteAt,
+  remainingMilliseconds,
+} from "../shared/clock.ts"
 import type { BankQuestion } from "../shared/questions.ts"
 import type { RaceSnapshot, RacePlayer } from "../shared/race.ts"
 import {
@@ -24,6 +33,7 @@ export interface InternalPlayer extends RacePlayer {
   wrong: Record<string, number>
   hintIds: string[]
   hintPaid?: Record<string, number>
+  lockouts?: Record<string, number>
   lastAttempt: number
   activeQuestionId: string | null
   receipts: Record<string, NonNullable<RaceSnapshot["lastResult"]>>
@@ -95,6 +105,8 @@ function player(name: string, now: number): InternalPlayer {
     answered: 0,
     score: 0,
     mistakes: 0,
+    penaltyMinutes: 0,
+    timedOut: false,
     hints: 0,
     finishedAt: null,
     position: { x: 690, y: 590 },
@@ -103,6 +115,7 @@ function player(name: string, now: number): InternalPlayer {
     lastMove: now,
     answeredIds: [],
     wrong: {},
+    lockouts: {},
     hintIds: [],
     lastAttempt: 0,
     activeQuestionId: null,
@@ -111,9 +124,20 @@ function player(name: string, now: number): InternalPlayer {
 }
 export function advance(room: Room, now: number) {
   if (room.phase === "countdown" && now >= room.startsAt!) room.phase = "playing"
+  if (room.phase === "playing")
+    for (const p of room.players) {
+      if (
+        !p.left &&
+        p.finishedAt === null &&
+        (now >= room.endsAt! ||
+          campusMinuteAt(room.startsAt!, now, p.penaltyMinutes ?? 0) >= DAY_END)
+      )
+        p.timedOut = true
+    }
   if (
     room.phase === "playing" &&
-    (now >= room.endsAt! || room.players.filter((p) => !p.left).every((p) => p.finishedAt !== null))
+    (now >= room.endsAt! ||
+      room.players.filter((p) => !p.left).every((p) => p.finishedAt !== null || p.timedOut))
   )
     room.phase = "finished"
 }
@@ -141,6 +165,8 @@ export function snapshot(
     answered: p.answered,
     score: p.score,
     mistakes: p.mistakes,
+    penaltyMinutes: p.penaltyMinutes ?? 0,
+    timedOut: p.timedOut ?? false,
     hints: p.hints,
     finishedAt: p.finishedAt,
     position: p.position,
@@ -173,6 +199,7 @@ export function snapshot(
                     ...(q.kind ? { kind: q.kind } : {}),
                     exhibit: q.exhibit,
                     visual: q.visual,
+                    lockedUntil: me.lockouts?.[q.id] ?? 0,
                     answers: (q.kind === "code" ? [] : q.answers).map((label, i) => ({
                       id: String(i),
                       label,
@@ -194,9 +221,7 @@ export async function createRoom(
 ) {
   const host = player(nickname(data.nickname), now)
   const mode = data.mode === "solo" ? "solo" : "friends"
-  const durationMinutes = [5, 10, 15].includes(Number(data.durationMinutes))
-    ? Number(data.durationMinutes)
-    : 15
+  const durationMinutes = GAME_DURATION_MINUTES
   for (let i = 0; i < 8; i++) {
     const code = shuffle("ABCDEFGHJKLMNPQRSTUVWXYZ23456789".split("")).slice(0, 6).join("")
     const room: Room = {
@@ -240,8 +265,16 @@ export async function transact(
     )
       throw new GameError("Ce salon est introuvable ou a expiré. Crée une nouvelle partie.", 404)
     const room = stored.room
+    if (room.durationMinutes !== GAME_DURATION_MINUTES) {
+      room.durationMinutes = GAME_DURATION_MINUTES
+      if (room.startsAt !== null && room.phase !== "finished")
+        room.endsAt = room.startsAt + GAME_DURATION_MS
+    }
 
     for (const participant of room.players) {
+      participant.penaltyMinutes ??= participant.mistakes * WRONG_ANSWER_MINUTES
+      participant.timedOut ??= false
+      participant.lockouts ??= {}
       if (!canWalkAt(participant.position)) {
         participant.position = {
           ...(ROOM_SPAWNS[getRoomAt(participant.position)?.id ?? "cafeteria"] ?? START_POSITION),
@@ -302,7 +335,7 @@ export async function transact(
       room.endsAt = room.startsAt + room.durationMinutes * 60000
       for (const p of active) p.lastMove = room.startsAt
     }
-    if (action === "move" && room.phase === "playing" && me.finishedAt === null) {
+    if (action === "move" && room.phase === "playing" && me.finishedAt === null && !me.timedOut) {
       const pos = data.position as { x: number; y: number } | undefined
       if (
         pos &&
@@ -315,7 +348,7 @@ export async function transact(
       }
     }
     if (["open", "answer", "hint", "finish", "clue", "assist"].includes(action)) {
-      if (room.phase !== "playing" || now < room.startsAt! || me.finishedAt !== null)
+      if (room.phase !== "playing" || now < room.startsAt! || me.finishedAt !== null || me.timedOut)
         throw new GameError("Cette manche n’accepte plus de réponses.", 409)
       const station = getNearbyInteraction(me.position)
       if (action === "finish") {
@@ -323,10 +356,9 @@ export async function transact(
           throw new GameError("Répare les cinq modules puis rejoins la console de Sormiou.")
         me.finishedAt = now
         me.score +=
-          Math.max(0, Math.floor((room.startsAt! + room.durationMinutes * 60000 - now) / 1000)) * 2
+          Math.floor(remainingMilliseconds(room.startsAt!, now, me.penaltyMinutes) / 1000) * 2
         if (!room.winnerId) {
           room.winnerId = me.id
-          room.endsAt = Math.min(room.endsAt!, now + 60000)
         }
       } else if (action === "assist") {
         const roomId = typeof data.roomId === "string" ? data.roomId : ""
@@ -378,6 +410,11 @@ export async function transact(
             }
           }
           if (action === "answer") {
+            if ((me.lockouts?.[q.id] ?? 0) > now)
+              throw new GameError(
+                `Ce terminal est bloqué encore ${Math.ceil((me.lockouts![q.id] - now) / 1000)} secondes.`,
+                429,
+              )
             if (me.activeQuestionId !== q.id)
               throw new GameError("Ouvre la borne avant de répondre.")
             if (now - me.lastAttempt < 1000)
@@ -395,6 +432,7 @@ export async function transact(
             )
               throw new GameError("Saisis un code de 1 à 32 caractères.")
             me.lastAttempt = now
+            const timeBefore = campusMinuteAt(room.startsAt!, now, me.penaltyMinutes)
             const correct =
               q.kind === "code"
                 ? typeof data.answerText === "string" &&
@@ -421,7 +459,9 @@ export async function transact(
               me.activeQuestionId = null
             } else {
               me.mistakes++
+              me.penaltyMinutes += WRONG_ANSWER_MINUTES
               me.wrong[q.id] = (me.wrong[q.id] ?? 0) + 1
+              if (me.wrong[q.id] % 3 === 0) (me.lockouts ??= {})[q.id] = now + PUZZLE_LOCK_MS
             }
             lastResult = {
               correct,
@@ -429,6 +469,9 @@ export async function transact(
               roomId: q.roomId,
               roomComplete: me.solvedRoomIds.includes(q.roomId),
               scoreDelta: delta,
+              penaltyMinutes: correct ? 0 : WRONG_ANSWER_MINUTES,
+              timeBefore,
+              timeAfter: campusMinuteAt(room.startsAt!, now, me.penaltyMinutes),
             }
             if (correct) me.receipts[q.id] = lastResult
           }

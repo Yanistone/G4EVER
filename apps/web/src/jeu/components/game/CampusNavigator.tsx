@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { isMapKey } from "../../game/shortcuts"
 import { WORLD_ROOMS, WALKABLE_AREAS, getRoomAt } from "../../game/world"
 import { PlayableCampusScene } from "../artwork/PlayableCampusScene"
 import { MISSIONS } from "../../../../../../shared/missions"
@@ -95,18 +96,23 @@ export function CampusNavigator({
   position,
   solvedRoomIds,
   targetRoomId,
-  onSelectRoom,
   onBack,
 }: {
   position: PlayerPosition
   solvedRoomIds: readonly string[]
   targetRoomId?: string
-  onSelectRoom: (roomId: string) => void
   onBack: () => void
 }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (
+        !e.defaultPrevented &&
+        !e.repeat &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !e.metaKey &&
+        (e.key === "Escape" || isMapKey(e))
+      ) {
         e.preventDefault()
         onBack()
       }
@@ -120,10 +126,10 @@ export function CampusNavigator({
       <header>
         <div>
           <small>INSTITUT G4 · CARTE TACTIQUE</small>
-          <h1>CHOISIS TA PROCHAINE SALLE</h1>
+          <h1>PLAN DU CAMPUS</h1>
         </div>
         <button className="r-btn r-btn-gold" onClick={onBack}>
-          ← RETOUR AU JEU · ÉCHAP
+          ← RETOUR AU JEU · M / ÉCHAP
         </button>
       </header>
       <div className="navigator-layout">
@@ -133,17 +139,8 @@ export function CampusNavigator({
             {WORLD_ROOMS.map((room) => (
               <g
                 key={room.id}
-                role="button"
-                tabIndex={0}
                 aria-label={room.label}
                 className={`navigator-room ${targetRoomId === room.id ? "is-target" : ""}`}
-                onClick={() => onSelectRoom(room.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault()
-                    onSelectRoom(room.id)
-                  }
-                }}
               >
                 <rect
                   {...room.floor}
@@ -215,16 +212,14 @@ export function CampusNavigator({
             <strong>{current?.label ?? "Couloirs du campus"}</strong>
             <small>{solvedRoomIds.length}/5 fragments récupérés</small>
           </div>
-          <p>
-            Choisis un objectif, puis rejoins le repère dans la salle. Les portes orange relient les
-            couloirs.
-          </p>
-          <div className="navigator-list">
+          <p>Repère les salles, puis rejoins-les à pied par les couloirs et les portes.</p>
+          <div className="navigator-list" role="list" aria-label="Salles du campus">
             {WORLD_ROOMS.map((room) => (
-              <button
+              <article
+                role="listitem"
+                aria-label={room.label}
                 key={room.id}
-                className={targetRoomId === room.id ? "is-target" : ""}
-                onClick={() => onSelectRoom(room.id)}
+                className={`navigator-room-info ${targetRoomId === room.id ? "is-target" : ""}`}
               >
                 <b>{solvedRoomIds.includes(room.id) ? "✓" : numbers[room.id]}</b>
                 <span>
@@ -233,8 +228,7 @@ export function CampusNavigator({
                     {solvedRoomIds.includes(room.id) ? "Module réparé" : MISSIONS[room.id].title}
                   </small>
                 </span>
-                <i>→</i>
-              </button>
+              </article>
             ))}
           </div>
         </aside>
@@ -250,13 +244,13 @@ export function CampusNavigator({
         </span>
         <span>
           <i className="map-key key-cyan" />
-          Objectif choisi
+          Objectif en cours
         </span>
         <span>
           <i className="map-key key-pink" />
           Console de sortie
         </span>
-        <b>5 FRAGMENTS → SORMIOU → ÉVASION</b>
+        <b>COULOIRS ET PORTES · DÉPLACEMENT À PIED</b>
       </footer>
     </div>
   )

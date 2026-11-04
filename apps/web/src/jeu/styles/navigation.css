@@ -152,7 +152,7 @@
   flex-direction: column;
   gap: 8px;
 }
-.navigator-list button {
+.navigator-list .navigator-room-info {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -161,13 +161,12 @@
   border-radius: 12px;
   padding: 7px 9px;
   color: #1b1030;
-  cursor: pointer;
   text-align: left;
 }
-.navigator-list button.is-target {
+.navigator-list .navigator-room-info.is-target {
   background: #2ee6ff;
 }
-.navigator-list button > b {
+.navigator-list .navigator-room-info > b {
   font:
     20px "Lilita One",
     sans-serif;
@@ -175,7 +174,7 @@
   flex: none;
   text-align: center;
 }
-.navigator-list button > span {
+.navigator-list .navigator-room-info > span {
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -251,11 +250,11 @@
 .navigator-list {
   gap: 6px;
 }
-.navigator-list button {
+.navigator-list .navigator-room-info {
   padding: 4px 7px;
   gap: 8px;
 }
-.navigator-list button > span {
+.navigator-list .navigator-room-info > span {
   gap: 1px;
 }
 .navigator-list strong {
@@ -266,6 +265,38 @@
   font-size: 9px;
   line-height: 11px;
 }
-.navigator-list button > b {
+.navigator-list .navigator-room-info > b {
   font-size: 18px;
+}
+
+.campus-world-layer {
+  width: 100%;
+  height: 100%;
+}
+.campus-map-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  overflow: auto;
+  background: #2d6bff;
+}
+.campus-map-layer .navigator-screen {
+  width: 100%;
+  min-width: 760px;
+  height: 100%;
+  min-height: 640px;
+  display: flex;
+  flex-direction: column;
+}
+.campus-map-layer .navigator-layout {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+.campus-map-layer .navigator-screen header,
+.campus-map-layer .navigator-screen footer {
+  flex-shrink: 0;
+}
+.campus-map-layer .navigator-room {
+  pointer-events: none;
 }
