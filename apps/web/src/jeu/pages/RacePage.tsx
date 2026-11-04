@@ -1,4 +1,11 @@
 import { ScenarioExhibit } from "../components/game/ScenarioExhibit"
+import {
+  GAME_DURATION_MINUTES,
+  DAY_END,
+  campusMinuteAt,
+  remainingMilliseconds,
+  formatCampusClock,
+} from "../../../../../shared/clock"
 import "../styles/scenario.css"
 import { DOCUMENT_POSITIONS } from "../game/escape"
 import { readInventory, storeDocuments } from "../three/inventory"
@@ -66,7 +73,6 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
   const { state, credentials, pending, error, connected } = race
   const [name, setName] = useState(nickname)
   const [code, setCode] = useState("")
-  const [duration, setDuration] = useState(10)
   const [view, setView] = useState<"world" | "map" | "question" | "feedback">("world")
   const [question, setQuestion] = useState<PublicQuestion | null>(null)
   const [selected, setSelected] = useState<string | null>(null)
@@ -130,7 +136,17 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
     if (state) offset.current = state.serverNow - Date.now()
   }, [state])
   const time = now + offset.current
-  const remaining = state?.endsAt ? Math.max(0, state.endsAt - time) : 0
+  const remaining = state?.startsAt
+    ? remainingMilliseconds(state.startsAt, me?.finishedAt ?? time, me?.penaltyMinutes ?? 0)
+    : 0
+  const campusMinute = me?.timedOut
+    ? DAY_END
+    : state?.startsAt
+      ? campusMinuteAt(state.startsAt, me?.finishedAt ?? time, me?.penaltyMinutes ?? 0)
+      : 540
+  const campusTime = formatCampusClock(campusMinute)
+  const lockedSeconds = Math.max(0, Math.ceil(((question?.lockedUntil ?? 0) - time) / 1000))
+  const expired = !!me?.timedOut || (state?.phase === "playing" && remaining <= 0)
   const move = (position: { x: number; y: number }) => {
     setLocalPosition(position)
     race.move(position)
@@ -160,12 +176,13 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
     }
   }
   const answer = async () => {
-    if (!question || selected === null) return
+    if (!question || selected === null || lockedSeconds > 0) return
     const result = await race.act("answer", {
       questionId: question.id,
       ...(question.kind === "code" ? { answerText: selected } : { answerId: selected }),
     })
     if (result?.lastResult) {
+      setQuestion(result.questions.find((q) => q.id === question.id) ?? question)
       setFeedback(result.lastResult)
       setView("feedback")
     }
@@ -193,7 +210,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
   }
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (view !== "question" || dialog || pending) return
+      if (view !== "question" || dialog || pending || lockedSeconds > 0) return
       if (/^[1-4]$/.test(e.key) && question && question.kind !== "code") {
         setSelected(question.answers[Number(e.key) - 1]?.id ?? null)
         e.preventDefault()
@@ -269,14 +286,10 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
               onChange={(e) => setName(e.target.value)}
             />
           </label>
-          <label>
-            DURÉE MAXIMALE
-            <select value={duration} onChange={(e) => setDuration(Number(e.target.value))}>
-              <option value={5}>5 minutes · Sprint</option>
-              <option value={10}>10 minutes · Standard</option>
-              <option value={15}>15 minutes · Exploration</option>
-            </select>
-          </label>
+          <div className="hub-duration" role="note">
+            <strong>15 minutes · 09:00 → 16:00</strong>
+            <p>Durée fixe. Chaque erreur avance l’heure du campus de 10 minutes.</p>
+          </div>
         </div>
         <div className="hub-cards">
           <section className="hub-card">
@@ -294,7 +307,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                 race.act("create", {
                   nickname: name,
                   mode: "friends",
-                  durationMinutes: duration,
+                  durationMinutes: GAME_DURATION_MINUTES,
                 })
               }
             >
@@ -338,7 +351,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                 race.act("create", {
                   nickname: name,
                   mode: "solo",
-                  durationMinutes: duration,
+                  durationMinutes: GAME_DURATION_MINUTES,
                 })
               }
             >
@@ -478,7 +491,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
         )}
       </div>
     )
-  if (state.phase === "finished" || me.finishedAt)
+  if (state.phase === "finished" || me.finishedAt || expired)
     return (
       <div className="race-screen results-screen">
         <div className="race-grid" />
@@ -505,9 +518,11 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                 : "Le temps est écoulé."}
           </h1>
           <p>
-            {state.phase !== "finished"
-              ? `Les autres joueurs ont encore ${clock(remaining)} pour terminer.`
-              : "Évadés classés par ordre d’arrivée. Les autres joueurs sont départagés par progression, puis score."}
+            {expired
+              ? "16:00 · G4-OS a redémarré. La prochaine manche repart à 09:00."
+              : state.phase !== "finished"
+                ? "Les autres joueurs poursuivent leur journée jusqu’à 16:00."
+                : "Évadés classés par ordre d’arrivée. Les autres joueurs sont départagés par progression, puis score."}
           </p>
         </div>
         <div className="result-stats">
@@ -591,7 +606,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
               active={
                 view === "world" && state.phase === "playing" && !dialog && connected && !pending
               }
-              gameTime="09:00"
+              gameTime={campusTime}
               loopNumber={state.round}
               hintCount={me.hints}
               objectiveLabel={target || undefined}
@@ -621,7 +636,9 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
             <Dialog title={question.title} onClose={() => setView("world")}>
               <div className="question-modal-meta">
                 <span>TERMINAL CONNECTÉ</span>
-                <b>⏱ {clock(remaining)}</b>
+                <b>
+                  {campusTime} · ⏱ {clock(remaining)} restantes
+                </b>
               </div>
               <section className="question-content">
                 <div className="question-kicker">
@@ -668,7 +685,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                         placeholder="Ta réponse…"
                         value={selected ?? ""}
                         maxLength={32}
-                        disabled={pending || !documentFound}
+                        disabled={pending || !documentFound || lockedSeconds > 0}
                         onChange={(e) => setSelected(e.target.value.trim() ? e.target.value : null)}
                       />
                       <small>
@@ -688,7 +705,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                         key={`${question.id}-${a.id}`}
                         className={`race-answer ${selected === a.id ? "is-selected" : ""}`}
                         aria-pressed={selected === a.id}
-                        disabled={pending}
+                        disabled={pending || lockedSeconds > 0}
                         onClick={() => setSelected(a.id)}
                       >
                         <b>{String.fromCharCode(65 + i)}</b>
@@ -697,6 +714,11 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                       </button>
                     ))}
                   </div>
+                )}
+                {lockedSeconds > 0 && (
+                  <p role="alert" className="scenario-lock">
+                    Trois erreurs : terminal bloqué encore {lockedSeconds} s.
+                  </p>
                 )}
                 {question.hint && (
                   <aside className="race-hint">
@@ -711,10 +733,18 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                   >
                     {question.hint ? "Indice affiché" : "Un indice ? −100 pts"}
                   </button>
-                  <span>Bonne réponse : jusqu’à +1 000 pts · Erreur : −150 pts</span>
+                  <span>
+                    Bonne réponse : jusqu’à +1 000 pts · Erreur : −10 min campus et −150 pts
+                  </span>
                   <button
                     className="r-btn r-btn-gold"
-                    disabled={pending || selected === null || !connected || !documentFound}
+                    disabled={
+                      pending ||
+                      selected === null ||
+                      !connected ||
+                      !documentFound ||
+                      lockedSeconds > 0
+                    }
                     onClick={answer}
                   >
                     {pending ? "VÉRIFICATION…" : "VALIDER LA RÉPONSE →"}
@@ -736,6 +766,12 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
             </div>
             <h1>{feedback.correct ? "Bien joué, hacker." : "Une autre piste ?"}</h1>
             <p>{feedback.explanation}</p>
+            {!!feedback.penaltyMinutes && (
+              <p className="scenario-lock" role="status">
+                Mauvaise réponse : +{feedback.penaltyMinutes} minutes sur l’horloge du campus ·{" "}
+                {formatCampusClock(feedback.timeBefore!)} → {formatCampusClock(feedback.timeAfter!)}
+              </p>
+            )}
             <strong className="feedback-points">
               {feedback.scoreDelta > 0 ? "+" : ""}
               {feedback.scoreDelta} points
@@ -750,7 +786,9 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
             <button className="r-btn r-btn-ghost" onClick={() => setView("world")}>
               Revenir dans la salle
             </button>
-            <span className="feedback-clock">Le chrono continue · {clock(remaining)}</span>
+            <span className="feedback-clock">
+              Horloge du campus : {campusTime} · {clock(remaining)} restantes
+            </span>
           </div>
         )}
       </div>
@@ -801,7 +839,11 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
               <p>
                 <b>ZQSD / WASD / flèches</b> : marcher · <b>E</b> : borne proche · <b>M</b> : carte.
               </p>
-              <p>Le chronomètre est commun et continue pendant les questions et les fenêtres.</p>
+              <p>
+                Tu as 15 minutes réelles pour aller de 09:00 à 16:00. Chaque erreur te retire 10
+                minutes campus. Trois erreurs sur le même verrou le bloquent 30 secondes. Le temps
+                continue pendant les questions et les fenêtres.
+              </p>
               <button
                 className="r-btn r-btn-gold"
                 onClick={() => {

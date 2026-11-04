@@ -9,6 +9,7 @@ export interface PublicQuestion {
   kind?: "code"
   exhibit?: string
   visual?: ScenarioKind
+  lockedUntil?: number
 }
 export interface RacePlayer {
   id: string
@@ -19,6 +20,8 @@ export interface RacePlayer {
   answered: number
   score: number
   mistakes: number
+  penaltyMinutes: number
+  timedOut: boolean
   hints: number
   finishedAt: number | null
   position: { x: number; y: number }
@@ -44,6 +47,9 @@ export interface RaceSnapshot {
     roomId: string
     roomComplete: boolean
     scoreDelta: number
+    penaltyMinutes?: number
+    timeBefore?: number
+    timeAfter?: number
   }
   winnerId: string | null
 }

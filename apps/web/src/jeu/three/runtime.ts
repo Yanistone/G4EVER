@@ -324,12 +324,6 @@ export function createCampusRuntime(
         e.preventDefault()
         interact()
       }
-      if (e.code === "KeyM") {
-        e.preventDefault()
-        report()
-        unlock()
-        cb.map()
-      }
       if (e.code === "KeyI") {
         e.preventDefault()
         report()
@@ -448,6 +442,11 @@ export function createCampusRuntime(
   return {
     ready,
     enter,
+    openMap() {
+      report()
+      unlock()
+      cb.map()
+    },
     interact,
     unlock: () => unlock(),
     update(next: RuntimeState) {

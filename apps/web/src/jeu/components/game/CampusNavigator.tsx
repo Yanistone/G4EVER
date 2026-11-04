@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { isMapKey } from "../../game/shortcuts"
 import { WORLD_ROOMS, WALKABLE_AREAS, getRoomAt } from "../../game/world"
 import { PlayableCampusScene } from "../artwork/PlayableCampusScene"
 import { MISSIONS } from "../../../../../../shared/missions"
@@ -106,7 +107,14 @@ export function CampusNavigator({
 }) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+      if (
+        !e.defaultPrevented &&
+        !e.repeat &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !e.metaKey &&
+        (e.key === "Escape" || isMapKey(e))
+      ) {
         e.preventDefault()
         onBack()
       }

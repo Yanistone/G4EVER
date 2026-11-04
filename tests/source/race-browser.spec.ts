@@ -1,4 +1,4 @@
-import { enterCampus, approachFirstTerminal, collectNetworkEvidence } from "./fps-helpers"
+import { approachFirstTerminal, collectNetworkEvidence } from "./fps-helpers"
 import { test, expect } from "@playwright/test"
 test("friends create/join, ready, start together, answer a random question and reconnect", async ({
   browser,
@@ -16,9 +16,12 @@ test("friends create/join, ready, start together, answer a random question and r
       ),
     )
   await a.goto("/#race")
+  await expect(a.getByRole("combobox")).toHaveCount(0)
+  await expect(a.locator(".hub-duration")).toContainText("15 minutes")
   await a.getByLabel("TON PSEUDO", { exact: true }).fill("Alice")
   await a.getByRole("button", { name: "CRÉER UN SALON →", exact: true }).click()
   const code = (await a.locator(".invite-code>strong").innerText()).trim()
+  await expect(a.locator(".lobby-pills")).toContainText("15 minutes")
   await b.goto("/#race")
   await b.getByLabel("TON PSEUDO", { exact: true }).fill("Bob")
   await b.getByLabel("Code du salon", { exact: true }).fill(code)
@@ -32,8 +35,11 @@ test("friends create/join, ready, start together, answer a random question and r
   await b.getByRole("button", { name: "C’EST PARTI !" }).click()
   await expect(a.getByTestId("exploration")).toBeVisible()
   await expect(b.getByTestId("exploration")).toBeVisible()
-  await enterCampus(a)
-  await a.keyboard.press("m")
+  await a.evaluate(() =>
+    window.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "m", code: "Semicolon", bubbles: true }),
+    ),
+  )
   await expect(a.locator(".navigator-list button")).toHaveCount(7)
   await a
     .locator(".navigator-list")
@@ -46,8 +52,18 @@ test("friends create/join, ready, start together, answer a random question and r
   await a.getByRole("button", { name: /Un indice/ }).click()
   await expect(a.locator(".race-hint")).toBeVisible()
   await a.getByLabel("Code du verrou").fill("999")
+  const answerResponse = a.waitForResponse(
+    (r) => r.url().endsWith("/answer") && r.request().method() === "POST",
+  )
   await a.getByRole("button", { name: "VALIDER LA RÉPONSE →" }).click()
+  const answerResult = await (await answerResponse).json()
+  expect(answerResult.snapshot.lastResult.penaltyMinutes).toBe(10)
+  expect(
+    answerResult.snapshot.lastResult.timeAfter - answerResult.snapshot.lastResult.timeBefore,
+  ).toBeCloseTo(10)
   await expect(a.locator(".race-feedback")).toBeVisible()
+  await expect(a.locator(".race-feedback").getByRole("status")).toContainText("+10 minutes")
+  await a.screenshot({ path: ".runtime/horloge-penalite.png" })
   await b.reload()
   await expect(b.getByTestId("exploration")).toBeVisible()
   await b.getByRole("button", { name: /♛/ }).click()

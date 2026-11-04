@@ -9,7 +9,46 @@ import { WORLD_DOORS, WORLD_ROOMS, canWalkAt } from "../../apps/web/src/jeu/game
 import { enterCampus, lookAt } from "./fps-helpers"
 import { createSession } from "../../apps/web/src/jeu/game/session"
 import { MouseLook } from "../../apps/web/src/jeu/three/mouseLook"
+import { isMapKey } from "../../apps/web/src/jeu/game/shortcuts"
 const settings = { sensitivity: 1, fov: 80, volume: 0, quality: "eco" as const, motion: false }
+test("le raccourci M suit la lettre sur AZERTY et QWERTY", () => {
+  expect(isMapKey({ key: "m", code: "Semicolon" })).toBe(true)
+  expect(isMapKey({ key: "M", code: "Semicolon" })).toBe(true)
+  expect(isMapKey({ key: "m", code: "KeyM" })).toBe(true)
+  expect(isMapKey({ key: ",", code: "KeyM" })).toBe(false)
+})
+test("M ouvre et ferme la carte sans cliquer ni capturer la souris", async ({ page }) => {
+  await page.addInitScript(
+    (save) => {
+      const p = { id: "map-azerty", nickname: "Carte", createdAt: new Date().toISOString() }
+      localStorage.setItem(
+        "g4-ever:profiles:v1",
+        JSON.stringify({ profiles: [p], activeProfileId: p.id }),
+      )
+      localStorage.setItem("g4-ever:save:map-azerty", JSON.stringify(save))
+      localStorage.setItem(
+        "g4:3d:settings",
+        JSON.stringify({ sensitivity: 1, fov: 80, volume: 0, quality: "eco", motion: false }),
+      )
+    },
+    { ...createSession("map-azerty"), started: true },
+  )
+  await page.goto("/#explore")
+  await expect(page.getByTestId("exploration")).toBeVisible()
+  await page.evaluate(() =>
+    window.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "m", code: "Semicolon", bubbles: true }),
+    ),
+  )
+  await expect(page).toHaveURL(/#campus$/)
+  await page.keyboard.press("M")
+  await expect(page).toHaveURL(/#explore$/)
+  await enterCampus(page)
+  await page.keyboard.press("m")
+  await expect(page).toHaveURL(/#campus$/)
+  await page.keyboard.press("m")
+  await expect(page).toHaveURL(/#explore$/)
+})
 test("la caméra reste droite, borne les rotations et ignore les déplacements aberrants", () => {
   const engine = new NullEngine(),
     scene = new Scene(engine)

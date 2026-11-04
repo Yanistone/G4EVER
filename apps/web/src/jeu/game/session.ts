@@ -1,3 +1,11 @@
+import {
+  DAY_START,
+  DAY_END,
+  CAMPUS_MINUTES_PER_SECOND,
+  WRONG_ANSWER_MINUTES,
+  PUZZLE_LOCK_MS,
+} from "../../../../../shared/clock"
+export { DAY_START, DAY_END, CAMPUS_MINUTES_PER_SECOND }
 import type { PlayerPosition } from "../types/game"
 import { canWalkAt, START_POSITION } from "./world"
 import { SCENARIO, availablePuzzle } from "../../../../../shared/scenario"
@@ -29,9 +37,6 @@ export interface AdventureSession {
   updatedAt: string
 }
 export const INITIAL_POSITION: PlayerPosition = { ...START_POSITION }
-export const DAY_START = 540
-export const DAY_END = 960
-export const CAMPUS_MINUTES_PER_SECOND = (DAY_END - DAY_START) / (15 * 60)
 export function createSession(profileId: string, unlockedEndings: number[] = []): AdventureSession {
   return {
     version: 2,
@@ -138,9 +143,9 @@ export function recordError(
       ...session,
       mistakes: session.mistakes + 1,
       errorCounts: { ...session.errorCounts, [id]: errors },
-      lockouts: { ...session.lockouts, [id]: errors % 3 === 0 ? now + 30000 : 0 },
+      lockouts: { ...session.lockouts, [id]: errors % 3 === 0 ? now + PUZZLE_LOCK_MS : 0 },
     },
-    10,
+    WRONG_ANSWER_MINUTES,
   )
 }
 export function revealHint(session: AdventureSession, id: string, level: 1 | 2): AdventureSession {
