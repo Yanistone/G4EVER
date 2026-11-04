@@ -292,6 +292,46 @@ test("raycast opens a sliding door and allows leaving the refectory", async ({ p
         ).open,
     )
     .toBeGreaterThan(0.9)
+  await page.screenshot({ path: ".runtime/portes-corrigees.png" })
+  await lookAt(page, { x: 580, y: 490 }, 1.5)
+  await expect(page.locator(".fps-interaction")).toContainText("Fermer · Réfectoire")
+  await page.keyboard.press("e")
+  await expect(page.getByRole("status")).toContainText("Éloigne-toi du seuil")
+  await lookAt(page, { x: 580, y: 546 }, 1.6)
+  await page.keyboard.down("s")
+  try {
+    await expect
+      .poll(
+        async () =>
+          JSON.parse((await page.locator(".fps-canvas").getAttribute("data-position"))!).x,
+      )
+      .toBeGreaterThan(625)
+  } finally {
+    await page.keyboard.up("s")
+  }
+  await lookAt(page, { x: 580, y: 490 }, 1.5)
+  await expect(page.locator(".fps-interaction")).toContainText("Fermer · Réfectoire")
+  await page.keyboard.press("e")
+  await expect
+    .poll(
+      async () =>
+        JSON.parse((await page.locator(".fps-canvas").getAttribute("data-doors"))!).find(
+          (d: { id: string }) => d.id === "cafeteria-west",
+        ).open,
+    )
+    .toBeLessThan(0.05)
+  await lookAt(page, { x: 580, y: 546 }, 1.6)
+  await expect(page.locator(".fps-interaction")).toContainText("Ouvrir · Réfectoire")
+  await page.keyboard.press("e")
+  await expect
+    .poll(
+      async () =>
+        JSON.parse((await page.locator(".fps-canvas").getAttribute("data-doors"))!).find(
+          (d: { id: string }) => d.id === "cafeteria-west",
+        ).open,
+    )
+    .toBeGreaterThan(0.9)
+  await lookAt(page, { x: 580, y: 546 }, 1.6)
   await page.keyboard.down("w")
   try {
     await expect

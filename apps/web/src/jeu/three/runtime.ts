@@ -231,7 +231,9 @@ export function createCampusRuntime(
           JSON.stringify(world.doors.filter((d) => d.desired).map((d) => d.id)),
         )
       } catch {}
-      cb.toast(d.desired ? "Porte ouverte" : "Porte fermée")
+      cb.toast(
+        d.desired ? "Porte ouverte · vise le cadre et appuie sur E pour fermer." : "Porte fermée",
+      )
     } else if (target.kind === "station") {
       const room = WORLD_ROOMS.find((r) => r.id === target!.id)!
       if (
