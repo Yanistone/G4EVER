@@ -14,8 +14,8 @@ export function QuizPage({
     <div
       aria-labelledby="quiz-question"
       style={{
-        width: "1280px",
-        height: "720px",
+        width: "100%",
+        height: "100%",
         boxSizing: "border-box",
         padding: "36px 48px",
         position: "relative",

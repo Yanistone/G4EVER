@@ -60,6 +60,14 @@ button {
   top: 50%;
   transform-origin: center;
 }
+.screen-stage .screen-content > * {
+  width: 100%;
+  height: 100%;
+}
+.screen-stage .race-play .race-screen {
+  width: 100%;
+  height: 100%;
+}
 .dialog-overlay {
   position: absolute;
   inset: 0;

@@ -495,7 +495,12 @@ export function App() {
   }
   return (
     <ScreenViewport
-      fluid={screen === "explore" || screen === "puzzle" || (screen === "campus" && played)}
+      fluid={
+        screen === "explore" ||
+        screen === "puzzle" ||
+        screen === "race" ||
+        (screen === "campus" && played)
+      }
       label={screenLabels[screen]}
       width={screen === "campus" && !played ? 1600 : 1280}
       height={screen === "campus" && !played ? 1100 : 720}

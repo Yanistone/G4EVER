@@ -5,8 +5,8 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
   return (
     <div
       style={{
-        width: "1280px",
-        height: "720px",
+        width: "100%",
+        height: "100%",
         boxSizing: "border-box",
         padding: "0",
         position: "relative",

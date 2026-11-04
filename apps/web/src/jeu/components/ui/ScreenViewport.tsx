@@ -19,16 +19,27 @@ export function ScreenViewport({
   reducedMotion = false,
 }: ScreenViewportProps) {
   const container = useRef<HTMLElement>(null)
-  const [scale, setScale] = useState(1)
+  const [layout, setLayout] = useState({ width, height, scale: 1 })
   useLayoutEffect(() => {
     const node = container.current
-    if (!node) return
-    const observer = new ResizeObserver(([entry]) => {
-      setScale(Math.min(entry.contentRect.width / width, entry.contentRect.height / height))
-    })
+    if (!node || fluid) return
+    const resize = () => {
+      const scale = Math.min(node.clientWidth / width, node.clientHeight / height)
+      if (scale <= 0) return
+      const next = { width: node.clientWidth / scale, height: node.clientHeight / scale, scale }
+      setLayout((previous) =>
+        previous.width === next.width &&
+        previous.height === next.height &&
+        previous.scale === next.scale
+          ? previous
+          : next,
+      )
+    }
+    resize()
+    const observer = new ResizeObserver(resize)
     observer.observe(node)
     return () => observer.disconnect()
-  }, [width, height])
+  }, [width, height, fluid])
   return (
     <main
       ref={container}
@@ -49,11 +60,11 @@ export function ScreenViewport({
                 transform: "none",
               }
             : {
-                width,
-                height,
-                marginLeft: -width / 2,
-                marginTop: -height / 2,
-                transform: `scale(${scale})`,
+                width: layout.width,
+                height: layout.height,
+                marginLeft: -layout.width / 2,
+                marginTop: -layout.height / 2,
+                transform: `scale(${layout.scale})`,
               }
         }
       >
