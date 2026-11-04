@@ -1,0 +1,62 @@
+.noah-sprite {
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.noah-sprite__frame {
+  opacity: 0;
+}
+
+.noah-sprite__frame[data-frame="1"] {
+  opacity: 1;
+}
+
+.noah-sprite.is-moving .noah-sprite__frame {
+  animation: noah-walk-frame 0.6s steps(1) infinite;
+}
+
+.noah-sprite.is-moving .noah-sprite__frame[data-frame="1"] {
+  animation-delay: 0s;
+}
+
+.noah-sprite.is-moving .noah-sprite__frame[data-frame="2"] {
+  animation-delay: -0.45s;
+}
+
+.noah-sprite.is-moving .noah-sprite__frame[data-frame="3"] {
+  animation-delay: -0.3s;
+}
+
+.noah-sprite.is-moving .noah-sprite__frame[data-frame="4"] {
+  animation-delay: -0.15s;
+}
+
+@keyframes noah-walk-frame {
+  0% {
+    opacity: 1;
+  }
+  25%,
+  100% {
+    opacity: 0;
+  }
+}
+.motion-reduced .noah-sprite.is-moving .noah-sprite__frame {
+  animation: none;
+  opacity: 0;
+}
+
+.motion-reduced .noah-sprite.is-moving .noah-sprite__frame[data-frame="1"] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .noah-sprite.is-moving .noah-sprite__frame {
+    animation: none;
+    opacity: 0;
+  }
+
+  .noah-sprite.is-moving .noah-sprite__frame[data-frame="1"] {
+    opacity: 1;
+  }
+}

@@ -1,13 +1,13 @@
-import { STATION_TARGETS } from "../../apps/web/src/game/escape"
+import { STATION_TARGETS } from "../../apps/web/src/jeu/game/escape"
 import { test, expect } from "@playwright/test"
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine.js"
 import { Scene } from "@babylonjs/core/scene.js"
 import { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera.js"
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js"
-import { FpsController } from "../../apps/web/src/three/controller"
-import { WORLD_DOORS, WORLD_ROOMS, canWalkAt } from "../../apps/web/src/game/world"
+import { FpsController } from "../../apps/web/src/jeu/three/controller"
+import { WORLD_DOORS, WORLD_ROOMS, canWalkAt } from "../../apps/web/src/jeu/game/world"
 import { enterCampus, lookAt } from "./fps-helpers"
-import { createSession } from "../../apps/web/src/game/session"
+import { createSession } from "../../apps/web/src/jeu/game/session"
 const settings = { sensitivity: 1, fov: 80, volume: 0, quality: "eco" as const, motion: false }
 test("FPS controller blocks every closed door, crosses open thresholds and stops at furniture", () => {
   const engine = new NullEngine(),

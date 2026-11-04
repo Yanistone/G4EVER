@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
-import { createSession } from "../../apps/web/src/game/session"
-import { campaignDeck } from "../../apps/web/src/game/campaignDeck"
+import { createSession } from "../../apps/web/src/jeu/game/session"
+import { campaignDeck } from "../../apps/web/src/jeu/game/campaignDeck"
 async function setup(page: import("@playwright/test").Page, found: boolean) {
   const seed = "keyboard-workshop",
     task = campaignDeck(seed)[0].practical!

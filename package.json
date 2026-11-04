@@ -16,6 +16,8 @@
     "format:check": "prettier --check .",
     "test:valentin": "node --experimental-strip-types --test tests/valentin-session.test.mjs",
     "test:valentin:ui": "playwright test --config playwright.valentin.config.mjs",
+    "test:jeu": "playwright test --config playwright.jeu.config.mjs",
+    "test": "npm run test:jeu",
     "dev:all": "node scripts/dev.mjs",
     "dev:race": "tsx watch server/index.ts",
     "server": "tsx server/index.ts",

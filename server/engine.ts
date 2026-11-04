@@ -7,7 +7,7 @@ import {
   getRoomAt,
   ROOM_SPAWNS,
   START_POSITION,
-} from "../apps/web/src/game/world.ts"
+} from "../apps/web/src/jeu/game/world.ts"
 
 export class GameError extends Error {
   status: number

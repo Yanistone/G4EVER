@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test"
 import { createRoom, transact, GameError } from "../../server/engine"
 import type { Repository, Room } from "../../server/engine"
-import { canWalkAt, getNearbyInteraction, WORLD_ROOMS } from "../../apps/web/src/game/world"
+import { canWalkAt, getNearbyInteraction, WORLD_ROOMS } from "../../apps/web/src/jeu/game/world"
 class Memory implements Repository {
   rows = new Map<string, { room: Room; version: number }>()
   async create(room: Room) {

@@ -1,4 +1,4 @@
-import { STATION_TARGETS } from "../../apps/web/src/game/escape"
+import { STATION_TARGETS } from "../../apps/web/src/jeu/game/escape"
 import { expect } from "@playwright/test"
 import type { Page } from "@playwright/test"
 export async function enterCampus(page: Page) {

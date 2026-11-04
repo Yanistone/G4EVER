@@ -1,0 +1,367 @@
+.sp-all {
+  opacity: 1;
+}
+.sp-term {
+  animation: spterm 10s linear forwards;
+}
+.sp-flash {
+  opacity: 0;
+  animation: spflash 10s linear forwards;
+}
+.sp-split {
+  opacity: 0;
+  animation: spsplit 10s steps(1) forwards;
+}
+.sp-rays {
+  opacity: 0;
+  animation: sprays 10s linear forwards;
+}
+.sp-spin {
+  transform-origin: 640px 360px;
+  animation: spspin 40s linear infinite;
+}
+.sp-logo {
+  opacity: 0;
+  transform: scale(0);
+  animation: splogo 10s linear forwards;
+}
+.sp-bob {
+  animation: spbob 2s ease-in-out infinite alternate;
+}
+.sp-spark {
+  opacity: 0;
+  animation: spspark 10s linear forwards;
+}
+.sp-bar {
+  opacity: 0;
+  animation: spbarw 10s linear forwards;
+}
+.sp-fill {
+  width: 0;
+  animation: spfill 10s linear forwards;
+}
+.sp-press {
+  opacity: 0;
+  animation: sppress 10s linear forwards;
+}
+.sp-pulse {
+  animation: sppulse 1s ease-in-out infinite alternate;
+}
+.sp-walk {
+  opacity: 0;
+  animation: spwalk 10s linear forwards;
+}
+.wk2 {
+  position: relative;
+  width: 110px;
+  height: 124px;
+}
+.wk2 > div {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: wkf 0.6s steps(1) infinite;
+}
+.wk2 > div:nth-child(1) {
+  animation-delay: 0s;
+}
+.wk2 > div:nth-child(2) {
+  animation-delay: -0.45s;
+}
+.wk2 > div:nth-child(3) {
+  animation-delay: -0.3s;
+}
+.wk2 > div:nth-child(4) {
+  animation-delay: -0.15s;
+}
+@keyframes wkf {
+  0% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes spall {
+  0%,
+  95% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes spterm {
+  0%,
+  30% {
+    opacity: 1;
+    transform: none;
+  }
+  31% {
+    transform: translateX(12px) skewX(-8deg);
+  }
+  32% {
+    transform: translateX(-10px);
+  }
+  33%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes spflash {
+  0%,
+  32% {
+    opacity: 0;
+  }
+  33.5% {
+    opacity: 1;
+  }
+  38%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes spsplit {
+  0%,
+  30% {
+    opacity: 0;
+  }
+  30.5% {
+    opacity: 1;
+  }
+  31.5% {
+    opacity: 0;
+  }
+  32% {
+    opacity: 1;
+  }
+  33%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes sprays {
+  0%,
+  34% {
+    opacity: 0;
+  }
+  40%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes spspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes splogo {
+  0%,
+  35% {
+    opacity: 0;
+    transform: scale(0) rotate(-12deg);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.15) rotate(3deg);
+  }
+  44%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+@keyframes spbob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-10px);
+  }
+}
+@keyframes spspark {
+  0%,
+  40% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+  50%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes spbarw {
+  0%,
+  44% {
+    opacity: 0;
+  }
+  46%,
+  58% {
+    opacity: 1;
+  }
+  61%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes spfill {
+  0%,
+  46% {
+    width: 0;
+  }
+  58%,
+  100% {
+    width: 100%;
+  }
+}
+@keyframes sppress {
+  0%,
+  60% {
+    opacity: 0;
+  }
+  63%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes sppulse {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.35;
+    transform: scale(0.95);
+  }
+}
+@keyframes spwalk {
+  0%,
+  55% {
+    opacity: 0;
+    transform: translateX(-140px);
+  }
+  56% {
+    opacity: 1;
+    transform: translateX(-140px);
+  }
+  96% {
+    opacity: 1;
+    transform: translateX(1300px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(1300px);
+  }
+}
+.sp-l0 {
+  opacity: 0;
+  animation: spl0 10s steps(1) forwards;
+}
+@keyframes spl0 {
+  0%,
+  3% {
+    opacity: 0;
+  }
+  3.1%,
+  100% {
+    opacity: 1;
+  }
+}
+.sp-l1 {
+  opacity: 0;
+  animation: spl1 10s steps(1) forwards;
+}
+@keyframes spl1 {
+  0%,
+  8% {
+    opacity: 0;
+  }
+  8.1%,
+  100% {
+    opacity: 1;
+  }
+}
+.sp-l2 {
+  opacity: 0;
+  animation: spl2 10s steps(1) forwards;
+}
+@keyframes spl2 {
+  0%,
+  13% {
+    opacity: 0;
+  }
+  13.1%,
+  100% {
+    opacity: 1;
+  }
+}
+.sp-l3 {
+  opacity: 0;
+  animation: spl3 10s steps(1) forwards;
+}
+@keyframes spl3 {
+  0%,
+  18% {
+    opacity: 0;
+  }
+  18.1%,
+  100% {
+    opacity: 1;
+  }
+}
+.sp-l4 {
+  opacity: 0;
+  animation: spl4 10s steps(1) forwards;
+}
+@keyframes spl4 {
+  0%,
+  24% {
+    opacity: 0;
+  }
+  24.1%,
+  100% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sp-all,
+  .sp-spin,
+  .sp-bob,
+  .sp-pulse,
+  .wk2 > div {
+    animation: none;
+  }
+  .sp-term,
+  .sp-flash,
+  .sp-split,
+  .sp-bar,
+  .sp-walk {
+    animation: none;
+    opacity: 0;
+  }
+  .sp-rays,
+  .sp-press,
+  .sp-spark {
+    animation: none;
+    opacity: 1;
+  }
+  .sp-logo {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .wk2 > div:nth-child(1) {
+    opacity: 1;
+  }
+}
+.sp-flash {
+  pointer-events: none;
+}

@@ -1,5 +1,5 @@
 import { build } from "esbuild"
-import { readFile, readdir, mkdir, writeFile, cp } from "node:fs/promises"
+import { readFile, readdir, mkdir, cp } from "node:fs/promises"
 import path from "node:path"
 const root = path.resolve(import.meta.dirname, "..")
 const dist = path.join(root, "apps/web/dist")

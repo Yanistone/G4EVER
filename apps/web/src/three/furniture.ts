@@ -607,7 +607,7 @@ function arcade(
   )
   label("backlit-acrylic-marquee", x, 1.785, z + 0.406, 0.707, 0.202, marquee)
   box("speaker-panel", x, 1.633, z + 0.31, 0.74, 0.055, 0.22, black)
-  for (let side of [-1, 1])
+  for (const side of [-1, 1])
     for (let i = 0; i < 7; i++)
       box(
         "speaker-grille-slot",

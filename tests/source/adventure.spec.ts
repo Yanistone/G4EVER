@@ -1,14 +1,14 @@
-import { STATION_TARGETS, DOCUMENT_HEIGHTS } from "../../apps/web/src/game/escape"
-import { campaignDeck } from "../../apps/web/src/game/campaignDeck"
+import { STATION_TARGETS, DOCUMENT_HEIGHTS } from "../../apps/web/src/jeu/game/escape"
+import { campaignDeck } from "../../apps/web/src/jeu/game/campaignDeck"
 import { enterCampus, lookAt } from "./fps-helpers"
 import { test, expect } from "@playwright/test"
-import { createSession, advanceTime, readSession } from "../../apps/web/src/game/session"
+import { createSession, advanceTime, readSession } from "../../apps/web/src/jeu/game/session"
 import {
   canWalkAt,
   getNearbyInteraction,
   START_POSITION,
   WORLD_ROOMS,
-} from "../../apps/web/src/game/world"
+} from "../../apps/web/src/jeu/game/world"
 
 test("all seven rooms and their interaction zones are reachable on foot", () => {
   const queue = [START_POSITION],

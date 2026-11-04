@@ -1,0 +1,808 @@
+.g4-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: #fff;
+  font:
+    28px "Lilita One",
+    sans-serif;
+  text-shadow: 0 3px 0 #1b1030;
+}
+.g4-brand-logo {
+  width: 62px;
+  height: 62px;
+  display: block;
+  border: 4px solid #1b1030;
+  border-radius: 17px;
+  overflow: hidden;
+  background: #2d6bff;
+  box-shadow: 0 5px 0 #1b1030;
+  flex: none;
+}
+.g4-brand-logo svg {
+  width: 100%;
+  height: 100%;
+}
+.g4-brand-mark small {
+  display: block;
+  font:
+    800 9px "Nunito",
+    sans-serif;
+  letter-spacing: 2px;
+  margin-top: 4px;
+  text-shadow: none;
+  color: #fff;
+}
+.race-screen {
+  background: #2d6bff url("/assets/blue-burst.svg") center/cover;
+  color: #1b1030;
+}
+.race-grid {
+  display: none;
+}
+.race-header {
+  height: 96px;
+  border: 0;
+  background: #2d6bff55;
+  color: #fff;
+  text-shadow: 0 2px 0 #1b1030;
+}
+.race-profile {
+  color: #fff;
+}
+.status-dot {
+  background: #3ddc6a;
+  border: 2px solid #1b1030;
+  width: 13px;
+  height: 13px;
+  box-shadow: none;
+}
+.eyebrow {
+  color: #fff;
+  font-size: 12px;
+  text-shadow: 0 2px 0 #1b1030;
+}
+.r-btn {
+  border: 4px solid #1b1030;
+  border-radius: 16px;
+  background: #fff;
+  color: #1b1030;
+  box-shadow: 0 5px 0 #1b1030;
+  font-family: "Lilita One", sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  min-height: 49px;
+  text-shadow: none;
+}
+.r-btn:hover:not(:disabled) {
+  box-shadow: 0 7px 0 #1b1030;
+  transform: translateY(-2px);
+}
+.r-btn:active:not(:disabled) {
+  box-shadow: 0 2px 0 #1b1030;
+  transform: translateY(3px);
+}
+.r-btn-gold {
+  background: linear-gradient(#fff27a, #ffaa00);
+}
+.r-btn-cyan {
+  background: #2ee6ff;
+}
+.r-btn-ghost {
+  background: #fff;
+}
+.r-btn-red {
+  background: #ff4b3e;
+  color: #fff;
+}
+.r-btn-small {
+  font-size: 13px;
+  min-height: 36px;
+  border-width: 3px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  box-shadow: 0 3px 0 #1b1030;
+}
+.r-btn:disabled {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+}
+.home-main {
+  padding-top: 48px;
+}
+.home-main h1 {
+  color: #fff;
+  text-shadow: 0 6px 0 #1b1030;
+  -webkit-text-stroke: 2px #1b1030;
+  paint-order: stroke fill;
+}
+.home-main > section > p {
+  color: #fff;
+  font-weight: 800;
+  text-shadow: 0 2px 0 #1b1030;
+}
+.home-chips span,
+.lobby-pills span {
+  background: #fff;
+  border: 3px solid #1b1030;
+  box-shadow: 0 3px 0 #1b1030;
+  color: #1b1030;
+}
+.mode-card,
+.mode-card.featured {
+  background: #fff;
+  border: 4px solid #1b1030;
+  border-radius: 24px;
+  box-shadow: 0 8px 0 #1b1030;
+  color: #1b1030;
+}
+.mode-card.featured {
+  background: #fff2b5;
+}
+.mode-card:hover {
+  border-color: #1b1030;
+  box-shadow: 0 11px 0 #1b1030;
+}
+.mode-icon {
+  border: 3px solid #1b1030;
+  background: #ffd93b;
+  box-shadow: 0 3px 0 #1b1030;
+}
+.mode-card small {
+  color: #2d6bff;
+}
+.mode-card h2 {
+  color: #1b1030;
+}
+.mode-card p {
+  color: #6b6585;
+  font-weight: 800;
+}
+.mode-arrow {
+  color: #ff3e7f;
+}
+.home-footer {
+  color: #fff;
+  font-weight: 800;
+}
+.home-logo {
+  display: none;
+}
+.home-secondary .r-btn {
+  font-size: 15px;
+}
+.hub-intro h1 {
+  color: #fff;
+  text-shadow: 0 5px 0 #1b1030;
+  -webkit-text-stroke: 1px #1b1030;
+  paint-order: stroke fill;
+}
+.hub-intro p {
+  color: #fff;
+  font-weight: 800;
+}
+.hub-online {
+  color: #fff;
+}
+.hub-settings label {
+  color: #fff;
+  text-shadow: 0 1px 0 #1b1030;
+}
+.hub-settings input,
+.hub-settings select {
+  border: 3px solid #1b1030;
+  background: #fff;
+  color: #1b1030;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 #1b1030;
+}
+.hub-card,
+.hub-card.solo {
+  background: #fff;
+  border: 4px solid #1b1030;
+  box-shadow: 0 7px 0 #1b1030;
+  border-radius: 24px;
+}
+.hub-card p {
+  color: #6b6585;
+  font-weight: 800;
+}
+.hub-card.solo .mode-icon {
+  background: #ff3e7f;
+  color: #fff;
+}
+.hub-card h2 {
+  color: #1b1030;
+}
+.code-label {
+  color: #6b6585;
+}
+.code-label input {
+  border: 3px solid #1b1030;
+  background: #f4f6ff;
+  color: #1b1030;
+  border-radius: 12px;
+}
+.race-hub-rules {
+  color: #fff;
+  font-weight: 900;
+  text-shadow: 0 2px #1b1030;
+}
+.hub-recover {
+  color: #fff;
+}
+.race-error {
+  background: #ff4b3e;
+  border: 4px solid #1b1030;
+  box-shadow: 0 5px 0 #1b1030;
+  color: #fff;
+}
+.lobby-invite h1 {
+  color: #fff;
+  text-shadow: 0 5px 0 #1b1030;
+  -webkit-text-stroke: 1px #1b1030;
+  paint-order: stroke fill;
+}
+.lobby-invite > p {
+  color: #fff;
+  font-weight: 800;
+}
+.invite-code {
+  background: #fff;
+  border: 4px solid #1b1030;
+  box-shadow: 0 7px 0 #1b1030;
+}
+.invite-code > small {
+  color: #6b6585;
+  font-weight: 900;
+}
+.invite-code > strong {
+  color: #ff3e7f;
+}
+.lobby-fair {
+  color: #fff !important;
+  text-shadow: 0 1px #1b1030;
+}
+.lobby-players {
+  border: 4px solid #1b1030;
+  background: #fff;
+  box-shadow: 0 7px 0 #1b1030;
+}
+.lobby-players h2 > span {
+  color: #248c3e;
+}
+.lobby-player {
+  background: #f4f6ff;
+  border: 3px solid #1b1030;
+  margin: 9px 0;
+}
+.lobby-player.is-me {
+  background: #fff2b5;
+  border-color: #1b1030;
+}
+.player-avatar {
+  border: 3px solid #1b1030;
+}
+.lobby-player small {
+  color: #6b6585;
+}
+.ready-badge {
+  background: #e5e3ef;
+  color: #6b6585;
+  border: 2px solid #1b1030;
+}
+.ready-badge.is-ready {
+  background: #3ddc6a;
+  color: #1b1030;
+}
+.lobby-actions {
+  border-color: #c9c4df;
+}
+.lobby-actions p {
+  color: #6b6585;
+}
+.race-live-clock {
+  background: #fff;
+  border: 4px solid #1b1030;
+  box-shadow: 0 6px 0 #1b1030;
+  color: #1b1030;
+}
+.race-live-clock small {
+  color: #6b6585;
+}
+.race-live-clock strong {
+  color: #1b1030;
+}
+.race-live-clock span {
+  color: #2d6bff;
+}
+.race-live-clock.is-urgent {
+  border-color: #1b1030;
+  background: #ffe2df;
+}
+.race-live-clock.is-urgent strong {
+  color: #ff4b3e;
+}
+.race-round-badge {
+  background: #ff3e7f;
+  border: 3px solid #1b1030;
+  border-radius: 12px;
+  color: #fff;
+  box-shadow: 0 4px 0 #1b1030;
+}
+.race-exploration .game-loop:after {
+  color: #1b1030;
+}
+.race-play .r-btn {
+  color: #1b1030;
+}
+.race-play .r-btn-red {
+  color: #fff;
+}
+.race-countdown {
+  background: #2d6bfff5;
+}
+.race-countdown > span {
+  color: #fff;
+}
+.race-countdown > strong {
+  text-shadow: 0 9px 0 #1b1030;
+  -webkit-text-stroke: 3px #1b1030;
+  paint-order: stroke fill;
+}
+.race-countdown h2 {
+  color: #fff;
+  text-shadow: 0 3px #1b1030;
+}
+.question-content {
+  padding: 18px 56px;
+}
+.question-kicker {
+  color: #fff;
+  text-shadow: 0 1px #1b1030;
+}
+.question-content h1 {
+  background: #fff;
+  border: 4px solid #1b1030;
+  border-radius: 20px;
+  box-shadow: 0 6px 0 #1b1030;
+  padding: 18px 22px;
+  font-size: 29px;
+  line-height: 1.2;
+  min-height: 76px;
+  margin: 16px 0 20px;
+  text-align: center;
+}
+.question-timer {
+  color: #ffd93b;
+  text-shadow: 0 3px #1b1030;
+}
+.mission-brief {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff2b5;
+  border: 3px solid #1b1030;
+  border-radius: 15px;
+  padding: 10px 14px;
+  margin-top: 12px;
+}
+.mission-seal {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #1b1030;
+  border-radius: 11px;
+  background: #ff3e7f;
+  color: #fff;
+  font:
+    20px "Lilita One",
+    sans-serif;
+  flex: none;
+}
+.mission-brief strong {
+  font:
+    19px "Lilita One",
+    sans-serif;
+}
+.mission-brief p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 800;
+  color: #554469;
+  max-width: 760px;
+}
+.lock-step {
+  margin-left: auto;
+  white-space: nowrap;
+  font:
+    13px "Lilita One",
+    sans-serif;
+  color: #2d6bff;
+}
+.race-answer {
+  background: #fff;
+  border: 4px solid #1b1030;
+  border-radius: 17px;
+  box-shadow: 0 5px 0 #1b1030;
+  color: #1b1030;
+  min-height: 74px;
+  font-size: 16px;
+  padding: 12px 16px;
+}
+.race-answer b {
+  border: 3px solid #1b1030;
+  background: #ffd93b;
+  color: #1b1030;
+  font-family: "Lilita One", sans-serif;
+  font-weight: 400;
+}
+.race-answer.is-selected {
+  background: #2ee6ff;
+  border-color: #1b1030;
+  box-shadow: 0 5px 0 #1b1030;
+}
+.race-answer.is-selected b {
+  background: #fff;
+  border-color: #1b1030;
+  color: #1b1030;
+}
+.race-answer i {
+  color: #1b1030;
+}
+.race-answer:hover:not(:disabled) {
+  border-color: #1b1030;
+  background: #fff2b5;
+}
+.race-answer.is-selected:hover:not(:disabled) {
+  background: #2ee6ff;
+}
+.question-actions {
+  margin-top: 23px;
+}
+.question-actions > span {
+  color: #fff;
+  font-weight: 800;
+  max-width: 260px;
+}
+.race-hint {
+  background: #fff2b5;
+  border: 3px solid #1b1030;
+  box-shadow: 0 4px 0 #1b1030;
+  color: #1b1030;
+  margin-top: 15px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.race-feedback h1 {
+  color: #fff;
+  text-shadow: 0 5px #1b1030;
+  -webkit-text-stroke: 1px #1b1030;
+  paint-order: stroke fill;
+}
+.race-feedback > p {
+  background: #fff;
+  border: 4px solid #1b1030;
+  border-radius: 22px;
+  box-shadow: 0 6px #1b1030;
+  color: #1b1030;
+  padding: 22px;
+  font-weight: 800;
+  font-size: 18px;
+}
+.feedback-symbol {
+  border: 5px solid #1b1030;
+  background: #ff4b3e;
+  color: #fff;
+  box-shadow: 0 7px #1b1030;
+}
+.race-feedback.is-correct .feedback-symbol {
+  background: #3ddc6a;
+  color: #1b1030;
+}
+.feedback-points {
+  text-shadow: 0 3px #1b1030;
+}
+.feedback-clock {
+  color: #fff;
+  font-weight: 800;
+}
+.code-challenge {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 20px;
+}
+.evidence-document {
+  border: 4px solid #1b1030;
+  border-radius: 18px;
+  box-shadow: 0 5px #1b1030;
+  background: #fff;
+  overflow: hidden;
+}
+.evidence-document > div {
+  background: #ff3e7f;
+  border-bottom: 3px solid #1b1030;
+  color: #fff;
+  padding: 9px 13px;
+  font:
+    14px "Lilita One",
+    sans-serif;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.evidence-document > div > span {
+  font:
+    800 8px "Nunito",
+    sans-serif;
+  align-self: center;
+}
+.evidence-document pre {
+  background: #1b1030;
+  color: #e7fcff;
+  margin: 0;
+  padding: 15px 20px;
+  font:
+    700 14px/1.45 "Courier New",
+    monospace;
+  min-height: 185px;
+  white-space: pre-wrap;
+}
+.code-entry {
+  background: #fff;
+  border: 4px solid #1b1030;
+  border-radius: 18px;
+  box-shadow: 0 5px #1b1030;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+.code-entry input {
+  width: 100%;
+  border: 4px solid #1b1030;
+  border-radius: 13px;
+  background: #f4f6ff;
+  padding: 12px 15px;
+  font:
+    28px "Lilita One",
+    sans-serif;
+  text-transform: uppercase;
+  color: #1b1030;
+  box-sizing: border-box;
+}
+.code-entry small {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b6585;
+  letter-spacing: 0;
+  line-height: 1.5;
+  max-width: 290px;
+}
+.code-lock-symbol {
+  position: absolute;
+  right: 15px;
+  bottom: -40px;
+  font-size: 120px;
+  opacity: 0.08;
+  pointer-events: none;
+}
+.race-question.is-code .question-content h1 {
+  font-size: 25px;
+  min-height: 65px;
+  padding: 13px 20px;
+}
+.race-question.is-code .mission-brief {
+  padding: 8px 14px;
+}
+.race-question.is-code .question-actions {
+  margin-top: 20px;
+}
+.results-heading h1 {
+  color: #fff;
+  text-shadow: 0 5px #1b1030;
+}
+.results-heading p {
+  color: #fff;
+  font-weight: 800;
+}
+.result-stats > div {
+  background: #fff;
+  border: 4px solid #1b1030;
+  box-shadow: 0 6px #1b1030;
+}
+.result-stats small {
+  color: #6b6585;
+}
+.result-stats strong {
+  color: #1b1030;
+}
+.race-board {
+  border: 4px solid #1b1030;
+  background: #fff;
+  box-shadow: 0 6px #1b1030;
+}
+.board-head {
+  background: #ff3e7f;
+  color: #fff;
+}
+.board-row {
+  color: #1b1030;
+  border-top: 2px solid #dcd6ef;
+}
+.board-row.is-me {
+  background: #fff2b5;
+}
+.board-row small {
+  background: #e9e4ff;
+  color: #6b46ad;
+}
+.board-row > span:nth-child(3) {
+  color: #2d6bff;
+}
+.rank {
+  border: 2px solid #1b1030;
+  background: #f4f6ff;
+  color: #1b1030;
+}
+.rank-1 {
+  background: #ffd93b;
+}
+.rank-2 {
+  background: #2ee6ff;
+}
+.rank-3 {
+  background: #ffadcd;
+}
+.results-actions > span {
+  color: #fff;
+}
+.game-button.game-minimap:has(.campus-mini) {
+  width: 274px;
+  height: 210px;
+  padding: 10px;
+  bottom: 23px;
+  right: 24px;
+  background: #fff;
+  border: 4px solid #1b1030;
+  border-radius: 20px;
+  box-shadow: 0 6px #1b1030;
+}
+.explore-controls {
+  font-size: 11px;
+  left: 49%;
+  bottom: 24px;
+  max-width: 660px;
+  white-space: normal;
+  text-align: center;
+}
+.game-button.explore-interact {
+  bottom: 95px;
+  font-size: 17px;
+  max-width: 530px;
+}
+.race-rank-button {
+  top: 400px;
+}
+.race-play .dialog-card {
+  border: 5px solid #1b1030;
+  background: #fff;
+  box-shadow: 0 8px #1b1030;
+}
+.game-button.camera-view-button {
+  position: absolute;
+  left: 25px;
+  top: 200px;
+  background: #fff;
+  border: 3px solid #1b1030;
+  border-radius: 12px;
+  padding: 9px 12px;
+  box-shadow: 0 4px #1b1030;
+  font:
+    14px "Lilita One",
+    sans-serif;
+  color: #1b1030;
+  cursor: pointer;
+}
+.explore-page {
+  background: #2d6bff url("/assets/blue-burst.svg") center/cover;
+}
+.explore-stage {
+  position: absolute;
+  left: 16px;
+  top: 108px;
+  width: 940px;
+  height: 532px;
+  border: 5px solid #1b1030;
+  border-radius: 22px;
+  background: #160f38;
+  box-shadow: 0 7px #1b1030;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.explore-stage .explore-world {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+.explore-page .game-identity {
+  left: 24px;
+  top: 20px;
+  max-width: 240px;
+  gap: 7px;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.explore-page .game-loop {
+  font-size: 17px;
+  padding: 5px 11px;
+  box-shadow: 0 3px #1b1030;
+}
+.explore-page .game-day {
+  font-size: 13px;
+  padding: 5px 10px;
+  box-shadow: 0 3px #1b1030;
+}
+.explore-page .explore-room {
+  font-size: 14px;
+  padding: 5px 12px;
+  box-shadow: 0 3px #1b1030;
+}
+.race-exploration .game-identity {
+  top: 64px;
+}
+.race-exploration .game-loop {
+  display: none;
+}
+.explore-page .camera-view-button {
+  top: 28px;
+  left: 277px;
+  padding: 9px 10px;
+  font-size: 13px;
+}
+.explore-page .explore-controls {
+  left: 486px;
+  bottom: 24px;
+  max-width: 900px;
+  font-size: 11px;
+}
+.explore-page .explore-memories {
+  display: none;
+}
+.game-button.journal-button {
+  left: auto;
+  right: 24px;
+  top: 410px;
+  bottom: auto;
+  width: 274px;
+  text-align: center;
+}
+.race-exploration .game-objectives,
+.explore-page .game-objectives {
+  width: 240px;
+}
+.game-button.explore-interact {
+  left: 486px;
+  bottom: 97px;
+  max-width: 750px;
+  font-size: 16px;
+  padding: 8px 15px;
+}
+.explore-page .game-timeline {
+  top: 18px;
+}
+.explore-stage svg {
+  touch-action: none;
+}
+.race-play .explore-page,
+.screen-stage .explore-page {
+  background: #2d6bff url("/assets/blue-burst.svg") center/cover;
+}

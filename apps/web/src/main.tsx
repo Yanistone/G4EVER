@@ -1,9 +1,9 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 
-import App from "./App"
+import { App } from "./jeu/App"
 
-import "./style.css"
+import "./jeu/styles/global.css"
 
 const root = document.getElementById("root")
 

@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
-import { campaignDeck, freshCampaignSeed } from "../../apps/web/src/game/campaignDeck"
-import { createSession, readSession } from "../../apps/web/src/game/session"
+import { campaignDeck, freshCampaignSeed } from "../../apps/web/src/jeu/game/campaignDeck"
+import { createSession, readSession } from "../../apps/web/src/jeu/game/session"
 test("campaign variations are reproducible, keep five solvable rooms and differ on replay", () => {
   const fingerprints = new Set<string>()
   for (let n = 0; n < 24; n++) {
