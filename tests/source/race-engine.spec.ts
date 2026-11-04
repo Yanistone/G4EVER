@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test"
 import { createRoom, transact, GameError } from "../../server/engine"
 import type { Repository, Room } from "../../server/engine"
-import { canWalkAt, getNearbyInteraction, WORLD_ROOMS } from "../../apps/web/src/game/world"
+import { canWalkAt, getNearbyInteraction, WORLD_ROOMS } from "../../apps/web/src/jeu/game/world"
 class Memory implements Repository {
   rows = new Map<string, { room: Room; version: number }>()
   async create(room: Room) {
@@ -112,8 +112,8 @@ test("two-player authoritative race: common deck, authentication, scoring, finis
     repo.rows
       .get(code)!
       .room.deck.map((q) => q.id)
-      .some((id) => originalDeck.includes(id)),
-  ).toBe(false)
+      .sort(),
+  ).toEqual([...originalDeck].sort())
   expect(repo.rows.get(code)!.room.players[0].answered).toBe(0)
 })
 test("wrong answers and hints affect score; answers require station proximity", async () => {

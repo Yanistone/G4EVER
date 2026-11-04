@@ -4,7 +4,7 @@ import { Scene } from "@babylonjs/core/scene.js"
 import { VertexData } from "@babylonjs/core/Meshes/mesh.vertexData.js"
 import { Ray } from "@babylonjs/core/Culling/ray.js"
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js"
-import { bevelBox } from "../../apps/web/src/three/props"
+import { bevelBox } from "../../apps/web/src/jeu/three/props"
 
 test("bevelled furniture has outward faces and can be targeted from all six sides", () => {
   const engine = new NullEngine(),

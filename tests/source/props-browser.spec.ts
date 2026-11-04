@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test"
-import { createSession } from "../../apps/web/src/game/session"
-import { STATION_TARGETS } from "../../apps/web/src/game/escape"
+import { createSession } from "../../apps/web/src/jeu/game/session"
+import { STATION_TARGETS } from "../../apps/web/src/jeu/game/escape"
 import { enterCampus, lookAt } from "./fps-helpers"
 
 test.beforeEach(async ({ page }) => {

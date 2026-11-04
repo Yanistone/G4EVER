@@ -7,7 +7,7 @@ import {
   getRoomAt,
   ROOM_SPAWNS,
   START_POSITION,
-} from "../apps/web/src/game/world.ts"
+} from "../apps/web/src/jeu/game/world.ts"
 
 export class GameError extends Error {
   status: number
@@ -29,6 +29,7 @@ export interface InternalPlayer extends RacePlayer {
   receipts: Record<string, NonNullable<RaceSnapshot["lastResult"]>>
 }
 export interface Room {
+  scenarioVersion?: number
   code: string
   mode: "solo" | "friends"
   phase: RaceSnapshot["phase"]
@@ -60,9 +61,9 @@ export const shuffle = <T>(items: readonly T[]): T[] => {
 }
 function deck(previous: BankQuestion[] = []) {
   return RACE_ROOM_IDS.flatMap((id) => {
-    const available = QUESTION_BANK.filter(
-      (q) => q.roomId === id && !previous.some((p) => p.id === q.id),
-    )
+    const pool = QUESTION_BANK.filter((q) => q.roomId === id)
+    const fresh = pool.filter((q) => !previous.some((p) => p.id === q.id))
+    const available = fresh.length >= 2 ? fresh : pool
     const picks = [
       shuffle(available.filter((q) => q.kind === "code"))[0],
       shuffle(available.filter((q) => !q.kind))[0],
@@ -169,7 +170,9 @@ export function snapshot(
                     roomId: q.roomId,
                     title: q.title,
                     prompt: q.prompt,
-                    ...(q.kind ? { kind: q.kind, exhibit: q.exhibit } : {}),
+                    ...(q.kind ? { kind: q.kind } : {}),
+                    exhibit: q.exhibit,
+                    visual: q.visual,
                     answers: (q.kind === "code" ? [] : q.answers).map((label, i) => ({
                       id: String(i),
                       label,
@@ -193,11 +196,12 @@ export async function createRoom(
   const mode = data.mode === "solo" ? "solo" : "friends"
   const durationMinutes = [5, 10, 15].includes(Number(data.durationMinutes))
     ? Number(data.durationMinutes)
-    : 10
+    : 15
   for (let i = 0; i < 8; i++) {
     const code = shuffle("ABCDEFGHJKLMNPQRSTUVWXYZ23456789".split("")).slice(0, 6).join("")
     const room: Room = {
       code,
+      scenarioVersion: 2,
       mode,
       phase: "lobby",
       hostId: host.id,
@@ -229,7 +233,11 @@ export async function transact(
 ) {
   for (let attempt = 0; attempt < 8; attempt++) {
     const stored = await repo.get(code)
-    if (!stored || now - stored.room.updatedAt > 6 * 60 * 60 * 1000)
+    if (
+      !stored ||
+      stored.room.scenarioVersion !== 2 ||
+      now - stored.room.updatedAt > 6 * 60 * 60 * 1000
+    )
       throw new GameError("Ce salon est introuvable ou a expiré. Crée une nouvelle partie.", 404)
     const room = stored.room
 

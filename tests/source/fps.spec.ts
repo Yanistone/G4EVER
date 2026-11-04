@@ -1,13 +1,13 @@
-import { STATION_TARGETS } from "../../apps/web/src/game/escape"
+import { STATION_TARGETS } from "../../apps/web/src/jeu/game/escape"
 import { test, expect } from "@playwright/test"
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine.js"
 import { Scene } from "@babylonjs/core/scene.js"
 import { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera.js"
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js"
-import { FpsController } from "../../apps/web/src/three/controller"
-import { WORLD_DOORS, WORLD_ROOMS, canWalkAt } from "../../apps/web/src/game/world"
+import { FpsController } from "../../apps/web/src/jeu/three/controller"
+import { WORLD_DOORS, WORLD_ROOMS, canWalkAt } from "../../apps/web/src/jeu/game/world"
 import { enterCampus, lookAt } from "./fps-helpers"
-import { createSession } from "../../apps/web/src/game/session"
+import { createSession } from "../../apps/web/src/jeu/game/session"
 const settings = { sensitivity: 1, fov: 80, volume: 0, quality: "eco" as const, motion: false }
 test("FPS controller blocks every closed door, crosses open thresholds and stops at furniture", () => {
   const engine = new NullEngine(),
@@ -89,7 +89,7 @@ test("3D world, real raycast terminal, NPC animation, inventory, settings and pa
   })
   await page.keyboard.press("e")
   await expect(page).toHaveURL(/#puzzle$/)
-  await page.getByRole("button", { name: /A Vert/ }).click()
+  await page.getByLabel("Nombre de tasses bleues").fill("5")
   await page.getByRole("button", { name: "Valider la réponse →" }).click()
   await expect(page).toHaveURL(/#success$/)
   await page.getByRole("button", { name: "CONTINUER ▸" }).click()
@@ -97,7 +97,7 @@ test("3D world, real raycast terminal, NPC animation, inventory, settings and pa
   await enterCampus(page)
   await page.keyboard.press("i")
   await expect(page.getByRole("dialog", { name: "Inventaire", exact: true })).toBeVisible()
-  await expect(page.locator(".inventory-summary")).toContainText("1/5")
+  await expect(page.locator(".inventory-summary")).toContainText("1/8")
   await page.keyboard.press("Escape")
   await page.getByRole("button", { name: "Paramètres 3D" }).click()
   const fov = page.getByRole("slider", { name: "Champ de vision" })
@@ -148,7 +148,7 @@ test("documents are collected and examined; a live NPC gives guidance", async ({
   await page.keyboard.press("e")
   await expect(page.getByRole("status")).toContainText("Document ajouté")
   await expect(page.locator(".document-view")).toBeVisible()
-  await expect(page.locator(".document-view")).toContainText("répare les cinq modules")
+  await expect(page.locator(".document-view")).toContainText("Huit énigmes")
   await page.keyboard.press("Escape")
   await page.evaluate(() => {
     sessionStorage.setItem("npc-test-position", JSON.stringify({ x: 700, y: 530 }))
@@ -159,9 +159,9 @@ test("documents are collected and examined; a live NPC gives guidance", async ({
   await expect(page.locator(".fps-interaction")).toContainText("Parler à Noa")
   await page.keyboard.press("e")
   await expect(page.getByRole("dialog", { name: "Noa", exact: true })).toBeVisible()
-  await expect(page.locator(".npc-dialogue")).toContainText("Bienvenue dans la boucle")
+  await expect(page.locator(".npc-dialogue")).toContainText("Le café de 9h00")
   await page.getByRole("button", { name: /JE SUIS BLOQUÉ/ }).click()
-  await expect(page.locator(".npc-help")).toContainText("trois premières couleurs")
+  await expect(page.locator(".npc-help")).toContainText("Seule une couleur compte")
   await page.screenshot({ path: "docs/3d/npc-dialogue.png" })
 })
 test("raycast opens a sliding door and allows leaving the refectory", async ({ page }) => {

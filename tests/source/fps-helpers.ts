@@ -1,4 +1,4 @@
-import { STATION_TARGETS } from "../../apps/web/src/game/escape"
+import { STATION_TARGETS } from "../../apps/web/src/jeu/game/escape"
 import { expect } from "@playwright/test"
 import type { Page } from "@playwright/test"
 export async function enterCampus(page: Page) {
@@ -66,7 +66,7 @@ export async function approachFirstTerminal(page: Page) {
 export async function collectNetworkEvidence(page: Page) {
   await enterCampus(page)
   await lookAt(page, { x: 830, y: 472 }, 1.25)
-  await expect(page.locator(".fps-interaction")).toContainText("DIAGNOSTIC RÉSEAU", {
+  await expect(page.locator(".fps-interaction")).toContainText("SOUVENIRS DU RÉFECTOIRE", {
     timeout: 15000,
   })
   await page.keyboard.press("e")

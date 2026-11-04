@@ -1,0 +1,200 @@
+.scenario-question .dialog-card {
+  width: 850px;
+  max-height: calc(100vh - 65px);
+}
+.scenario-exhibit {
+  display: block;
+  width: 100%;
+  max-height: 230px;
+  margin: 10px auto;
+}
+.scenario-question pre {
+  white-space: pre-wrap;
+  background: #202a41;
+  color: #e8f8ff;
+  padding: 18px;
+  border-radius: 12px;
+  line-height: 1.65;
+  font-size: 15px;
+}
+.scenario-fields,
+.scenario-comparison {
+  display: flex;
+  gap: 18px;
+}
+.scenario-comparison figure {
+  flex: 1;
+  margin: 0;
+  min-width: 0;
+}
+.scenario-comparison figcaption {
+  text-align: center;
+  font-weight: 900;
+}
+.scenario-field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 7px;
+  font-weight: 800;
+  margin: 14px 0;
+}
+.scenario-field input {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  background: white;
+  color: #24314a;
+  border: 2px solid #647896;
+  border-radius: 10px;
+  font: inherit;
+}
+.scenario-seats {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+  background: #d7ba8e;
+  padding: 16px;
+  border-radius: 16px;
+}
+.scenario-seats span {
+  padding: 8px;
+  background: #f8f2e5;
+  border-radius: 8px;
+  font-weight: 900;
+}
+.scenario-plan {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: #eff4fb;
+  padding: 14px;
+  border-radius: 12px;
+}
+.scenario-plan span {
+  display: inline-block;
+  padding: 7px 13px;
+  background: white;
+  border: 1px solid #8392aa;
+  border-radius: 7px;
+}
+.scenario-plan div {
+  display: flex;
+  gap: 22px;
+}
+.scenario-kanban {
+  color: #a13448;
+  border-left: 5px solid #b63f51;
+  padding: 10px;
+}
+.scenario-lea,
+.scenario-hints {
+  background: #edf5f5;
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 18px;
+}
+.scenario-hints > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 9px;
+}
+.scenario-script {
+  display: grid;
+  gap: 4px;
+}
+.scenario-script button {
+  display: flex;
+  gap: 18px;
+  text-align: left;
+  padding: 12px;
+  background: #24314a;
+  color: #e8f6ff;
+  border: 2px solid transparent;
+  border-radius: 7px;
+}
+.scenario-script button[aria-pressed="true"] {
+  border-color: #f4b852;
+  background: #38566d;
+}
+.scenario-script code {
+  white-space: pre-wrap;
+}
+.scenario-cards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 9px;
+}
+.scenario-cards li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #edf2f9;
+  border: 1px solid #8797af;
+  border-radius: 9px;
+  padding: 12px;
+  cursor: grab;
+}
+.scenario-cards span {
+  flex: 1;
+}
+.scenario-cards button {
+  padding: 4px 12px;
+  border: 1px solid #64748b;
+  border-radius: 5px;
+  background: white;
+  color: #24314a;
+}
+.scenario-final {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+}
+.scenario-cut {
+  background: #ac4258 !important;
+}
+.scenario-notice {
+  padding: 10px;
+  background: #e5f4e5;
+  border-radius: 8px;
+}
+.scenario-lock {
+  padding: 12px;
+  background: #fae0e3;
+  color: #943144;
+  font-weight: 900;
+  animation: scenario-glitch 0.2s 3;
+}
+.scenario-question .question-modal-meta {
+  gap: 15px;
+  flex-wrap: wrap;
+}
+@keyframes scenario-glitch {
+  50% {
+    transform: translateX(3px);
+  }
+}
+@media (max-width: 650px) {
+  .scenario-fields {
+    display: block;
+  }
+  .scenario-plan div {
+    gap: 5px;
+  }
+  .scenario-cards li {
+    gap: 7px;
+    padding: 8px;
+  }
+  .scenario-question .ui-button {
+    font-size: 12px;
+  }
+  .scenario-comparison {
+    gap: 7px;
+  }
+}

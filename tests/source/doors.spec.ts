@@ -9,7 +9,7 @@ import {
   findWalkPath,
   START_POSITION,
   getNearbyInteraction,
-} from "../../apps/web/src/game/world"
+} from "../../apps/web/src/jeu/game/world"
 
 test("all nine doorways have furniture-free approach areas", () => {
   for (const door of WORLD_DOORS)

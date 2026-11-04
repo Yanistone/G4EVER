@@ -1,3 +1,4 @@
+import type { ScenarioKind } from "./scenario"
 export interface PublicQuestion {
   id: string
   roomId: string
@@ -7,6 +8,7 @@ export interface PublicQuestion {
   hint?: string
   kind?: "code"
   exhibit?: string
+  visual?: ScenarioKind
 }
 export interface RacePlayer {
   id: string
