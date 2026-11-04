@@ -1,0 +1,105 @@
+[
+  {
+    "id": "modern_arm_chair_01",
+    "url": "https://polyhaven.com/a/modern_arm_chair_01",
+    "license": "CC0-1.0",
+    "gltf": "modern_arm_chair_01_1k.gltf",
+    "size": 2698032,
+    "files": [
+      "modern_arm_chair_01_1k.gltf",
+      "textures/modern_arm_chair_01_pillow_nor_gl_1k.jpg",
+      "textures/modern_arm_chair_01_legs_nor_gl_1k.jpg",
+      "textures/modern_arm_chair_01_pillow_arm_1k.jpg",
+      "textures/modern_arm_chair_01_legs_diff_1k.jpg",
+      "textures/modern_arm_chair_01_legs_arm_1k.jpg",
+      "modern_arm_chair_01.bin",
+      "textures/modern_arm_chair_01_pillow_diff_1k.jpg"
+    ],
+    "nodes": [
+      {
+        "mesh": 0,
+        "name": "modern_arm_chair_01"
+      }
+    ],
+    "bounds": [
+      {
+        "mesh": "Cube.007",
+        "vertices": 3884,
+        "min": [
+          -0.4068087339401245,
+          0.0003815953677985817,
+          -0.56038498878479
+        ],
+        "max": [
+          0.4135356843471527,
+          0.8698092699050903,
+          0.41110995411872864
+        ]
+      },
+      {
+        "mesh": "Cube.007",
+        "vertices": 1967,
+        "min": [
+          -0.3549351990222931,
+          0.34748637676239014,
+          -0.5754517316818237
+        ],
+        "max": [
+          0.3583531975746155,
+          1.0232336521148682,
+          0.38417327404022217
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sofa_03",
+    "url": "https://polyhaven.com/a/sofa_03",
+    "license": "CC0-1.0",
+    "gltf": "sofa_03_1k.gltf",
+    "size": 668033,
+    "files": [
+      "sofa_03_1k.gltf",
+      "textures/sofa_03_rough_1k.jpg",
+      "sofa_03.bin",
+      "textures/sofa_03_diff_1k.jpg",
+      "textures/sofa_03_nor_gl_1k.jpg"
+    ],
+    "nodes": [
+      {
+        "mesh": 0,
+        "name": "sofa_03"
+      }
+    ],
+    "bounds": [
+      {
+        "mesh": "Mesh.009",
+        "vertices": 4507,
+        "min": [
+          -1.365588665008545,
+          0.0006283945986069739,
+          -0.46388354897499084
+        ],
+        "max": [
+          1.365588665008545,
+          1.1188924312591553,
+          0.46120065450668335
+        ]
+      },
+      {
+        "mesh": "Mesh.009",
+        "vertices": 1148,
+        "min": [
+          -1.1109505891799927,
+          0.4996996223926544,
+          -0.3475067615509033
+        ],
+        "max": [
+          1.1109504699707031,
+          1.0264620780944824,
+          0.2057821899652481
+        ]
+      }
+    ]
+  }
+]

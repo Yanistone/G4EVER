@@ -1,12 +1,16 @@
 import Phaser from "phaser"
 
 import { Player } from "../entities/Player"
+import { gameEvents, GAME_EVENTS } from "../events"
+import { INITIAL_POSITION, isPlayerPosition } from "../session"
 
 export class GameScene extends Phaser.Scene {
   private player!: Player
 
   private readonly mapWidth = 2000
   private readonly mapHeight = 1400
+  private lastPosition = { ...INITIAL_POSITION }
+  private lastPositionEvent = 0
 
   constructor() {
     super("GameScene")
@@ -17,10 +21,22 @@ export class GameScene extends Phaser.Scene {
     this.createWorld()
     this.createPlayer()
     this.createCamera()
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.publishPosition())
   }
 
   update() {
     this.player.update()
+    if (this.time.now - this.lastPositionEvent >= 200) {
+      this.publishPosition()
+      this.lastPositionEvent = this.time.now
+    }
+  }
+
+  private publishPosition() {
+    const position = { x: this.player.x, y: this.player.y }
+    if (position.x === this.lastPosition.x && position.y === this.lastPosition.y) return
+    this.lastPosition = position
+    gameEvents.emit(GAME_EVENTS.playerMoved, position)
   }
 
   private createTextures() {
@@ -45,7 +61,6 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight)
 
-    // Grille temporaire
     const graphics = this.add.graphics()
 
     graphics.lineStyle(1, 0x334155, 0.5)
@@ -60,7 +75,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createPlayer() {
-    this.player = new Player(this, this.mapWidth / 2, this.mapHeight / 2)
+    const saved: unknown = this.registry.get("playerPosition")
+    const position = isPlayerPosition(saved) ? saved : INITIAL_POSITION
+    this.player = new Player(this, position.x, position.y)
+    this.lastPosition = { ...position }
   }
 
   private createCamera() {

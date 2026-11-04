@@ -1,28 +1,36 @@
-import { BurstBackground } from "../components/BurstBackground"
-import { Button } from "../components/Button"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { PlayMenuPage } from "../pages/PlayMenuPage"
+import { Dialog } from "../components/ui/Dialog"
+import type { AdventureSession } from "../game/session"
 
-export function HomeScreen() {
+export function HomeScreen({
+  session,
+  onStart,
+}: {
+  session: AdventureSession
+  onStart: () => void
+}) {
+  const navigate = useNavigate()
+  const [confirmNewGame, setConfirmNewGame] = useState(false)
+  const canContinue = session.status !== "idle"
   return (
-    <BurstBackground className="flex min-h-dvh items-center justify-center p-6">
-      <main className="relative z-10 flex w-full max-w-md flex-col items-center gap-6">
-        <div className="flex w-full flex-col gap-6">
-          <Button to="/game" variant="primary" size="lg">
-            NOUVELLE PARTIE
-          </Button>
-
-          <Button variant="secondary" size="lg" disabled>
-            CONTINUER
-          </Button>
-
-          <Button variant="tertiary" size="lg" disabled>
-            OPTIONS
-          </Button>
-
-          <Button variant="tertiary" size="lg" disabled>
-            QUITTER
-          </Button>
-        </div>
-      </main>
-    </BurstBackground>
+    <>
+      <div inert={confirmNewGame}>
+        <PlayMenuPage
+          canContinue={canContinue}
+          onCampaign={() => (canContinue ? setConfirmNewGame(true) : onStart())}
+          onContinue={() => navigate(session.status === "won" ? "/victory" : "/game")}
+        />
+      </div>
+      {confirmNewGame && (
+        <Dialog title="NOUVELLE PARTIE" onClose={() => setConfirmNewGame(false)}>
+          <p>Recommencer la partie ? La sauvegarde actuelle sera remplacée.</p>
+          <button className="ui-button" onClick={onStart}>
+            RECOMMENCER
+          </button>
+        </Dialog>
+      )}
+    </>
   )
 }

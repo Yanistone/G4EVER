@@ -1,0 +1,509 @@
+.immersive-home {
+  background: #2d6bff;
+}
+.home-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #16112bf2 0%, #16112bed 27%, #1b10308a 53%, #1b10300a 100%),
+    linear-gradient(0deg, #16112bba, transparent 30%);
+}
+.immersive-header {
+  position: absolute;
+  top: 27px;
+  left: 38px;
+  right: 38px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.immersive-header .brand-mark {
+  width: 113px;
+  height: 68px;
+}
+.immersive-header > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.immersive-header button {
+  color: #dce5ff;
+  font-size: 11px;
+  border: 0;
+  background: transparent;
+  margin-left: 16px;
+  cursor: pointer;
+}
+.immersive-home-content {
+  position: absolute;
+  top: 131px;
+  left: 66px;
+  width: 540px;
+}
+.edition-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #2ee6ff;
+}
+.immersive-home-content h1 {
+  font: 64px/0.98 "Lilita One";
+  letter-spacing: -1px;
+  margin: 18px 0 19px;
+}
+.immersive-home-content h1 em {
+  color: #ffd93b;
+  font-style: normal;
+}
+.immersive-home-content > p {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #cad0e4;
+  margin: 0 0 22px;
+}
+.immersive-modes {
+  display: grid;
+  gap: 8px;
+  width: 448px;
+}
+.immersive-modes > button {
+  display: flex;
+  align-items: center;
+  text-align: left;
+  gap: 17px;
+  border-radius: 8px;
+  padding: 16px 19px;
+  cursor: pointer;
+  transition:
+    transform 0.15s,
+    border-color 0.15s;
+}
+.immersive-modes > button:hover {
+  transform: translateX(5px);
+}
+.immersive-modes > button > span {
+  font-size: 12px;
+  align-self: flex-start;
+  opacity: 0.7;
+  margin-top: 3px;
+}
+.immersive-modes > button strong {
+  display: block;
+  font: 23px "Lilita One";
+  margin-top: 3px;
+}
+.immersive-modes > button small {
+  font-size: 8px;
+  letter-spacing: 1.6px;
+  font-weight: 800;
+}
+.immersive-modes > button p {
+  font-size: 11px;
+  margin: 4px 0 0;
+}
+.immersive-modes > button > b {
+  margin-left: auto;
+  font-size: 24px;
+}
+.immersive-play {
+  color: #1b1030;
+  background: #ffd93b;
+  border: 1px solid #ffe87e;
+  box-shadow: 0 8px 35px #ffd93b15;
+}
+.immersive-story {
+  background: #ffffff0c;
+  border: 1px solid #ffffff38;
+  color: white;
+}
+.immersive-menu-links {
+  display: flex;
+  gap: 28px;
+  margin-top: 18px;
+}
+.immersive-menu-links button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 11px;
+  color: #f4f6ff;
+  font-weight: 800;
+  cursor: pointer;
+}
+.immersive-menu-links button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.home-scene-caption {
+  position: absolute;
+  right: 54px;
+  bottom: 112px;
+  width: 250px;
+}
+.home-scene-caption > span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #2ee6ff;
+}
+.home-scene-caption p {
+  font: 27px/1.2 "Lilita One";
+  text-shadow: 0 2px 20px #0007;
+}
+.home-scene-caption i {
+  display: block;
+  width: 54px;
+  height: 3px;
+  background: #ff3e7f;
+}
+.immersive-footer {
+  position: absolute;
+  bottom: 25px;
+  left: 38px;
+  right: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+  color: #cad0e4;
+}
+.immersive-footer button {
+  border: 0;
+  background: none;
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 1px;
+  cursor: pointer;
+}
+.ending-shade {
+  position: absolute;
+  inset: 0;
+  background: #16122be3;
+  backdrop-filter: blur(4px);
+}
+.immersive-ending > section {
+  position: absolute;
+  inset: 55px 290px;
+  text-align: center;
+}
+.ending-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #2ee6ff;
+}
+.ending-seal {
+  width: 60px;
+  height: 60px;
+  background: #ffd93b;
+  color: #1b1030;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font: 39px "Lilita One";
+  margin: 28px auto 22px;
+  animation: result-appear 0.7s ease-out;
+}
+.immersive-ending h1 {
+  font: 51px/1 "Lilita One";
+  margin: 0 0 16px;
+}
+.immersive-ending h2 {
+  font: 26px "Lilita One";
+  margin: 0;
+  color: #ffd93b;
+}
+.immersive-ending p {
+  font-size: 16px;
+  line-height: 1.65;
+  color: #c7d1e9;
+  margin: 16px 0 28px;
+}
+.ending-stats {
+  display: flex;
+  justify-content: center;
+  gap: 36px;
+  padding: 23px 0;
+  border-top: 1px solid #ffffff22;
+  border-bottom: 1px solid #ffffff22;
+}
+.ending-stats > span {
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: #b1c1df;
+}
+.ending-stats strong {
+  font: 30px "Lilita One";
+  color: white;
+  display: block;
+  letter-spacing: 0;
+  margin-bottom: 6px;
+}
+.ending-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 27px 0 24px;
+}
+.ending-actions button {
+  padding: 13px 19px;
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 6px;
+  background: #ffffff09;
+  border: 1px solid #ffffff33;
+  color: white;
+  cursor: pointer;
+}
+.ending-actions button:first-child {
+  background: #ffd93b;
+  border-color: #ffd93b;
+  color: #1b1030;
+}
+.immersive-ending section > small {
+  font-size: 11px;
+  color: #9baac8;
+}
+.ending-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.ending-particles i {
+  position: absolute;
+  top: -30px;
+  width: 5px;
+  height: 12px;
+  animation: fall 6s linear infinite;
+  opacity: 0.7;
+}
+@keyframes fall {
+  to {
+    transform: translateY(780px) rotate(400deg);
+  }
+}
+@keyframes result-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.6) rotate(-15deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ending-particles i,
+  .result-emblem,
+  .ending-seal {
+    animation: none;
+  }
+}
+
+.immersive-home,
+.immersive-ending {
+  position: relative;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #19152f;
+  color: #f4f6ff;
+  font-family: Nunito, sans-serif;
+}
+.campus-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.brand-mark {
+  font:
+    32px "Lilita One",
+    sans-serif;
+  letter-spacing: 1px;
+}
+.immersive-home button:focus-visible,
+.immersive-ending button:focus-visible,
+.dialog-card button:focus-visible {
+  outline: 3px solid #ff3e7f;
+  outline-offset: 5px;
+}
+.game-hud {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: white;
+}
+.game-hud > span {
+  padding: 12px 20px;
+  background: #1b1030e8;
+  border-radius: 12px;
+  font-weight: 800;
+}
+.game-hud .countdown {
+  color: #2ee6ff;
+  font:
+    36px "Lilita One",
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+.game-hud .urgent {
+  color: #ff9a1f;
+}
+.game-controls {
+  position: absolute;
+  left: 24px;
+  bottom: 20px;
+  color: #fff;
+  font-size: 14px;
+  background: #1b1030dd;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+.reboot-screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 140px 24px 40px;
+  color: white;
+  text-align: center;
+}
+.reboot-screen h1 {
+  font:
+    54px "Lilita One",
+    sans-serif;
+  color: #ffd93b;
+}
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #100d2bc4;
+  backdrop-filter: blur(9px);
+}
+.dialog-card {
+  width: min(520px, 100%);
+  border-radius: 16px;
+  padding: 30px;
+  background: #f4f6ff;
+  color: #1b1030;
+  box-shadow: 0 25px 90px #08051f66;
+}
+.dialog-card h2 {
+  font:
+    30px "Lilita One",
+    sans-serif;
+  margin-bottom: 20px;
+}
+.dialog-card p {
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.dialog-card .ui-button {
+  border: 0;
+  background: #2d6bff;
+  color: white;
+  border-radius: 7px;
+  padding: 12px 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+.save-error {
+  position: fixed;
+  z-index: 30;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  background: #ffedbd;
+  color: #1b1030;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+@media (max-width: 900px) {
+  .home-scene-caption {
+    display: none;
+  }
+  .immersive-home-content {
+    left: 32px;
+  }
+  .immersive-ending > section {
+    inset: 55px 32px;
+  }
+  .game-hud {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .game-hud > span {
+    padding: 10px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 600px), (max-height: 650px) {
+  .immersive-home-content {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: auto;
+    padding: 110px 24px 80px;
+  }
+  .immersive-home-content h1 {
+    font-size: 46px;
+  }
+  .immersive-modes {
+    width: 100%;
+  }
+  .immersive-home {
+    overflow-y: auto;
+  }
+  .immersive-header {
+    left: 24px;
+    top: 24px;
+  }
+  .immersive-footer {
+    left: 24px;
+    right: 24px;
+    font-size: 7px;
+  }
+  .immersive-ending > section {
+    position: relative;
+    inset: auto;
+    padding: 30px 24px;
+  }
+  .immersive-ending {
+    overflow-y: auto;
+  }
+  .immersive-ending h1 {
+    font-size: 36px;
+  }
+  .ending-stats {
+    gap: 20px;
+  }
+  .ending-actions {
+    flex-wrap: wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .immersive-modes > button {
+    transition: none;
+  }
+}

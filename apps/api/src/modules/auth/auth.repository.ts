@@ -103,8 +103,8 @@ export async function createPlayerWithSession(
     try {
       await connection.rollback()
     } catch (rollbackError) {
-      // On conserve l'erreur initiale.
-      // Un échec du rollback mérite néanmoins d'être journalisé.
+
+
       console.error("Transaction rollback failed:", rollbackError)
     }
 

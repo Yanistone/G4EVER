@@ -1,5 +1,14 @@
 node_modules/
 dist/
+*.tsbuildinfo
+test-results/
+playwright-report/
 .env
 .env.*
 !.env.example
+*.[mM][dD]
+.runtime/
+.site-build/
+.vite/
+*.local
+.DS_Store

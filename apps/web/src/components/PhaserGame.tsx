@@ -2,9 +2,11 @@ import { useEffect, useRef } from "react"
 import Phaser from "phaser"
 
 import { gameConfig } from "../game/config"
+import type { PlayerPosition } from "../game/session"
 
-export function PhaserGame() {
+export function PhaserGame({ initialPosition }: { initialPosition: PlayerPosition }) {
   const containerRef = useRef<HTMLDivElement>(null)
+  const spawnRef = useRef(initialPosition)
 
   useEffect(() => {
     const container = containerRef.current
@@ -14,6 +16,9 @@ export function PhaserGame() {
     const game = new Phaser.Game({
       ...gameConfig,
       parent: container,
+      callbacks: {
+        preBoot: (instance) => instance.registry.set("playerPosition", spawnRef.current),
+      },
     })
 
     return () => {

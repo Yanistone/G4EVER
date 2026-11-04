@@ -1,33 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@400;600;700;800;900&display=swap");
+@import "./styles/fonts.css";
 
 @import "tailwindcss";
 
 @theme {
-  /* Brand */
   --color-primary: #2d6bff;
   --color-secondary: #2ee6ff;
   --color-accent: #ff3e7f;
-
-  /* Backgrounds */
   --color-background: #2d6bff;
   --color-surface: #ffffff;
   --color-muted: #4a86ff;
   --color-dark: #2a1b5c;
-
-  /* Text & borders */
   --color-foreground: #1b1030;
   --color-border: #1b1030;
-
-  /* Actions */
   --color-gold-light: #fff27a;
   --color-gold: #ffaa00;
-
-  /* Feedback */
   --color-success: #3ddc6a;
   --color-destructive: #ff483e;
   --color-warning: #ff9a1f;
-
-  /* Typography */
   --font-display: "Lilita One", sans-serif;
   --font-sans: "Nunito", sans-serif;
 }

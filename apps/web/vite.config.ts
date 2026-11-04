@@ -7,6 +7,8 @@ export default defineConfig({
 
   server: {
     proxy: {
+      "/api/rooms": { target: "http://127.0.0.1:5197", changeOrigin: false },
+      "/api/health": { target: "http://127.0.0.1:5197", changeOrigin: false },
       "/api": {
         target: "http://127.0.0.1:8000",
         changeOrigin: true,

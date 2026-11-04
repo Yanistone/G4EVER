@@ -15,7 +15,5 @@ export function playSound(sound: Sound): void {
 
   audio.currentTime = 0
 
-  void audio.play().catch(() => {
-    // Le navigateur peut bloquer l'audio avant une interaction.
-  })
+  void audio.play().catch(() => {})
 }

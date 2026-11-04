@@ -1,0 +1,71 @@
+{
+  "id": "projector_screen",
+  "url": "https://polyhaven.com/a/projector_screen",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://polyhaven.com/license",
+  "authors": {
+    "PeterM": "All"
+  },
+  "description": "Free 8K model of a portable projector screen: teal metal roll case, white fabric with subtle stains and creases, black edges, tripod stand with rubber feet.",
+  "gltf": "projector_screen_1k.gltf",
+  "files": [
+    "projector_screen_1k.gltf",
+    "textures/projector_screen_frame_nor_gl_1k.jpg",
+    "textures/projector_screen_frame_diff_1k.jpg",
+    "textures/projector_screen_frame_arm_1k.jpg",
+    "textures/projector_screen_nor_gl_1k.jpg",
+    "textures/projector_screen_diff_1k.jpg",
+    "textures/projector_screen_arm_1k.jpg",
+    "projector_screen.bin"
+  ],
+  "size": 3108259,
+  "bounds": {
+    "min": [
+      -0.5467833876609802,
+      -5.960464477539063e-8,
+      -0.6062744855880737
+    ],
+    "max": [
+      0.5467833280563354,
+      1.7994642853736877,
+      0.3095262944698334
+    ],
+    "size": [
+      1.0935667157173157,
+      1.7994643449783325,
+      0.9158007800579071
+    ],
+    "nodes": [
+      {
+        "name": "projector_screen",
+        "min": [
+          -0.5467833876609802,
+          0.7005736231803894,
+          -0.048256900161504745
+        ],
+        "max": [
+          0.5467833280563354,
+          1.7994642853736877,
+          0.08967974036931992
+        ]
+      },
+      {
+        "name": "projector_screen_frame",
+        "min": [
+          -0.5280041694641113,
+          -5.960464477539063e-8,
+          -0.6062744855880737
+        ],
+        "max": [
+          0.5280041694641113,
+          1.1641931533813477,
+          0.3095262944698334
+        ]
+      }
+    ]
+  },
+  "orientation": {
+    "up": "+Y",
+    "units": "metres"
+  }
+}
