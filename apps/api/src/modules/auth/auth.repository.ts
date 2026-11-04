@@ -29,7 +29,7 @@ export async function createPlayer(input: RegisterInput): Promise<string> {
     return String(result.insertId)
   } catch (error) {
     if (error instanceof Error && "code" in error && error.code === "ER_DUP_ENTRY") {
-      throw new Error("PLAYER_ALREADY_EXISTS")
+      throw new Error("PLAYER_ALREADY_EXISTS", { cause: error })
     }
 
     throw error
@@ -103,13 +103,11 @@ export async function createPlayerWithSession(
     try {
       await connection.rollback()
     } catch (rollbackError) {
-
-
       console.error("Transaction rollback failed:", rollbackError)
     }
 
     if (error instanceof Error && "code" in error && error.code === "ER_DUP_ENTRY") {
-      throw new Error("PLAYER_ALREADY_EXISTS")
+      throw new Error("PLAYER_ALREADY_EXISTS", { cause: error })
     }
 
     throw error

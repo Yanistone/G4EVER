@@ -342,6 +342,9 @@
   gap: 20px;
   color: white;
 }
+.campus-hud {
+  top: 110px;
+}
 .game-hud > span {
   padding: 12px 20px;
   background: #1b1030e8;

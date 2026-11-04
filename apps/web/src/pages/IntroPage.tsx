@@ -1,195 +1,43 @@
 import type { IntroPageProps } from "../types/entry"
-import { IntroArtwork0 } from "../components/artwork/IntroArtwork"
+import "../styles/yanis.css"
 
 export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
   return (
-    <div
-      style={{
-        width: "1280px",
-        height: "720px",
-        boxSizing: "border-box",
-        padding: "0",
-        position: "relative",
-        background: "#2A1B5C",
-        color: "#1B1030",
-        fontFamily: "'Nunito', system-ui, sans-serif",
-        display: "flex",
-        flexDirection: "column",
-        gap: "0",
-        overflow: "hidden",
-      }}
-    >
-      <div
-        style={{
-          position: "absolute",
-          left: "0",
-          right: "0",
-          top: "50px",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "10px",
-            padding: "8px 18px",
-            border: "4px solid #1B1030",
-            borderRadius: "999px",
-            background: "#FF3E7F",
-            boxShadow: "0 5px 0 #1B1030",
-            fontFamily: "'Lilita One', 'Arial Black', sans-serif",
-            fontWeight: "400",
-            fontSize: "30px",
-            color: "#FFFFFF",
-            whiteSpace: "nowrap",
-          }}
-        >
-          {data.dayLabel}
+    <main className="yanis-intro">
+      <header>
+        <strong>G4 EVER</strong>
+        <button onClick={onSkip}>PASSER ▸▸</button>
+      </header>
+      <section>
+        <span className="story-day">{data.dayLabel}</span>
+        <div className="story-console" aria-hidden="true">
+          <span>G4-OS / INITIALISATION</span>
+          <b>
+            {data.sceneNumber === 2
+              ? "ERREUR 0x16H00"
+              : data.sceneNumber === 3
+                ? "MÉMOIRE CONSERVÉE"
+                : "BOUCLE TEMPORELLE"}
+          </b>
+          <i />
         </div>
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          left: "0",
-          right: "0",
-          top: "140px",
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <IntroArtwork0 />
-      </div>
-      <div style={{ position: "absolute", right: "48px", top: "44px" }}>
-        <button
-          type="button"
-          className="game-button"
-          onClick={onSkip}
-          style={{
-            width: "170px",
-            height: "56px",
-            boxSizing: "border-box",
-            border: "5px solid #1B1030",
-            borderRadius: "22px",
-            background: "#FFFFFF",
-            boxShadow: "0 8px 0 #1B1030",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            fontFamily: "'Lilita One', 'Arial Black', sans-serif",
-            fontWeight: "400",
-            fontSize: "20px",
-            lineHeight: "1.1",
-            letterSpacing: "1px",
-            color: "#1B1030",
-            textAlign: "center",
-          }}
-        >
-          {"PASSER ▸▸"}
-        </button>
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          left: "110px",
-          right: "110px",
-          bottom: "60px",
-          padding: "34px 40px 30px",
-          background: "#FFFFFF",
-          border: "5px solid #1B1030",
-          borderRadius: "28px",
-          boxShadow: "0 10px 0 #1B1030",
-        }}
-      >
-        <div style={{ position: "absolute", left: "34px", top: "-26px" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "8px 18px",
-              border: "4px solid #1B1030",
-              borderRadius: "999px",
-              background: "#2EE6FF",
-              boxShadow: "0 5px 0 #1B1030",
-              fontFamily: "'Lilita One', 'Arial Black', sans-serif",
-              fontWeight: "400",
-              fontSize: "20px",
-              color: "#1B1030",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {data.narrator}
-          </div>
-        </div>
-        <p
-          style={{
-            margin: "0",
-            fontSize: "26px",
-            fontWeight: "800",
-            lineHeight: "1.45",
-          }}
-        >
-          {data.beforeHighlight}
-          <span style={{ color: "#FF3E7F" }}>{data.highlight}</span>
-          {data.afterHighlight}
-        </p>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginTop: "22px",
-          }}
-        >
-          <div
-            role="img"
-            aria-label={`Scène ${data.sceneNumber} sur ${data.totalScenes}`}
-            style={{ display: "flex", gap: "10px" }}
-          >
-            {Array.from({ length: data.totalScenes }, (_, index) => (
-              <span
-                key={index}
-                style={{
-                  width: index + 1 === data.sceneNumber ? "34px" : "12px",
-                  height: "12px",
-                  borderRadius: "6px",
-                  background: index + 1 === data.sceneNumber ? "#1B1030" : "#C9CCE0",
-                }}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            className="game-button"
-            onClick={onNext}
-            style={{
-              width: "220px",
-              height: "64px",
-              boxSizing: "border-box",
-              border: "5px solid #1B1030",
-              borderRadius: "22px",
-              background: "linear-gradient(180deg,#FFF27A,#FFAA00)",
-              boxShadow: "0 8px 0 #1B1030",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "'Lilita One', 'Arial Black', sans-serif",
-              fontWeight: "400",
-              fontSize: "26px",
-              lineHeight: "1.1",
-              letterSpacing: "1px",
-              color: "#1B1030",
-              textAlign: "center",
-            }}
-          >
-            {"SUIVANT ▸"}
+        <article>
+          <small>{data.narrator}</small>
+          <h1>
+            {data.beforeHighlight}
+            <em>{data.highlight}</em>
+            {data.afterHighlight}
+          </h1>
+        </article>
+        <footer>
+          <span aria-label={`Scène ${data.sceneNumber} sur ${data.totalScenes}`}>
+            {data.sceneNumber} / {data.totalScenes}
+          </span>
+          <button onClick={onNext}>
+            {data.sceneNumber === data.totalScenes ? "ENTRER DANS LE CAMPUS" : "SUIVANT ▸"}
           </button>
-        </div>
-      </div>
-    </div>
+        </footer>
+      </section>
+    </main>
   )
 }

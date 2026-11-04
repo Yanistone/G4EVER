@@ -4,6 +4,7 @@ export const CAMPUS_EVENTS = {
   controls: "campus:controls",
   puzzleRequested: "puzzle:requested",
   hintDiscovered: "hint:discovered",
+  progressChanged: "campaign:changed",
 } as const
 
 export interface InteractionRequest {

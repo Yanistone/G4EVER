@@ -1,6 +1,9 @@
 import { Navigate, useNavigate } from "react-router-dom"
 import { Button } from "../components/Button"
 import { PhaserGame } from "../components/PhaserGame"
+import { CampusPanel } from "../components/game/CampusPanel"
+import { CampaignPanel } from "../components/game/CampaignPanel"
+import { getCampaignSeed } from "../game/campaignRun"
 import { formatDuration } from "../game/session"
 import type { useAdventure } from "../hooks/useAdventure"
 
@@ -12,7 +15,26 @@ export function GameScreen({ adventure }: { adventure: ReturnType<typeof useAdve
   const expired = session.status === "expired"
   return (
     <main className="relative h-dvh w-full overflow-hidden bg-dark">
-      {!expired && <PhaserGame key={session.loopNumber} initialPosition={session.playerPosition} />}
+      {!expired && (
+        <>
+          <PhaserGame
+            key={`campus:${session.loopNumber}`}
+            initialPosition={session.playerPosition}
+            challengeSeed={session.challengeSeed}
+          />
+          <CampusPanel />
+          <CampaignPanel
+            key={`campagne:${session.loopNumber}`}
+            standalone={false}
+            initialProgress={{
+              seed: session.challengeSeed ?? getCampaignSeed(),
+              solvedRoomIds: [...session.solvedRoomIds],
+              knownHintIds: [...session.knownHintIds],
+              foundDocumentIds: [...session.foundDocumentIds],
+            }}
+          />
+        </>
+      )}
       <div className="game-hud">
         <Button
           variant="tertiary"

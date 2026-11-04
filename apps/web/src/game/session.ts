@@ -12,7 +12,7 @@ export interface PlayerPosition {
   x: number
   y: number
 }
-export const INITIAL_POSITION: PlayerPosition = { x: 1000, y: 700 }
+export const INITIAL_POSITION: PlayerPosition = { x: 690, y: 590 }
 
 export interface AdventureSession {
   version: 1
@@ -22,6 +22,8 @@ export interface AdventureSession {
   loopNumber: number
   solvedRoomIds: PuzzleRoomId[]
   knownHintIds: string[]
+  foundDocumentIds: string[]
+  challengeSeed?: string
   playerPosition: PlayerPosition
 }
 
@@ -34,6 +36,7 @@ export function createSession(loopNumber = 1, knownHintIds: string[] = []): Adve
     loopNumber,
     solvedRoomIds: [],
     knownHintIds: [...knownHintIds],
+    foundDocumentIds: [],
     playerPosition: { ...INITIAL_POSITION },
   }
 }
@@ -60,6 +63,8 @@ export function restartLoop(session: AdventureSession): AdventureSession {
     ...createSession(session.loopNumber + 1, session.knownHintIds),
     status: "running",
     playedMs: session.playedMs,
+    foundDocumentIds: [...session.foundDocumentIds],
+    ...(session.challengeSeed ? { challengeSeed: session.challengeSeed } : {}),
   }
 }
 
@@ -114,6 +119,13 @@ export function readSession(storage?: Pick<Storage, "getItem">): AdventureSessio
       new Set(data.solvedRoomIds).size !== data.solvedRoomIds.length ||
       !Array.isArray(data.knownHintIds) ||
       !data.knownHintIds.every((id) => typeof id === "string" && id.length > 0) ||
+      (data.foundDocumentIds !== undefined &&
+        (!Array.isArray(data.foundDocumentIds) ||
+          !data.foundDocumentIds.every((id) => typeof id === "string" && id.length > 0))) ||
+      (data.challengeSeed !== undefined &&
+        (typeof data.challengeSeed !== "string" ||
+          data.challengeSeed.length === 0 ||
+          data.challengeSeed.length > 100)) ||
       !isPlayerPosition(data.playerPosition) ||
       (data.status === "expired") !== (data.remainingMs === 0) ||
       (data.status === "won") !== (data.solvedRoomIds.length === PUZZLE_ROOM_IDS.length) ||
@@ -129,6 +141,8 @@ export function readSession(storage?: Pick<Storage, "getItem">): AdventureSessio
       loopNumber: data.loopNumber,
       solvedRoomIds: [...data.solvedRoomIds],
       knownHintIds: [...new Set(data.knownHintIds as string[])],
+      foundDocumentIds: [...new Set((data.foundDocumentIds ?? []) as string[])],
+      ...(typeof data.challengeSeed === "string" ? { challengeSeed: data.challengeSeed } : {}),
       playerPosition: { ...data.playerPosition },
     }
   } catch {

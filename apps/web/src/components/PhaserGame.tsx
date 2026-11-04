@@ -6,9 +6,16 @@ import { getCampaignSeed } from "../game/campaignRun"
 import { START_POSITION } from "../game/world"
 import type { PlayerPosition } from "../types/game"
 
-export function PhaserGame({ initialPosition }: { initialPosition?: PlayerPosition }) {
+export function PhaserGame({
+  initialPosition,
+  challengeSeed,
+}: {
+  initialPosition?: PlayerPosition
+  challengeSeed?: string
+}) {
   const containerRef = useRef<HTMLDivElement>(null)
   const spawnRef = useRef(initialPosition ?? START_POSITION)
+  const seedRef = useRef(challengeSeed ?? getCampaignSeed())
 
   useEffect(() => {
     const container = containerRef.current
@@ -23,7 +30,7 @@ export function PhaserGame({ initialPosition }: { initialPosition?: PlayerPositi
         callbacks: {
           preBoot: (instance) => {
             instance.registry.set("playerPosition", spawnRef.current)
-            instance.registry.set("challengeSeed", getCampaignSeed())
+            instance.registry.set("challengeSeed", seedRef.current)
           },
         },
       })

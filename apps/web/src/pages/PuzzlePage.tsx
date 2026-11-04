@@ -1,108 +1,114 @@
-import { useEffect } from "react"
 import type { PuzzlePageProps } from "../types/adventure"
 import { Dialog } from "../components/ui/Dialog"
-import "../styles/immersive.css"
+import "../styles/yanis.css"
+
+type Props = PuzzlePageProps & {
+  onExamineDocument: () => void
+  onHint: () => void
+  hintText: string
+  error: string
+  showDocument: boolean
+}
+
 export function PuzzlePage({
   puzzle,
   selectedAnswerId,
   onSelectAnswer,
   onValidate,
   onLeave,
-  pending = false,
-  requiredDocumentFound = true,
+  requiredDocumentFound = false,
   loopNumber,
   solvedCount,
-}: PuzzlePageProps) {
-  useEffect(() => {
-    const key = (e: KeyboardEvent) => {
-      if (e.repeat || pending || (e.target instanceof HTMLInputElement && e.key !== "Enter")) return
-      if (["1", "2", "3", "4"].includes(e.key)) {
-        const a = puzzle.question.answers[Number(e.key) - 1]
-        if (a) onSelectAnswer(a.id)
-      }
-      if (e.key === "Enter" && selectedAnswerId) {
-        e.preventDefault()
-        onValidate()
-      }
-    }
-    window.addEventListener("keydown", key)
-    return () => window.removeEventListener("keydown", key)
-  }, [puzzle, onSelectAnswer, onValidate, pending, selectedAnswerId])
-  const q = puzzle.question
+  onExamineDocument,
+  onHint,
+  hintText,
+  error,
+  showDocument,
+}: Props) {
+  const task = puzzle.practical
   return (
-    <div className="cartoon-question story-question">
-      <Dialog title={puzzle.title} onClose={onLeave}>
-        <div className="question-modal-meta">
-          <span>{q.courseLabel}</span>
-          <b>
-            BOUCLE {loopNumber} · {solvedCount}/5 MODULES
-          </b>
-        </div>
-        <h3 className="question-modal-prompt">
-          {q.prompt.before}
-          <em>{q.prompt.highlight}</em>
-          {q.prompt.after}
-        </h3>
-        {puzzle.practical ? (
-          <div className="practical-station">
-            <pre>{puzzle.practical.template}</pre>
-            {requiredDocumentFound ? (
-              <label>
-                {puzzle.practical.language} /{" "}
-                {puzzle.practical.kind === "code" ? "LIGNE À COMPLÉTER" : "SAISIE CONSOLE"}
-                <input
-                  autoFocus
-                  autoComplete="off"
-                  spellCheck={false}
-                  maxLength={150}
-                  aria-label="Réponse du terminal"
-                  placeholder={puzzle.practical.placeholder}
-                  value={selectedAnswerId ?? ""}
-                  onChange={(e) => onSelectAnswer(e.target.value)}
-                />
-              </label>
-            ) : (
-              <div className="missing-document">
-                <strong>Il manque une information.</strong>
-                <p>{puzzle.practical.instruction}</p>
-                <button className="ui-button" onClick={onLeave}>
-                  RETOUR EXPLORER LA SALLE
-                </button>
-              </div>
-            )}
-          </div>
+    <Dialog title={puzzle.title} onClose={onLeave}>
+      <div className="question-meta">
+        <span>{puzzle.question.courseLabel}</span>
+        <b>
+          BOUCLE {loopNumber} · {solvedCount}/5 MODULES
+        </b>
+      </div>
+      <p>{task?.instruction ?? puzzle.question.prompt.before}</p>
+      {task && (
+        <>
+          <button className="document-button" onClick={onExamineDocument}>
+            EXAMINER LE DOCUMENT
+          </button>
+          {showDocument && (
+            <article className="evidence">
+              <h3>{task.document.name}</h3>
+              <p>{task.document.text}</p>
+            </article>
+          )}
+          <pre>{task.template}</pre>
+        </>
+      )}
+      <form
+        onSubmit={(event) => {
+          event.preventDefault()
+          onValidate()
+        }}
+      >
+        {task ? (
+          <label className="terminal-field">
+            {task.language}
+            <input
+              autoComplete="off"
+              spellCheck={false}
+              maxLength={150}
+              aria-label="Réponse du terminal"
+              placeholder={task.placeholder}
+              disabled={!requiredDocumentFound}
+              value={selectedAnswerId ?? ""}
+              onChange={(event) => onSelectAnswer(event.target.value)}
+            />
+          </label>
         ) : (
           <div className="terminal-answers" role="group" aria-label="Choisir une réponse">
-            {q.answers.map((a, i) => (
+            {puzzle.question.answers.map((answer) => (
               <button
-                key={a.id}
-                aria-pressed={a.id === selectedAnswerId}
-                className={a.id === selectedAnswerId ? "selected" : ""}
-                disabled={pending}
-                onClick={() => onSelectAnswer(a.id)}
+                type="button"
+                key={answer.id}
+                aria-pressed={answer.id === selectedAnswerId}
+                onClick={() => onSelectAnswer(answer.id)}
               >
-                <b>{a.letter}</b>
-                <span>{a.label}</span>
-                <kbd>{i + 1}</kbd>
+                {answer.letter} · {answer.label}
               </button>
             ))}
           </div>
         )}
-        <div className="question-modal-actions">
-          <span>
-            {puzzle.practical
-              ? "Trouve les indices dans la salle · Entrée : valider"
-              : "1–4 : choisir · Entrée : valider"}
-          </span>
+        {!requiredDocumentFound && task && (
+          <p>Examine le document pour obtenir les informations nécessaires.</p>
+        )}
+        {error && (
+          <p className="answer-error" role="alert">
+            {error}
+          </p>
+        )}
+        <div className="terminal-actions">
+          <button type="button" className="hint-button" onClick={onHint}>
+            JE SUIS BLOQUÉ
+          </button>
           <button
             className="ui-button"
-            disabled={pending || !selectedAnswerId || !requiredDocumentFound}
-            onClick={onValidate}
+            type="submit"
+            disabled={!selectedAnswerId?.trim() || (!!task && !requiredDocumentFound)}
           >
-            {pending ? "VÉRIFICATION…" : "Valider la réponse →"}
+            Valider la réponse →
           </button>
         </div>
-      </Dialog>
-    </div>
+      </form>
+      {hintText && (
+        <p className="hint-message" role="status">
+          {hintText}
+        </p>
+      )}
+    </Dialog>
   )
 }

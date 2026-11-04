@@ -44,6 +44,23 @@ export class CampusScene extends Phaser.Scene {
     const controls = (enabled: boolean) => {
       this.controlsEnabled = enabled
       this.input.keyboard?.resetKeys()
+      if (this.input.keyboard) {
+        this.input.keyboard.enabled = enabled
+        if (enabled)
+          this.input.keyboard.addCapture([
+            "Z",
+            "Q",
+            "S",
+            "D",
+            "W",
+            "A",
+            "UP",
+            "DOWN",
+            "LEFT",
+            "RIGHT",
+          ])
+        else this.input.keyboard.clearCaptures()
+      }
       if (!enabled) campusAudio.suspend()
       else if (isCampusSoundEnabled()) campusAudio.resume()
     }

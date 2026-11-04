@@ -696,14 +696,12 @@ export function buildWorld(
     const glyph = screen("document-title", "G4 / NOTES", 0, 0.045, 0, 0.38, 0.2, COLORS.yellow)
     glyph.parent = root
     glyph.rotation.x = Math.PI / 2
-    root
-      .getChildMeshes()
-      .forEach(
-        (m) =>
-          (m.metadata = {
-            interaction: { id: item.id, kind: "item", label: item.name } satisfies Interaction,
-          }),
-      )
+    root.getChildMeshes().forEach(
+      (m) =>
+        (m.metadata = {
+          interaction: { id: item.id, kind: "item", label: item.name } satisfies Interaction,
+        }),
+    )
     items.set(item.id, root)
   }
 

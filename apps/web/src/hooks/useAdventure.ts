@@ -9,6 +9,7 @@ import {
   solveRoom,
 } from "../game/session"
 import type { AdventureSession } from "../game/session"
+import type { CampaignProgress } from "../game/campaign"
 
 export function useAdventure(running: boolean) {
   const [session, setSession] = useState(readSession)
@@ -29,9 +30,9 @@ export function useAdventure(running: boolean) {
     }
   }, [])
   useEffect(() => {
-    const timeout = window.setTimeout(saveNow, 200)
-    return () => window.clearTimeout(timeout)
-  }, [session, saveNow])
+    const timer = window.setInterval(saveNow, 1000)
+    return () => window.clearInterval(timer)
+  }, [saveNow])
 
   useEffect(() => {
     if (!running) return
@@ -63,10 +64,13 @@ export function useAdventure(running: boolean) {
       saveNow()
     }
   }, [saveNow])
-  const begin = useCallback(() => {
-    update(beginSession)
-    saveNow()
-  }, [update, saveNow])
+  const begin = useCallback(
+    (seed?: string) => {
+      update(() => ({ ...beginSession(), ...(seed ? { challengeSeed: seed } : {}) }))
+      saveNow()
+    },
+    [update, saveNow],
+  )
   const reboot = useCallback(() => {
     update(restartLoop)
     saveNow()
@@ -87,5 +91,21 @@ export function useAdventure(running: boolean) {
     },
     [update, saveNow],
   )
-  return { session, saveError, saveNow, begin, reboot, move, solve }
+  const recordCampaign = useCallback(
+    (progress: CampaignProgress) => {
+      update((value) =>
+        value.status === "running"
+          ? {
+              ...value,
+              challengeSeed: progress.seed,
+              foundDocumentIds: [...progress.foundDocumentIds],
+              knownHintIds: [...new Set([...value.knownHintIds, ...progress.knownHintIds])],
+            }
+          : value,
+      )
+      saveNow()
+    },
+    [update, saveNow],
+  )
+  return { session, saveError, saveNow, begin, reboot, move, solve, recordCampaign }
 }

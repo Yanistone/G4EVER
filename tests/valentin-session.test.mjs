@@ -15,6 +15,19 @@ import {
 
 const read = (value) => readSession({ getItem: () => JSON.stringify(value) })
 
+test("la graine et les documents sont sauvegardés puis conservés au redémarrage", () => {
+  const saved = {
+    ...beginSession(),
+    challengeSeed: "histoire",
+    foundDocumentIds: ["escape:gaming"],
+  }
+  assert.deepEqual(read(saved), saved)
+  const reboot = restartLoop(advanceTime(saved, LOOP_DURATION_MS))
+  assert.equal(reboot.challengeSeed, "histoire")
+  assert.deepEqual(reboot.foundDocumentIds, ["escape:gaming"])
+  assert.equal(read({ ...saved, challengeSeed: 12 }).status, "idle")
+})
+
 test("a game starts with exactly fifteen minutes", () => {
   assert.equal(beginSession().remainingMs, 900000)
   assert.equal(formatDuration(900), "15:00")
