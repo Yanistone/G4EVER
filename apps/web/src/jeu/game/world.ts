@@ -26,7 +26,7 @@ export const INTERACTION_RADIUS = 70
 export const WORLD_ROOMS: readonly WorldRoom[] = [
   {
     id: "classroom",
-    label: "Salle principale",
+    label: "Sugiton",
     floor: { x: 70, y: 130, width: 370, height: 320 },
     interactionPosition: { x: 170, y: 264 },
     interactionLabel: "Examiner le poste de cours",
@@ -42,7 +42,7 @@ export const WORLD_ROOMS: readonly WorldRoom[] = [
   },
   {
     id: "gaming",
-    label: "Salle gaming",
+    label: "Mont Ventoux",
     floor: { x: 1160, y: 130, width: 370, height: 300 },
     interactionPosition: { x: 1196, y: 250 },
     interactionLabel: "Inspecter la borne d’arcade",
@@ -50,7 +50,7 @@ export const WORLD_ROOMS: readonly WorldRoom[] = [
   },
   {
     id: "cowork",
-    label: "Cowork",
+    label: "Co-working",
     floor: { x: 70, y: 560, width: 370, height: 400 },
     interactionPosition: { x: 245, y: 687 },
     interactionLabel: "Lire le dossier de conception",
@@ -58,7 +58,7 @@ export const WORLD_ROOMS: readonly WorldRoom[] = [
   },
   {
     id: "amphitheater",
-    label: "Amphithéâtre",
+    label: "Sainte Victoire",
     floor: { x: 1160, y: 540, width: 370, height: 420 },
     interactionPosition: { x: 1350, y: 616 },
     interactionLabel: "Analyser le terminal de l’amphi",

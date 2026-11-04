@@ -65,6 +65,7 @@ export interface FailurePageProps {
 }
 
 export interface EndResult {
+  score?: number
   characterQuote: string
   rank: string
   day: string

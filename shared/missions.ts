@@ -9,55 +9,51 @@ export const MISSIONS: Record<
   }
 > = {
   classroom: {
-    title: "Le registre corrompu",
-    brief:
-      "Le registre de présence répète la même journée. Analyse ses traces pour retrouver la clé du premier module.",
-    object: "REGISTRE DE PRÉSENCE · G4-OS",
-    reward: "Fragment LOGIQUE récupéré",
-    symbol: "01",
-  },
-  cafeteria: {
-    title: "Le réseau du réfectoire",
-    brief:
-      "La borne du réfectoire ne joint plus le serveur central. Examine les indices réseau et rétablis la connexion.",
-    object: "DIAGNOSTIC RÉSEAU · BORNE DU RÉFECTOIRE",
-    reward: "Fragment RÉSEAU récupéré",
+    title: "Le terminal de Sugiton",
+    brief: "Calcule le total puis interprète le journal d’erreur de G4-OS.",
+    object: "TERMINAL ET JOURNAL · SUGITON",
+    reward: "Journal analysé",
     symbol: "02",
   },
-  gaming: {
-    title: "La boucle du programme",
-    brief:
-      "Le jeu d’arcade tourne à l’infini. Lis le programme et retrouve le résultat qui permet de le débloquer.",
-    object: "CONSOLE DE DÉBOGAGE · SALLE GAMING",
-    reward: "Fragment CODE récupéré",
-    symbol: "03",
+  cafeteria: {
+    title: "Le café et la table",
+    brief: "Observe les tasses puis retrouve les places de Noah, Léa, Yanis et Inès.",
+    object: "SOUVENIRS DU RÉFECTOIRE",
+    reward: "Code de Sugiton récupéré",
+    symbol: "01",
   },
-  cowork: {
-    title: "Le dossier verrouillé",
-    brief:
-      "Le dossier de conception est protégé. Déchiffre son message et vérifie les règles de sécurité du campus.",
-    object: "ARCHIVE PROTÉGÉE · ESPACE COWORK",
-    reward: "Fragment SÉCURITÉ récupéré",
+  gaming: {
+    title: "Le script et les différences",
+    brief: "Repère la ligne fautive puis compare les deux vues de Mont Ventoux.",
+    object: "SCRIPT DE LA JOURNÉE · MONT VENTOUX",
+    reward: "Code du Co-working récupéré",
     symbol: "04",
   },
-  amphitheater: {
-    title: "La mémoire du campus",
-    brief:
-      "Le système de l’amphi a perdu sa configuration. Retrouve ses valeurs pour restaurer la mémoire centrale.",
-    object: "CONSOLE SYSTÈME · AMPHITHÉÂTRE",
-    reward: "Fragment SYSTÈME récupéré",
+  cowork: {
+    title: "Le correctif",
+    brief: "Sauvegarde, correction, tests, déploiement : retrouve la bonne procédure.",
+    object: "PROCÉDURE DE CORRECTION · CO-WORKING",
+    reward: "Correctif prêt",
     symbol: "05",
   },
+  amphitheater: {
+    title: "Le planning de G4-OS",
+    brief: "Analyse les dépendances du projet et retrouve la tâche sacrifiée.",
+    object: "PLANNING · SAINTE VICTOIRE",
+    reward: "Cause du crash identifiée",
+    symbol: "03",
+  },
   sormiou: {
-    title: "Briser la boucle",
-    brief: "Assemble les cinq fragments dans la console finale et valide ton évasion.",
+    title: "Sortir du campus",
+    brief:
+      "Dans la course, valide ton arrivée après les cinq salles. En aventure, applique le correctif au Co-working.",
     object: "CONSOLE CENTRALE · SORMIOU",
     reward: "La sortie est ouverte !",
     symbol: "★",
   },
   vending: {
     title: "Le ticket oublié",
-    brief: "Un ticket coincé dans le distributeur cache un conseil pour explorer le campus.",
+    brief: "Un ticket rappelle le rôle de ton carnet de souvenirs.",
     object: "DISTRIBUTEURS",
     reward: "Indice découvert",
     symbol: "?",

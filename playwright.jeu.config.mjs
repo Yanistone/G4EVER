@@ -5,6 +5,7 @@ export default defineConfig({
   testDir: "./tests/source",
   testMatch: [
     "adventure.spec.ts",
+    "scenario.spec.ts",
     "campaign-deck.spec.ts",
     "fps.spec.ts",
     "practical-ui.spec.ts",

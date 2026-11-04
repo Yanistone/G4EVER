@@ -1,5 +1,5 @@
 import { readInventory } from "./three/inventory"
-import { normalizeCode } from "./game/escape"
+import { availablePuzzle, unlockedRooms, validateScenario } from "../../../../shared/scenario"
 import { useCallback, useMemo, useEffect, useRef, useState } from "react"
 import { ScreenViewport } from "./components/ui/ScreenViewport"
 import { Dialog } from "./components/ui/Dialog"
@@ -37,7 +37,7 @@ import {
 } from "./mocks/quizData"
 import { campaignDeck } from "./game/campaignDeck"
 import { introScenes, vendingClue, sormiouClue } from "./game/puzzles"
-import { WORLD_ROOMS, ROOM_SPAWNS, getRoomAt } from "./game/world"
+import { WORLD_ROOMS, ROOM_SPAWNS } from "./game/world"
 import { formatClock, formatDuration } from "./game/session"
 import type { RoomId } from "./game/world"
 import "./styles/adventure.css"
@@ -91,6 +91,7 @@ export function App() {
     fail,
     collectClue,
     rememberHint,
+    trustLea,
     finish,
     dismissEvent,
   } = useAdventure(
@@ -107,6 +108,7 @@ export function App() {
   const [selectedAnswerId, setSelectedAnswerId] = useState<string | null>(demoSelectedAnswerId)
   const [currentPuzzleId, setCurrentPuzzleId] = useState<string | null>(null)
   const [submitted, setSubmitted] = useState<SubmittedAnswer | null>(null)
+  const [notice, setNotice] = useState("")
   const [clueText, setClueText] = useState("")
   const [selectedMapRoom, setSelectedMapRoom] = useState<RoomId>("cafeteria")
   const [referencePosition, setReferencePosition] = useState(mockGameData.playerPosition)
@@ -120,8 +122,8 @@ export function App() {
   const played = !!profiles.profile && session.started
   const activePuzzle =
     puzzles.find((p) => p.id === currentPuzzleId) ??
-    puzzles.find((p) => p.roomId === getRoomAt(session.playerPosition)?.id) ??
-    puzzles[0]
+    puzzles.find((p) => p.id === availablePuzzle(session.solvedPuzzleIds)?.id) ??
+    puzzles[puzzles.length - 1]
   const feedbackPuzzle = puzzles.find((p) => p.id === submitted?.puzzleId)
 
   useEffect(() => {
@@ -140,6 +142,8 @@ export function App() {
       openOverlay("reboot")
       dismissEvent()
       setSubmitted(null)
+      setCurrentPuzzleId(null)
+      setSelectedAnswerId(null)
     }
   }, [session.event, screen, navigate, openOverlay, dismissEvent])
 
@@ -153,6 +157,7 @@ export function App() {
     setSelectedAnswerId(null)
     setSubmitted(null)
     setCurrentPuzzleId(null)
+    setNotice("")
     navigate("intro")
   }
   const requestStart = () => {
@@ -176,44 +181,80 @@ export function App() {
       openOverlay("terminal")
       return
     }
-    const puzzle = puzzles.find((p) => p.roomId === roomId)
-    if (!puzzle) return
-    if (session.solvedRoomIds.includes(roomId)) {
-      setClueText(puzzle.clue)
+    const next = availablePuzzle(session.solvedPuzzleIds)
+    const puzzle =
+      roomId === "cowork" && session.procedureValidated
+        ? puzzles[7]
+        : puzzles.find((p) => p.roomId === roomId && !session.solvedPuzzleIds.includes(p.id))
+    if (!puzzle) {
+      setClueText(
+        puzzles
+          .filter((p) => p.roomId === roomId)
+          .map((p) => p.clue)
+          .join("\n\n"),
+      )
+      openOverlay("clue")
+      return
+    }
+    if (next?.id !== puzzle.id && !(puzzle.id === "correctif" && session.procedureValidated)) {
+      setClueText(
+        `Commence par « ${next?.title} » (${next?.room}). Les codes se récupèrent dans l’ordre et restent dans ton carnet.`,
+      )
       openOverlay("clue")
       return
     }
     setCurrentPuzzleId(puzzle.id)
-    setSelectedAnswerId(null)
+    setSelectedAnswerId(puzzle.id === "correctif" && session.procedureValidated ? "CDBA" : null)
+    setNotice("")
     setSubmitted(null)
     navigate("puzzle")
   }
   const validate = () => {
     const isAdventure = screen === "puzzle"
-    const question = isAdventure ? activePuzzle.question : demoQuizQuestion
-    const practical = isAdventure ? activePuzzle.practical : undefined
-    if (practical && !readInventory(inventoryKey).includes(practical.document.id)) return
-    const answer =
-      practical && selectedAnswerId?.trim()
-        ? { id: selectedAnswerId, letter: "⌨", label: selectedAnswerId }
-        : question.answers.find((a) => a.id === selectedAnswerId)
+    if (!selectedAnswerId?.trim()) return
+    if (isAdventure && (session.lockouts[activePuzzle.id] ?? 0) > Date.now()) return
+    if (
+      isAdventure &&
+      activePuzzle.scenario?.kind === "algorithm" &&
+      selectedAnswerId.split("|")[0].trim() !== "5"
+    ) {
+      setNotice("Souvenir manquant : consulte ton carnet pour retrouver n.")
+      return
+    }
+    const answer = isAdventure
+      ? { id: selectedAnswerId, letter: "⌨", label: selectedAnswerId }
+      : demoQuizQuestion.answers.find((a) => a.id === selectedAnswerId)
     if (!answer) return
-    const correct = practical
-      ? practical.accepted.some((a) => normalizeCode(a) === normalizeCode(answer.id))
-      : answer.id === (isAdventure ? activePuzzle.correctAnswerId : demoAnswerKey[question.id])
+    const correct = isAdventure
+      ? validateScenario(activePuzzle.id, selectedAnswerId)
+      : answer.id === demoAnswerKey[demoQuizQuestion.id]
     setSubmitted({
       answer,
       puzzleId: isAdventure ? activePuzzle.id : "reference",
       timeBefore: formatClock(session.gameMinute),
-      timeAfter: formatClock(Math.min(960, session.gameMinute + 20)),
+      timeAfter: formatClock(Math.min(960, session.gameMinute + 10)),
     })
     if (isAdventure) {
-      if (correct) solve(activePuzzle.roomId)
+      if (correct) solve(activePuzzle.id)
       else fail(activePuzzle.id)
+      if (activePuzzle.scenario?.kind === "patch") {
+        setNotice(
+          correct
+            ? "Procédure validée. Tu peux appliquer le correctif."
+            : "Ordre incorrect : −10 minutes campus. Réorganise les opérations.",
+        )
+        return
+      }
     }
     navigate(correct ? "success" : "failure")
   }
   const complete = (ending: 1 | 2) => {
+    if (!session.solvedPuzzleIds.includes("avant-apres")) return
+    if (
+      ending === 1 &&
+      (!session.procedureValidated || !validateScenario("correctif", selectedAnswerId ?? ""))
+    )
+      return
     finish(ending)
     navigate("end")
   }
@@ -226,8 +267,8 @@ export function App() {
           explanation: feedbackPuzzle.explanation,
           memoryReward: 1,
           timeLabel: "Fragment de réparation récupéré",
-          solved: session.solvedRoomIds.length,
-          total: 5,
+          solved: session.solvedPuzzleIds.length,
+          total: 8,
         }
       : {
           ...demoSuccessFeedback,
@@ -241,10 +282,10 @@ export function App() {
           answer: submitted.answer,
           timeBefore: submitted.timeBefore,
           timeAfter: submitted.timeAfter,
-          penaltyMinutes: 20,
+          penaltyMinutes: 10,
           resetTime: "16:00",
           progress: ((session.gameMinute - 540) / 420) * 100,
-          hint: feedbackPuzzle.hint,
+          hint: "Consulte le carnet ou demande un souvenir de boucle au terminal.",
         }
       : {
           ...demoFailureFeedback,
@@ -253,27 +294,32 @@ export function App() {
   const ending: EndResult = session.ending
     ? {
         ...demoEndResult,
+        total: 8,
+        score: Math.max(
+          0,
+          session.solvedPuzzleIds.length * 1000 - session.mistakes * 150 - session.hintUses * 100,
+        ),
         rank: session.mistakes === 0 ? "S" : session.mistakes <= 2 ? "A" : "B",
         totalTime: formatDuration(session.playedSeconds),
         loops: session.loopNumber,
-        solved: session.solvedRoomIds.length,
-        hints: session.knownHintIds.length,
+        solved: session.solvedPuzzleIds.length,
+        hints: session.hintUses,
         endingNumber: session.ending,
-        endingTitle: session.ending === 1 ? "Le correctif" : "Le campus libéré",
+        endingTitle: session.ending === 1 ? "Le correctif complet" : "Tout couper · fin partielle",
         endingDescription:
           session.ending === 1
-            ? "Les cinq modules sont réparés. G4-OS accepte enfin ses sauvegardes et le campus passe au lendemain."
-            : "Avec le code du distributeur, tu as isolé le moteur temporel. Le campus garde ses données et reprend le contrôle.",
+            ? "Sauvegarde, correction, tests et déploiement : les huit énigmes sont résolues. G4-OS est réparé et la journée dépasse enfin 16h00."
+            : "Tu as coupé l’alimentation. La boucle est interrompue, mais G4-OS reste en panne : le correctif n’a pas été déployé.",
         otherEndingUnlocked: session.unlockedEndings.includes(session.ending === 1 ? 2 : 1),
         lockedEndingNumber: session.ending === 1 ? 2 : 1,
         lockedEndingTitle: session.unlockedEndings.includes(session.ending === 1 ? 2 : 1)
           ? session.ending === 1
-            ? "Le campus libéré"
+            ? "Tout couper"
             : "Le correctif"
           : "???",
         lockedEndingDescription: session.unlockedEndings.includes(session.ending === 1 ? 2 : 1)
           ? "Cette fin a déjà été découverte sur ce profil."
-          : "Explore les distributeurs pour découvrir une autre solution.",
+          : "Au Co-working, tu peux appliquer le correctif ou choisir de tout couper.",
       }
     : demoEndResult
   const campusData = played
@@ -338,11 +384,21 @@ export function App() {
     explore: (
       <ExplorePage
         onAskHelp={async (roomId) => {
-          const puzzle = puzzles.find((p) => p.roomId === roomId)
-          if (!puzzle) return "Les cinq modules sont nécessaires pour ouvrir Sormiou."
-          rememberHint(puzzle.id)
-          return puzzle.hint
+          const next = availablePuzzle(session.solvedPuzzleIds)
+          if (!next || next.roomId !== roomId)
+            return next
+              ? `Ta prochaine étape : ${next.title}, ${next.room}.`
+              : "La procédure du Co-working est prête."
+          rememberHint(next.id)
+          return next.hints[0]
         }}
+        helpCost="−5 min campus (gratuit si déjà mémorisé ou aide de Léa)"
+        unlockedRoomIds={unlockedRooms(session.solvedPuzzleIds)}
+        progress={{ solved: session.solvedPuzzleIds.length, total: 8 }}
+        objectiveLabel={
+          availablePuzzle(session.solvedPuzzleIds)?.title ?? "Appliquer le correctif au Co-working"
+        }
+        targetRoomId={availablePuzzle(session.solvedPuzzleIds)?.roomId ?? "cowork"}
         onJournal={() => openOverlay("journal")}
         inventoryKey={inventoryKey}
         escapeDocuments={escapeDocuments}
@@ -414,7 +470,21 @@ export function App() {
         onValidate={validate}
         onLeave={() => navigate("explore")}
         loopNumber={session.loopNumber}
-        solvedCount={session.solvedRoomIds.length}
+        solvedCount={session.solvedPuzzleIds.length}
+        gameTime={formatClock(session.gameMinute)}
+        hintLevel={session.hintLevels[activePuzzle.id] ?? 0}
+        onHint={(level) => rememberHint(activePuzzle.id, level)}
+        lockedUntil={session.lockouts[activePuzzle.id] ?? 0}
+        freeLightHint={
+          session.trustedLea &&
+          ["planning", "script", "differences"].includes(activePuzzle.scenario!.kind)
+        }
+        trustedLea={session.trustedLea}
+        onTrustLea={trustLea}
+        onJournal={() => openOverlay("journal")}
+        onComplete={complete}
+        procedureValidated={session.procedureValidated}
+        notice={notice}
       />
     ),
     success: (
@@ -465,7 +535,7 @@ export function App() {
         {screen === "explore" || screen === "puzzle" ? (
           <>
             {pages.explore}
-            {screen === "puzzle" && pages.puzzle}
+            {screen === "puzzle" && !overlay && pages.puzzle}
           </>
         ) : (
           pages[screen]
@@ -540,44 +610,15 @@ export function App() {
                 mais tes souvenirs sont intacts.
               </p>
               <p>
-                Boucle n°{session.loopNumber} · {session.knownHintIds.length} indices conservés.
+                Boucle n°{session.loopNumber} · {session.memoryIds.length} souvenirs conservés ·{" "}
+                {session.mistakes} erreurs · {formatDuration(session.playedSeconds)} jouées.
               </p>
               <button className="game-button ui-button" onClick={closeOverlay}>
                 C’EST REPARTI !
               </button>
             </>
           )}
-          {overlay === "terminal" &&
-            (session.solvedRoomIds.length < 5 ? (
-              <>
-                <p>{sormiouClue}</p>
-                <p>
-                  <strong>{session.solvedRoomIds.length}/5 modules réparés.</strong> Termine les
-                  autres salles, puis reviens ici.
-                </p>
-              </>
-            ) : (
-              <>
-                <p>Les cinq modules sont stabilisés. Choisis comment briser la boucle.</p>
-                <div className="flex flex-col gap-4">
-                  <button className="game-button ui-button" onClick={() => complete(1)}>
-                    INSTALLER LE CORRECTIF
-                  </button>
-                  <button
-                    className="game-button ui-button"
-                    disabled={!session.hasVendingClue}
-                    onClick={() => complete(2)}
-                  >
-                    ISOLER LE MOTEUR TEMPOREL
-                  </button>
-                </div>
-                {!session.hasVendingClue && (
-                  <p className="dialog-small">
-                    La seconde solution nécessite l’indice des distributeurs.
-                  </p>
-                )}
-              </>
-            ))}
+          {overlay === "terminal" && <p>{sormiouClue}</p>}
           {overlay === "map-room" && (
             <>
               <p>
@@ -594,18 +635,22 @@ export function App() {
               </p>
               <button
                 className="game-button ui-button"
+                disabled={!unlockedRooms(session.solvedPuzzleIds).includes(selectedMapRoom)}
                 onClick={() => {
+                  if (!unlockedRooms(session.solvedPuzzleIds).includes(selectedMapRoom)) return
                   move(ROOM_SPAWNS[selectedMapRoom])
                   navigate("explore")
                 }}
               >
-                REJOINDRE LA SALLE
+                {unlockedRooms(session.solvedPuzzleIds).includes(selectedMapRoom)
+                  ? "REJOINDRE LA SALLE"
+                  : "VERROUILLÉ · RÉSOUS L’ÉTAPE PRÉCÉDENTE"}
               </button>
             </>
           )}
           {overlay === "journal" && (
             <div className="journal-list">
-              {session.knownHintIds.length === 0 && session.solvedRoomIds.length === 0 ? (
+              {session.knownHintIds.length === 0 && session.memoryIds.length === 0 ? (
                 <p>
                   Aucun souvenir pour le moment. Explore les salles, examine les bornes et apprends
                   de tes erreurs.
@@ -615,13 +660,13 @@ export function App() {
                   {puzzles
                     .filter(
                       (p) =>
-                        session.knownHintIds.includes(p.id) ||
-                        session.solvedRoomIds.includes(p.roomId),
+                        session.knownHintIds.includes(p.id) || session.memoryIds.includes(p.id),
                     )
                     .map((p) => (
                       <article key={p.id}>
                         <strong>{p.title}</strong>
-                        <p>{session.solvedRoomIds.includes(p.roomId) ? p.clue : p.hint}</p>
+                        <p>{session.memoryIds.includes(p.id) ? p.clue : p.hint}</p>
+                        {(session.hintLevels[p.id] ?? 0) >= 2 && <p>{p.scenario?.hints[1]}</p>}
                       </article>
                     ))}
                   {session.hasVendingClue && (

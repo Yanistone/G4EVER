@@ -705,10 +705,20 @@ export function buildWorld(
     items.set(item.id, root)
   }
 
-  screen("logic-whiteboard", "3 > 6 > 12 > ?", 5.94, 1.9, 3.35, 4.2, 0.8, COLORS.cyan, Math.PI)
+  screen(
+    "logic-whiteboard",
+    "SUGITON / JOURNAL G4-OS",
+    5.94,
+    1.9,
+    3.35,
+    4.2,
+    0.8,
+    COLORS.cyan,
+    Math.PI,
+  )
   screen(
     "cowork-whiteboard",
-    "DESIGN / ACCESSIBILITE",
+    "SAUVEGARDER / CORRIGER / TESTER / DEPLOYER",
     5.94,
     1.9,
     14.1,
@@ -722,6 +732,51 @@ export function buildWorld(
   const sky = scene.getMeshByName("daylight-sky")
   if (sky) glow.addExcludedMesh(sky as Mesh)
   addCampusIdentity(scene)
+  for (const y of [1.45, 1.95])
+    box("scenario-shelf", 19.3, y, 11.2, 3.8, 0.07, 0.45, "#72533B").isPickable = false
+  const cupColors = [
+    "#2888D5",
+    "#E66865",
+    "#2888D5",
+    "#F7F5EF",
+    "#2888D5",
+    "#E66865",
+    "#2888D5",
+    "#F7F5EF",
+    "#E66865",
+    "#2888D5",
+  ]
+  cupColors.forEach((color, i) => {
+    const x = 17.8 + (i % 5) * 0.74,
+      y = i < 5 ? 2.1 : 1.6
+    const cup = MeshBuilder.CreateCylinder(
+      "scenario-cup-" + i,
+      { height: 0.23, diameterTop: 0.2, diameterBottom: 0.17, tessellation: 16 },
+      scene,
+    )
+    cup.position.set(x, y, 11.22)
+    cup.material = mat(color)
+    cup.isPickable = false
+    const handle = MeshBuilder.CreateTorus(
+      "scenario-cup-handle-" + i,
+      { diameter: 0.12, thickness: 0.025, tessellation: 12 },
+      scene,
+    )
+    handle.rotation.x = Math.PI / 2
+    handle.position.set(x + 0.11, y, 11.22)
+    handle.material = mat(color)
+    handle.isPickable = false
+    const coffee = MeshBuilder.CreateDisc(
+      "scenario-coffee-" + i,
+      { radius: 0.087, tessellation: 16 },
+      scene,
+    )
+    coffee.rotation.x = Math.PI / 2
+    coffee.position.set(x, y + 0.116, 11.22)
+    coffee.material = mat("#402C22")
+    coffee.isPickable = false
+  })
+  box("scenario-tray", 20.86, 1.54, 11.42, 0.48, 0.2, 0.04, "#9EA9B0").isPickable = false
   const staticMeshes = scene.meshes.filter(
     (m) =>
       !m.name.startsWith("sliding-door") &&

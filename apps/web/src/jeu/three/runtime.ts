@@ -23,6 +23,7 @@ export interface RuntimeState {
   solved: readonly string[]
   inventory: readonly string[]
   documents?: readonly EscapeDocument[]
+  unlockedRoomIds?: readonly string[]
 }
 export interface RuntimeCallbacks {
   move: (p: PlayerPosition) => void
@@ -135,15 +136,15 @@ export function createCampusRuntime(
       controller.pitch = Math.max(-1.35, Math.min(1.35, v.pitch))
     }
   } catch {}
+  const roomLocked = (id: string) =>
+    state.unlockedRoomIds
+      ? !state.unlockedRoomIds.includes(id)
+      : id === "sormiou" && state.solved.length < 5
   const doorKey = "g4:3d:doors:" + key
   try {
     const saved = JSON.parse(sessionStorage.getItem(doorKey) || "[]")
     for (const d of world.doors)
-      if (
-        Array.isArray(saved) &&
-        saved.includes(d.id) &&
-        !(d.roomId === "sormiou" && state.solved.length < 5)
-      )
+      if (Array.isArray(saved) && saved.includes(d.id) && !roomLocked(d.roomId))
         d.desired = d.openness = 1
   } catch {}
   for (const d of world.doors)
@@ -205,9 +206,9 @@ export function createCampusRuntime(
     report()
     if (target.kind === "door") {
       const d = world.doors.find((d) => d.id === target!.id)!
-      if (d.roomId === "sormiou" && state.solved.length < 5 && controller.position.y < 880) {
+      if (roomLocked(d.roomId)) {
         audio.cue("deny")
-        cb.toast("Sormiou verrouillée · répare les 5 modules. Atlas peut te guider.")
+        cb.toast("Porte verrouillée · récupère le code en terminant les énigmes précédentes.")
         return
       }
       if (d.desired && doorIntersectsPosition(d, controller.position)) {
@@ -391,7 +392,7 @@ export function createCampusRuntime(
         const d = world.doors.find((d) => d.id === target!.id)!
         target = {
           ...target,
-          label: `${d.roomId === "sormiou" && state.solved.length < 5 ? "Verrouillée · " : d.desired ? "Fermer · " : "Ouvrir · "}${WORLD_ROOMS.find((r) => r.id === d.roomId)!.label}`,
+          label: `${roomLocked(d.roomId) ? "Verrouillée · " : d.desired ? "Fermer · " : "Ouvrir · "}${WORLD_ROOMS.find((r) => r.id === d.roomId)!.label}`,
         }
       }
       const k = JSON.stringify(target)
@@ -451,7 +452,13 @@ export function createCampusRuntime(
       )
         controller.teleport(next.position)
       if (next.epoch !== state.epoch || (state.solved.length >= 5 && next.solved.length < 5))
-        for (const door of world.doors) if (door.roomId === "sormiou") door.desired = 0
+        for (const door of world.doors)
+          if (
+            next.unlockedRoomIds
+              ? !next.unlockedRoomIds.includes(door.roomId)
+              : door.roomId === "sormiou"
+          )
+            door.desired = 0
       state = next
       for (const [id, root] of world.items) root.setEnabled(!state.inventory.includes(id))
     },

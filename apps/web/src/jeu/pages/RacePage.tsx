@@ -1,3 +1,5 @@
+import { ScenarioExhibit } from "../components/game/ScenarioExhibit"
+import "../styles/scenario.css"
 import { DOCUMENT_POSITIONS } from "../game/escape"
 import { readInventory, storeDocuments } from "../three/inventory"
 import { ThreeSettings } from "../components/game/ThreeSettings"
@@ -639,6 +641,12 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                   </span>
                 </div>
                 <h1>{question.prompt}</h1>
+                {question.visual && (question.kind !== "code" || documentFound) && (
+                  <ScenarioExhibit kind={question.visual} />
+                )}
+                {question.exhibit && question.kind !== "code" && !question.visual && (
+                  <pre>{question.exhibit}</pre>
+                )}
                 {question.kind === "code" && (
                   <div className="code-challenge">
                     <div className="evidence-document">

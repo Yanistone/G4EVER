@@ -35,7 +35,7 @@ export function PlayMenuPage(p: Props) {
           <em>de ton cerveau.</em>
         </h1>
         <p>
-          Une boucle temporelle. Cinq systèmes à réparer.
+          Une boucle temporelle. Huit énigmes à résoudre en quinze minutes.
           <br />
           Explore le campus, trouve les indices et ouvre la sortie.
         </p>

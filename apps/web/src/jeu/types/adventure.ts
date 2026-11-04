@@ -1,9 +1,11 @@
+import type { ScenarioPuzzle } from "../../../../../shared/scenario"
 import type { PracticalTask } from "../game/escape"
 import type { EmphasizedText, QuizQuestion } from "./quiz"
 
 export type PuzzleRoomId = "classroom" | "cafeteria" | "gaming" | "cowork" | "amphitheater"
 
 export interface AdventurePuzzle {
+  scenario?: ScenarioPuzzle
   practical?: PracticalTask
   id: string
   roomId: PuzzleRoomId
@@ -27,4 +29,15 @@ export interface PuzzlePageProps {
   pending?: boolean
   loopNumber: number
   solvedCount: number
+  hintLevel?: number
+  onHint?: (level: 1 | 2) => void
+  freeLightHint?: boolean
+  lockedUntil?: number
+  trustedLea?: boolean
+  onTrustLea?: () => void
+  onJournal?: () => void
+  onComplete?: (ending: 1 | 2) => void
+  procedureValidated?: boolean
+  notice?: string
+  gameTime?: string
 }

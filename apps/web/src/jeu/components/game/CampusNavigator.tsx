@@ -11,11 +11,11 @@ interface Props {
   camera?: { x: number; y: number; width: number; height: number }
 }
 const numbers: Record<string, string> = {
-  classroom: "01",
-  cafeteria: "02",
-  gaming: "03",
-  cowork: "04",
-  amphitheater: "05",
+  classroom: "02",
+  cafeteria: "01",
+  gaming: "04",
+  cowork: "05",
+  amphitheater: "03",
   sormiou: "★",
   vending: "?",
 }

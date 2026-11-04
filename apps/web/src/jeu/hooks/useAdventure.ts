@@ -1,6 +1,14 @@
 import { freshCampaignSeed } from "../game/campaignDeck"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { advanceTime, createSession, readSession } from "../game/session"
+import {
+  advanceTime,
+  createSession,
+  readSession,
+  solvePuzzle,
+  recordError,
+  revealHint,
+  CAMPUS_MINUTES_PER_SECOND,
+} from "../game/session"
 import type { AdventureSession } from "../game/session"
 import type { PlayerPosition } from "../types/game"
 
@@ -42,11 +50,25 @@ export function useAdventure(profileId: string | null, running: boolean) {
   useEffect(() => {
     if (!running || !profileId) return
 
-    const timer = window.setInterval(() => {
+    let last = performance.now()
+    const tick = () => {
+      const now = performance.now()
+      const seconds = (now - last) / 1000
+      last = now
       if (document.visibilityState === "visible")
-        setSession((previous) => advanceTime(previous, 1, 1))
-    }, 1000)
-    return () => window.clearInterval(timer)
+        setSession((previous) =>
+          advanceTime(previous, seconds * CAMPUS_MINUTES_PER_SECOND, seconds),
+        )
+    }
+    const visibility = () => {
+      last = performance.now()
+    }
+    document.addEventListener("visibilitychange", visibility)
+    const timer = window.setInterval(tick, 250)
+    return () => {
+      window.clearInterval(timer)
+      document.removeEventListener("visibilitychange", visibility)
+    }
   }, [running, profileId])
   const begin = () =>
     setSession((previous) => ({
@@ -59,27 +81,14 @@ export function useAdventure(profileId: string | null, running: boolean) {
       setSession((previous) => ({ ...previous, playerPosition: position })),
     [],
   )
-  const solve = (roomId: string) =>
-    setSession((previous) => ({
-      ...previous,
-      solvedRoomIds: [...new Set([...previous.solvedRoomIds, roomId])],
-    }))
-  const fail = (puzzleId: string) =>
+  const solve = (puzzleId: string) => setSession((previous) => solvePuzzle(previous, puzzleId))
+  const fail = (puzzleId: string) => setSession((previous) => recordError(previous, puzzleId))
+  const rememberHint = (puzzleId: string, level: 1 | 2 = 1) =>
+    setSession((previous) => revealHint(previous, puzzleId, level))
+  const trustLea = () =>
     setSession((previous) =>
-      advanceTime(
-        {
-          ...previous,
-          mistakes: previous.mistakes + 1,
-          knownHintIds: [...new Set([...previous.knownHintIds, puzzleId])],
-        },
-        20,
-      ),
+      previous.trustedLea ? previous : advanceTime({ ...previous, trustedLea: true }, 10),
     )
-  const rememberHint = (puzzleId: string) =>
-    setSession((previous) => ({
-      ...previous,
-      knownHintIds: [...new Set([...previous.knownHintIds, puzzleId])],
-    }))
   const collectClue = () =>
     setSession((previous) => ({
       ...previous,
@@ -103,6 +112,7 @@ export function useAdventure(profileId: string | null, running: boolean) {
     fail,
     collectClue,
     rememberHint,
+    trustLea,
     finish,
     dismissEvent,
   }

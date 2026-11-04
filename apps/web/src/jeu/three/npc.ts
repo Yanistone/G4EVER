@@ -68,7 +68,7 @@ export function createNpcs(
     },
     {
       id: "leo",
-      name: "Léo",
+      name: "Léa",
       role: "standard",
       roomId: "amphitheater",
       color: COLORS.blue,
@@ -231,22 +231,20 @@ export function createNpcs(
       root,
       position: { ...s.p },
       state: s.role === "guardian" ? "guard" : "patrol",
-      talk(solved) {
+      talk() {
         talkUntil = performance.now() + 5000
         npc.state = "talk"
         if (s.role === "guardian")
-          return solved.length >= 5
-            ? "Les cinq fragments sont synchronisés. La porte de Sormiou est déverrouillée : regarde-la et appuie sur E, puis active la console centrale."
-            : "La console de Sormiou attend cinq fragments. Répare le réfectoire, la salle principale, le gaming, le cowork et l’amphi. Je libérerai ensuite l’accès. Aucun combat : ici, on gagne avec sa tête."
+          return "En aventure, le correctif se prépare au Co-working. Dans la course, cette console valide l’arrivée après les cinq salles. Le carnet garde tes souvenirs entre deux boucles."
         if (s.roomId === "classroom")
-          return "Le registre est corrompu, mais son rythme laisse des traces. Si tu bloques, nous pouvons examiner ensemble la règle qui relie les valeurs. Demande-moi un indice : il sera adapté au verrou de cette partie."
+          return "Le terminal de Sugiton utilise le souvenir du café. Lis ensuite le journal d’erreur : le crash et la restauration y laissent des traces."
         if (s.roomId === "cowork")
-          return "Je garde les archives du cowork. Les messages chiffrés et les choix de conception demandent surtout une bonne méthode. Si tu bloques, je peux te donner un indice lié à ton verrou actuel."
+          return "Les quatre cartes décrivent la réparation. Protège d’abord les données et vérifie le correctif avant de le déployer. Tout couper donne une autre fin, mais laisse le système en panne."
         if (s.roomId === "amphitheater")
-          return "Le système de l’amphi a perdu ses repères. Il faut lire ses valeurs avant de décider. Si tu as besoin d’un coup de pouce, je peux analyser ton verrou avec toi."
+          return "Je suis Léa. Le planning montre ce qui a été sacrifié pour livrer trop vite. Au terminal, tu peux accepter mon aide contre dix minutes : les indices légers seront gratuits ici et à Mont Ventoux."
         if (s.role === "special")
-          return "Cette arcade cache un problème de programmation. Lis l’expression exacte : le résultat peut changer d’une partie à l’autre. Si tu bloques, je peux te donner un indice sur ton verrou actuel."
-        return "Bienvenue dans la boucle ! L’ordinateur du réfectoire contrôle le premier système. Explore les autres salles et rassemble les cinq fragments. Si tu bloques sur ce terminal, demande-moi un indice. M ouvre le plan, I ton inventaire."
+          return "À Mont Ventoux, suis la valeur de l’heure dans le script, puis compare les deux images. Le numéro de ligne et le nombre de différences formeront un code."
+        return "Le café de 9h00 est le début de la chaîne. Observe les étagères, puis résous la disposition de la table. M ouvre le plan et J le carnet de souvenirs."
       },
       update(dt, time, player, doors) {
         const distance = Math.hypot(player.x - npc.position.x, player.y - npc.position.y)

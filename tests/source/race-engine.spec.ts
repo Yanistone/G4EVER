@@ -112,8 +112,8 @@ test("two-player authoritative race: common deck, authentication, scoring, finis
     repo.rows
       .get(code)!
       .room.deck.map((q) => q.id)
-      .some((id) => originalDeck.includes(id)),
-  ).toBe(false)
+      .sort(),
+  ).toEqual([...originalDeck].sort())
   expect(repo.rows.get(code)!.room.players[0].answered).toBe(0)
 })
 test("wrong answers and hints affect score; answers require station proximity", async () => {

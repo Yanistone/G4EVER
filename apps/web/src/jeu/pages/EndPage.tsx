@@ -34,15 +34,20 @@ export function EndPage({ result: r, onReplay, onMenu, onCredits }: EndPageProps
             <strong>
               {r.solved}/{r.total}
             </strong>
-            MODULES
+            ÉNIGMES
           </span>
           <span>
             <strong>{r.loops}</strong>BOUCLES
           </span>
           <span>
-            <strong>{r.hints}</strong>SOUVENIRS
+            <strong>{r.hints}</strong>INDICES
           </span>
         </div>
+        {r.score !== undefined && (
+          <p>
+            Score : {r.score.toLocaleString("fr-FR")} points · Rang {r.rank}
+          </p>
+        )}
         <div className="ending-actions">
           <button onClick={onMenu}>MENU PRINCIPAL</button>
           <button onClick={onReplay}>REJOUER ↗</button>

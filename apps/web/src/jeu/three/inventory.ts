@@ -5,7 +5,7 @@ export const COLLECTIBLES = [
     icon: "▤",
     room: "cafeteria",
     position: { x: 650, y: 640 },
-    text: "G4-OS / JOURNAL 09:00\nLe réfectoire, la salle principale, le cowork, le gaming et l’amphi portent chacun un fragment. Repère les ordinateurs et examine les documents, répare les cinq modules, puis rejoins Sormiou. Les portes répondent à E. Le gardien surveille la console finale.",
+    text: "G4-OS / JOURNAL 09:00\nCommence par le café de 9h00 au réfectoire. Huit énigmes te conduisent à Sugiton, Sainte Victoire, Mont Ventoux et au Co-working. Tes souvenirs survivent au redémarrage. Les portes répondent à E. La procédure finale attend au Co-working.",
   },
   {
     id: "debug-card",
@@ -13,7 +13,7 @@ export const COLLECTIBLES = [
     icon: "</>",
     room: "gaming",
     position: { x: 1420, y: 340 },
-    text: "DEBUG / MÉTHODE\nLis toute l’expression avant de calculer. Une pile se lit en dernier entré, premier sorti. Un indice précise la méthode ; il ne remplace pas le raisonnement. Dans la course, le même tirage attend tous les joueurs.",
+    text: "DEBUG / MÉTHODE\nLe journal mentionne zéro test et restauration_9h00. Observe le sens dans lequel avance l’heure du script. Un indice précise la méthode ; il ne remplace pas le raisonnement. Dans la course, le même tirage attend tous les joueurs.",
   },
   {
     id: "access-card",
@@ -21,7 +21,7 @@ export const COLLECTIBLES = [
     icon: "⌁",
     room: "cowork",
     position: { x: 180, y: 620 },
-    text: "DESIGN / ACCÈS\nUne interface claire explique son état avec des mots ou des icônes, pas seulement avec une couleur. Ton inventaire conserve les documents examinés. Les fragments gagnés aux terminaux y apparaissent aussi.",
+    text: "DESIGN / ACCÈS\nAvant de déployer, protège les données et vérifie que le correctif fonctionne. Ton inventaire conserve les documents examinés. Les fragments gagnés aux terminaux y apparaissent aussi.",
   },
 ] as const
 export type CollectibleId = (typeof COLLECTIBLES)[number]["id"]

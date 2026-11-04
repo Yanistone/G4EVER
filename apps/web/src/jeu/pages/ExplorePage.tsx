@@ -21,6 +21,8 @@ export interface ExplorePageProps {
   onPause: () => void
   onInteract: (id: string) => void
   solvedRoomIds: readonly string[]
+  unlockedRoomIds?: readonly string[]
+  progress?: { solved: number; total: number }
   active: boolean
   gameTime: string
   loopNumber: number
@@ -85,6 +87,7 @@ export function ExplorePage(p: ExplorePageProps) {
               active: q.active && !blockedRef.current,
               position: q.playerPosition,
               solved: q.solvedRoomIds,
+              unlockedRoomIds: q.unlockedRoomIds,
               inventory: itemRef.current,
               documents: latest.current.escapeDocuments ?? readDocuments(key),
             },
@@ -139,6 +142,7 @@ export function ExplorePage(p: ExplorePageProps) {
       active: p.active && !blocked,
       position: p.playerPosition,
       solved: p.solvedRoomIds,
+      unlockedRoomIds: p.unlockedRoomIds,
       inventory: items,
     })
   }, [p.active, p.playerPosition, p.solvedRoomIds, items, blocked, ready])
@@ -148,7 +152,8 @@ export function ExplorePage(p: ExplorePageProps) {
     return () => clearTimeout(t)
   }, [toast])
   const room = getRoomAt(p.playerPosition),
-    complete = p.solvedRoomIds.length
+    complete = p.progress?.solved ?? p.solvedRoomIds.length,
+    total = p.progress?.total ?? 5
   const close = () => {
     setInventory(false)
     setTalk(null)
@@ -200,16 +205,24 @@ export function ExplorePage(p: ExplorePageProps) {
               : "Restaurer les cinq modules du campus")}
         </p>
         <div className="fragment-dots">
-          {WORLD_ROOMS.filter((r) => r.kind === "puzzle").map((r, i) => (
-            <span
-              key={r.id}
-              className={p.solvedRoomIds.includes(r.id) ? "done" : ""}
-              title={r.label}
-            >
-              {p.solvedRoomIds.includes(r.id) ? "✓" : String(i + 1).padStart(2, "0")}
-            </span>
-          ))}
-          <b>{complete}/5</b>
+          {p.progress
+            ? Array.from({ length: total }, (_, i) => (
+                <span key={i} className={i < complete ? "done" : ""} title={`Énigme ${i + 1}`}>
+                  {i < complete ? "✓" : String(i + 1).padStart(2, "0")}
+                </span>
+              ))
+            : WORLD_ROOMS.filter((r) => r.kind === "puzzle").map((r, i) => (
+                <span
+                  key={r.id}
+                  className={p.solvedRoomIds.includes(r.id) ? "done" : ""}
+                  title={r.label}
+                >
+                  {p.solvedRoomIds.includes(r.id) ? "✓" : String(i + 1).padStart(2, "0")}
+                </span>
+              ))}
+          <b>
+            {complete}/{total}
+          </b>
         </div>
       </div>
       <div className={`fps-reticle ${target ? "has-target" : ""}`} aria-hidden="true">
@@ -347,7 +360,9 @@ export function ExplorePage(p: ExplorePageProps) {
             <div className="inventory-panel">
               <div className="inventory-summary">
                 <strong>{items.length} documents</strong>
-                <span>{complete}/5 fragments restaurés</span>
+                <span>
+                  {complete}/{total} {p.progress ? "énigmes résolues" : "fragments restaurés"}
+                </span>
               </div>
               {!examine ? (
                 <>

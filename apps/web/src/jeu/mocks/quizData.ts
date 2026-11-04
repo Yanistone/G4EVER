@@ -1,56 +1,55 @@
 import type { EndResult, FailureFeedback, QuizQuestion, SuccessFeedback } from "../types/quiz"
 
 export const demoQuizQuestion: QuizQuestion = {
-  id: "javascript-typeof-null",
-  courseLabel: "JOUR 1 · 10:00 · COURS D’ALGO",
+  id: "http-503",
+  courseLabel: "SUGITON · JOURNAL D’ERREUR",
   loopNumber: 3,
   number: 2,
-  total: 5,
+  total: 8,
   prompt: {
-    before: "En JavaScript, que renvoie ",
-    highlight: "typeof null",
+    before: "Que signifie le code HTTP ",
+    highlight: "503",
     after: " ?",
   },
   answers: [
-    { id: "a", letter: "A", label: "« object »" },
-    { id: "b", letter: "B", label: "« null »" },
-    { id: "c", letter: "C", label: "« undefined »" },
-    { id: "d", letter: "D", label: "« number »" },
+    { id: "a", letter: "A", label: "Service indisponible" },
+    { id: "b", letter: "B", label: "Page introuvable" },
+    { id: "c", letter: "C", label: "Accès interdit" },
+    { id: "d", letter: "D", label: "Erreur de syntaxe" },
   ],
   progress: 40,
 }
 
 export const demoAnswerKey: Readonly<Record<string, string>> = {
-  "javascript-typeof-null": "a",
+  "http-503": "a",
 }
 export const demoSelectedAnswerId = "b"
 
 export const demoSuccessFeedback: SuccessFeedback = {
   characterQuote: "« Trop facile. »",
-  contextLabel: "TA RÉPONSE · SALLE GAMING · ÉNIGME 2/5",
-  answer: { id: "a", letter: "A", label: "« object »" },
+  contextLabel: "TA RÉPONSE · SUGITON · ÉNIGME 4/8",
+  answer: { id: "a", letter: "A", label: "Service indisponible" },
   explanation: {
     before: "Exact : ",
-    highlight: "typeof null",
-    after:
-      " renvoie « object ». C’est un vieux bug de JavaScript, gardé depuis 1995 pour ne rien casser.",
+    highlight: "503",
+    after: " indique un service indisponible. Les erreurs 5xx concernent le serveur.",
   },
   memoryReward: 1,
   timeLabel: "Aucun temps perdu",
   solved: 2,
-  total: 5,
+  total: 8,
 }
 
 export const demoFailureFeedback: FailureFeedback = {
   characterQuote: "« Sérieux… ? »",
-  contextLabel: "TA RÉPONSE · SALLE GAMING · ÉNIGME 2/5",
-  answer: { id: "reference-d", letter: "D", label: "« undefined »" },
+  contextLabel: "TA RÉPONSE · SUGITON · ÉNIGME 4/8",
+  answer: { id: "reference-d", letter: "D", label: "Accès interdit" },
   timeBefore: "10:20",
-  timeAfter: "10:40",
-  penaltyMinutes: 20,
+  timeAfter: "10:30",
+  penaltyMinutes: 10,
   resetTime: "16:00",
   progress: 29,
-  hint: "« null » n’est pas vraiment vide pour JavaScript… Pense aux types les plus anciens du langage.",
+  hint: "Les erreurs 5xx concernent le serveur.",
 }
 
 export const demoEndResult: EndResult = {
@@ -62,7 +61,7 @@ export const demoEndResult: EndResult = {
   totalTime: "11:42",
   loops: 7,
   solved: 5,
-  total: 5,
+  total: 8,
   hints: 9,
   endingNumber: 1,
   endingsTotal: 2,

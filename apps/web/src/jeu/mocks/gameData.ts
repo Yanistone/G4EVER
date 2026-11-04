@@ -2,26 +2,27 @@ import type { BriefingData, CampusData, GameData } from "../types/game"
 
 export const mockBriefingData: BriefingData = {
   alertTitle: "⚠ G4-OS · ALERTE SYSTÈME",
-  deadlineLabel: "Crash prévu à 16:00",
+  deadlineLabel: "15 min réelles · Crash à 16:00",
   missionTitle: "Remonte à l’origine du bug avant le reboot définitif.",
   cards: [
     {
       id: "puzzles",
       icon: "question",
-      title: "Chaque salle cache une énigme",
-      description: "Logique, code, conception, observation.",
+      title: "Huit énigmes liées",
+      description: "Réfectoire, Sugiton, Sainte Victoire, Mont Ventoux, Co-working.",
     },
     {
       id: "memories",
       icon: "hint",
-      title: "Une erreur = un indice",
-      description: "Tu gardes tes souvenirs d’une boucle à l’autre.",
+      title: "Souvenirs de boucle",
+      description: "Indice léger : −5 min campus ; fort : −10. Erreur : −10 min.",
     },
     {
       id: "loop",
       icon: "clock",
       title: "À 16:00, tout recommence",
-      description: "Retour à 9:00 : sois plus rapide la prochaine fois.",
+      description:
+        "Retour à 9:00. Le carnet garde tes découvertes ; trois erreurs bloquent le terminal 30 s.",
     },
   ],
   startLabel: "LANCER LA JOURNÉE",
