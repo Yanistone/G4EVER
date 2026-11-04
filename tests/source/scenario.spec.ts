@@ -34,13 +34,10 @@ test("les huit énigmes du PDF se jouent depuis les terminaux du campus 3D", asy
   await page.goto("/#explore")
   await enterCampus(page)
   await page.keyboard.press("m")
-  await page
-    .locator(".navigator-list")
-    .getByRole("button", { name: /Sugiton/ })
-    .click()
-  await expect(page.getByRole("button", { name: /VERROUILLÉ/ })).toBeDisabled()
-  await page.getByRole("button", { name: "FERMER", exact: true }).click()
-  await page.goto("/#explore")
+  await expect(page.getByRole("listitem", { name: "Sugiton", exact: true })).toBeVisible()
+  await expect(page.getByRole("button", { name: /REJOINDRE|VERROUILLÉ/ })).toHaveCount(0)
+  await page.keyboard.press("m")
+  await expect(page).toHaveURL(/#explore$/)
   for (let i = 0; i < SCENARIO.length; i++) {
     const p = SCENARIO[i]
     const room = WORLD_ROOMS.find((r) => r.id === p.roomId)!

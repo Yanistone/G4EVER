@@ -25,6 +25,7 @@ export interface ExplorePageProps {
   unlockedRoomIds?: readonly string[]
   progress?: { solved: number; total: number }
   active: boolean
+  mapOpen?: boolean
   gameTime: string
   loopNumber: number
   hintCount: number
@@ -43,6 +44,7 @@ export function ExplorePage(p: ExplorePageProps) {
     runtime = useRef<CampusRuntime | null>(null),
     latest = useRef(p)
   latest.current = p
+  const resumeAfterMap = useRef(false)
   const [ready, setReady] = useState(false),
     [error, setError] = useState(""),
     [locked, setLocked] = useState(false),
@@ -128,7 +130,10 @@ export function ExplorePage(p: ExplorePageProps) {
               map: () => latest.current.onOpenMap(),
               inventory: () => setInventory(true),
               target: setTarget,
-              lock: setLocked,
+              lock: (value) => {
+                if (value) resumeAfterMap.current = false
+                setLocked(value)
+              },
               toast: setToast,
               talk: (name, text, roomId) => setTalk({ name, text, roomId }),
               pickup: (id) => {
@@ -176,6 +181,10 @@ export function ExplorePage(p: ExplorePageProps) {
       inventory: items,
     })
   }, [p.active, p.playerPosition, p.solvedRoomIds, items, blocked, ready])
+  useEffect(() => {
+    if (p.mapOpen) resumeAfterMap.current = true
+    else if (resumeAfterMap.current && p.active && ready && !blocked) runtime.current?.enter()
+  }, [p.mapOpen, p.active, ready, blocked])
   useEffect(() => {
     if (!toast) return
     const t = setTimeout(() => setToast(""), 4200)
@@ -277,7 +286,7 @@ export function ExplorePage(p: ExplorePageProps) {
           </div>
         </div>
       )}
-      {!locked && p.active && !blocked && ready && (
+      {!locked && p.active && !blocked && ready && !resumeAfterMap.current && (
         <button className="fps-enter" onClick={() => runtime.current?.enter()}>
           <span className="enter-arrow">↗</span>
           <div>

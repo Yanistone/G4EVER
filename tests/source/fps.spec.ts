@@ -44,10 +44,40 @@ test("M ouvre et ferme la carte sans cliquer ni capturer la souris", async ({ pa
   await page.keyboard.press("M")
   await expect(page).toHaveURL(/#explore$/)
   await enterCampus(page)
+  await lookAt(page, { x: 790, y: 500 }, 1.65)
+  const canvas = page.locator(".fps-canvas")
+  const original = await canvas.elementHandle()
+  const position = await canvas.getAttribute("data-position")
+  const yaw = await canvas.getAttribute("data-yaw")
+  const pitch = await canvas.getAttribute("data-pitch")
+  await canvas.evaluate((node) => {
+    node.dataset.mapReloads = "0"
+    new MutationObserver(() => {
+      if (node.dataset.ready !== "true")
+        node.dataset.mapReloads = String(Number(node.dataset.mapReloads) + 1)
+    }).observe(node, { attributes: true, attributeFilter: ["data-ready"] })
+  })
   await page.keyboard.press("m")
   await expect(page).toHaveURL(/#campus$/)
+  await expect(page.getByRole("listitem")).toHaveCount(7)
+  await expect(page.getByRole("button", { name: /REJOINDRE|VERROUILLÉ|Sugiton/ })).toHaveCount(0)
+  await page.getByRole("listitem", { name: "Sugiton", exact: true }).click()
+  await expect(page).toHaveURL(/#campus$/)
+  await expect(canvas).toHaveAttribute("data-position", position!)
+  await page.screenshot({ path: ".runtime/carte-sans-teleportation.png" })
   await page.keyboard.press("m")
   await expect(page).toHaveURL(/#explore$/)
+  expect(await original!.evaluate((node) => node === document.querySelector(".fps-canvas"))).toBe(
+    true,
+  )
+  await expect(canvas).toHaveAttribute("data-ready", "true")
+  await expect(canvas).toHaveAttribute("data-map-reloads", "0")
+  await expect(canvas).toHaveAttribute("data-position", position!)
+  await expect(canvas).toHaveAttribute("data-yaw", yaw!)
+  await expect(canvas).toHaveAttribute("data-pitch", pitch!)
+  await expect(page.locator(".fps-loading")).toHaveCount(0)
+  await expect(canvas).toHaveAttribute("data-input-mode", /pointer-lock|mouse/)
+  await expect(page.getByRole("button", { name: /Entrer dans le campus/ })).toHaveCount(0)
 })
 test("la caméra reste droite, borne les rotations et ignore les déplacements aberrants", () => {
   const engine = new NullEngine(),

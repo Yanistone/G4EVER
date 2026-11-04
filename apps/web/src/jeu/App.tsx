@@ -37,36 +37,16 @@ import {
 } from "./mocks/quizData"
 import { campaignDeck } from "./game/campaignDeck"
 import { introScenes, vendingClue, sormiouClue } from "./game/puzzles"
-import { WORLD_ROOMS, ROOM_SPAWNS } from "./game/world"
 import { formatClock, formatDuration } from "./game/session"
-import type { RoomId } from "./game/world"
 import "./styles/adventure.css"
 
 type Overlay =
-  | "options"
-  | "pause"
-  | "credits"
-  | "newgame"
-  | "clue"
-  | "terminal"
-  | "reboot"
-  | "map-room"
-  | "journal"
-  | null
+  "options" | "pause" | "credits" | "newgame" | "clue" | "terminal" | "reboot" | "journal" | null
 interface SubmittedAnswer {
   answer: QuizAnswer
   puzzleId: string
   timeBefore: string
   timeAfter: string
-}
-const mapRoomIds: Record<string, RoomId> = {
-  main: "classroom",
-  refectory: "cafeteria",
-  amphi: "amphitheater",
-  gaming: "gaming",
-  cowork: "cowork",
-  sormiou: "sormiou",
-  vending: "vending",
 }
 
 export function App() {
@@ -110,7 +90,6 @@ export function App() {
   const [submitted, setSubmitted] = useState<SubmittedAnswer | null>(null)
   const [notice, setNotice] = useState("")
   const [clueText, setClueText] = useState("")
-  const [selectedMapRoom, setSelectedMapRoom] = useState<RoomId>("cafeteria")
   const [referencePosition, setReferencePosition] = useState(mockGameData.playerPosition)
   const overlayTrigger = useRef<HTMLElement | null>(null)
   const openOverlay = useCallback((next: Exclude<Overlay, null>) => {
@@ -404,6 +383,7 @@ export function App() {
         escapeDocuments={escapeDocuments}
         playerPosition={session.playerPosition}
         onMove={move}
+        mapOpen={screen === "campus"}
         onOpenMap={() => navigate("campus")}
         onPause={() => openOverlay("pause")}
         onInteract={interact}
@@ -418,22 +398,13 @@ export function App() {
       <CampusNavigator
         position={session.playerPosition}
         solvedRoomIds={session.solvedRoomIds}
-        targetRoomId={selectedMapRoom}
-        onSelectRoom={(id) => {
-          setSelectedMapRoom(id as RoomId)
-          openOverlay("map-room")
-        }}
+        targetRoomId={availablePuzzle(session.solvedPuzzleIds)?.roomId ?? "cowork"}
         onBack={() => navigate("explore")}
       />
     ) : (
       <CampusPage
         data={campusData}
-        onSelectRoom={(id) => {
-          if (played) {
-            setSelectedMapRoom(mapRoomIds[id])
-            openOverlay("map-room")
-          } else navigate("briefing")
-        }}
+        onSelectRoom={() => navigate("briefing")}
         onBack={() => navigate(played ? "explore" : "game")}
       />
     ),
@@ -520,21 +491,23 @@ export function App() {
     clue: "SOUVENIR CONSERVÉ",
     terminal: "CONSOLE DE SORMIOU",
     reboot: "09:00 · UNE NOUVELLE BOUCLE",
-    "map-room": WORLD_ROOMS.find((r) => r.id === selectedMapRoom)?.label ?? "SALLE",
     journal: "TES SOUVENIRS",
   }
   return (
     <ScreenViewport
-      fluid={screen === "explore" || screen === "puzzle"}
+      fluid={screen === "explore" || screen === "puzzle" || (screen === "campus" && played)}
       label={screenLabels[screen]}
       width={screen === "campus" && !played ? 1600 : 1280}
       height={screen === "campus" && !played ? 1100 : 720}
       reducedMotion={reducedMotion}
     >
       <div className="screen-content" inert={overlay !== null}>
-        {screen === "explore" || screen === "puzzle" ? (
+        {screen === "explore" || screen === "puzzle" || (screen === "campus" && played) ? (
           <>
-            {pages.explore}
+            <div className="campus-world-layer" inert={screen === "campus"}>
+              {pages.explore}
+            </div>
+            {screen === "campus" && <div className="campus-map-layer">{pages.campus}</div>}
             {screen === "puzzle" && !overlay && pages.puzzle}
           </>
         ) : (
@@ -619,35 +592,6 @@ export function App() {
             </>
           )}
           {overlay === "terminal" && <p>{sormiouClue}</p>}
-          {overlay === "map-room" && (
-            <>
-              <p>
-                {session.solvedRoomIds.includes(selectedMapRoom)
-                  ? "Module réparé. Tu peux y relire ton dossier."
-                  : selectedMapRoom === "sormiou"
-                    ? sormiouClue
-                    : selectedMapRoom === "vending"
-                      ? "Un ticket oublié pourrait contenir un indice."
-                      : "Explore cette salle et approche-toi du repère E pour interagir."}
-              </p>
-              <p className="dialog-small">
-                Les couloirs et portes permettent aussi de rejoindre chaque salle à pied.
-              </p>
-              <button
-                className="game-button ui-button"
-                disabled={!unlockedRooms(session.solvedPuzzleIds).includes(selectedMapRoom)}
-                onClick={() => {
-                  if (!unlockedRooms(session.solvedPuzzleIds).includes(selectedMapRoom)) return
-                  move(ROOM_SPAWNS[selectedMapRoom])
-                  navigate("explore")
-                }}
-              >
-                {unlockedRooms(session.solvedPuzzleIds).includes(selectedMapRoom)
-                  ? "REJOINDRE LA SALLE"
-                  : "VERROUILLÉ · RÉSOUS L’ÉTAPE PRÉCÉDENTE"}
-              </button>
-            </>
-          )}
           {overlay === "journal" && (
             <div className="journal-list">
               {session.knownHintIds.length === 0 && session.memoryIds.length === 0 ? (

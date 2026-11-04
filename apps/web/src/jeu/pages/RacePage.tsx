@@ -81,7 +81,6 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
     "pause" | "help" | "terminal" | "clue" | "board" | "exit" | null
   >(null)
   const [target, setTarget] = useState("")
-  const [targetRoomId, setTargetRoomId] = useState<string>()
   const [copyStatus, setCopyStatus] = useState("")
   const [now, setNow] = useState(Date.now())
   const [localPosition, setLocalPosition] = useState({ x: 690, y: 590 })
@@ -122,7 +121,6 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
       setDialog(null)
       setQuestion(null)
       setTarget("")
-      setTargetRoomId(undefined)
     }
   }, [state, me])
   useEffect(() => {
@@ -580,8 +578,8 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
   return (
     <div className="race-play">
       <div inert={dialog !== null || state.phase === "countdown"}>
-        {campusEntered && ["world", "question", "feedback"].includes(view) && (
-          <div className="race-exploration">
+        {campusEntered && ["world", "question", "feedback", "map"].includes(view) && (
+          <div className="race-exploration" inert={view === "map"}>
             <ExplorePage
               helpCost="Un indice coûte 100 points, une seule fois par verrou. Le chrono continue."
               onAskHelp={async (roomId) => {
@@ -599,6 +597,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
               }}
               playerPosition={localPosition}
               onMove={move}
+              mapOpen={view === "map"}
               onOpenMap={() => setView("map")}
               onPause={() => setDialog("pause")}
               onInteract={interact}
@@ -610,23 +609,19 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
               loopNumber={state.round}
               hintCount={me.hints}
               objectiveLabel={target || undefined}
-              targetRoomId={targetRoomId}
+              targetRoomId={state.questions[0]?.roomId}
             />
           </div>
         )}
         {view === "map" && (
-          <CampusNavigator
-            position={localPosition}
-            solvedRoomIds={me.solvedRoomIds}
-            targetRoomId={targetRoomId}
-            onSelectRoom={(id) => {
-              const room = WORLD_ROOMS.find((r) => r.id === id)
-              setTargetRoomId(id)
-              setTarget(room ? `Rejoindre : ${room.label}` : "")
-              setView("world")
-            }}
-            onBack={() => setView("world")}
-          />
+          <div className="campus-map-layer">
+            <CampusNavigator
+              position={localPosition}
+              solvedRoomIds={me.solvedRoomIds}
+              targetRoomId={state.questions[0]?.roomId}
+              onBack={() => setView("world")}
+            />
+          </div>
         )}
 
         {view === "question" && question && (

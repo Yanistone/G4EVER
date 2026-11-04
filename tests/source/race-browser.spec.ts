@@ -1,4 +1,4 @@
-import { approachFirstTerminal, collectNetworkEvidence } from "./fps-helpers"
+import { enterCampus, approachFirstTerminal, collectNetworkEvidence } from "./fps-helpers"
 import { test, expect } from "@playwright/test"
 test("friends create/join, ready, start together, answer a random question and reconnect", async ({
   browser,
@@ -40,12 +40,27 @@ test("friends create/join, ready, start together, answer a random question and r
       new KeyboardEvent("keydown", { key: "m", code: "Semicolon", bubbles: true }),
     ),
   )
-  await expect(a.locator(".navigator-list button")).toHaveCount(7)
-  await a
-    .locator(".navigator-list")
-    .getByRole("button", { name: /Réfectoire/ })
-    .click()
+  await expect(a.locator(".navigator-list").getByRole("listitem")).toHaveCount(7)
+  await a.keyboard.press("m")
   await expect(a.getByTestId("exploration")).toBeVisible()
+  await enterCampus(a)
+  const canvas = a.locator(".fps-canvas"),
+    original = await canvas.elementHandle()
+  const position = await canvas.getAttribute("data-position"),
+    yaw = await canvas.getAttribute("data-yaw")
+  await a.keyboard.press("m")
+  await expect(a.locator(".campus-map-layer")).toBeVisible()
+  await a.getByRole("listitem", { name: "Co-working", exact: true }).click()
+  await expect(a.locator(".campus-map-layer")).toBeVisible()
+  await a.getByRole("button", { name: /RETOUR AU JEU/ }).click()
+  expect(await original!.evaluate((node) => node === document.querySelector(".fps-canvas"))).toBe(
+    true,
+  )
+  await expect(canvas).toHaveAttribute("data-ready", "true")
+  await expect(canvas).toHaveAttribute("data-position", position!)
+  await expect(canvas).toHaveAttribute("data-yaw", yaw!)
+  await expect(canvas).toHaveAttribute("data-input-mode", /pointer-lock|mouse/)
+  await expect(a.locator(".fps-loading")).toHaveCount(0)
   await collectNetworkEvidence(a)
   await approachFirstTerminal(a)
   await expect(a.locator(".race-question")).toBeVisible()
@@ -104,7 +119,7 @@ test("evidence code opens a second lock, then repairs the room and updates the m
   await page.keyboard.press("m")
   await expect(page.locator(".navigator-status")).toContainText("1/5 fragments récupérés")
   await expect(
-    page.locator(".navigator-list").getByRole("button", { name: /Distributeurs/ }),
+    page.locator(".navigator-list").getByRole("listitem", { name: "Distributeurs", exact: true }),
   ).toBeInViewport()
 })
 
