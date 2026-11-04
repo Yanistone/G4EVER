@@ -1,5 +1,6 @@
 import { Button } from "../components/Button"
 import { PhaserGame } from "../components/PhaserGame"
+import { CampusPanel } from "../components/game/CampusPanel"
 
 export function GameScreen() {
   return (
@@ -9,6 +10,7 @@ export function GameScreen() {
       </Button>
 
       <PhaserGame />
+      <CampusPanel />
     </main>
   )
 }

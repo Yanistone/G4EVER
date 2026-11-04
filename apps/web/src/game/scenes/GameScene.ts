@@ -45,7 +45,6 @@ export class GameScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, 0, this.mapWidth, this.mapHeight)
 
-    // Grille temporaire
     const graphics = this.add.graphics()
 
     graphics.lineStyle(1, 0x334155, 0.5)
