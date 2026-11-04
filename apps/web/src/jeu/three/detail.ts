@@ -111,14 +111,4 @@ export function addArchitecturalDetail(
     )
     minute.rotation.z = 0.1
   }
-
-  for (const [x, z] of [
-    [11.53, 11.25],
-    [28.38, 12.5],
-    [11.53, 16.88],
-  ]) {
-    box("safety-cabinet", x, 1.5, z, 0.11, 0.85, 0.6, "#DF365D")
-    box("safety-cabinet-window", x + 0.065, 1.5, z, 0.025, 0.62, 0.42, "#8BABC1")
-    cyl("wall-conduit", x, 2.93, z, 0.035, 1.8, "#8B93AB").rotation.z = Math.PI / 2
-  }
 }

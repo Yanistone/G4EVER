@@ -9,7 +9,7 @@ export async function enterCampus(page: Page) {
   if (await enter.isVisible()) await enter.click()
   await expect(page.locator(".fps-canvas")).toHaveAttribute(
     "data-input-mode",
-    /pointer-lock|drag/,
+    /pointer-lock|mouse/,
     { timeout: 15000 },
   )
 }
@@ -24,20 +24,42 @@ export async function lookAt(page: Page, p: { x: number; y: number }, height = 1
   const angle = -Math.atan2(height - 1.72, Math.hypot(p.x - pos.x, p.y - pos.y) * 0.025)
   await page.evaluate(
     ({ dx, dy }) => {
-      document
-        .querySelector("canvas.fps-canvas")!
-        .dispatchEvent(new MouseEvent("mousedown", { bubbles: true }))
-      document.dispatchEvent(
-        new MouseEvent("mousemove", { movementX: dx, movementY: dy, bubbles: true }),
+      const canvas = document.querySelector("canvas.fps-canvas")!
+      canvas.dispatchEvent(new MouseEvent("mouseleave"))
+      canvas.dispatchEvent(
+        new MouseEvent("mousemove", { clientX: 300, clientY: 300, bubbles: true }),
       )
-      window.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }))
+      const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy)) / 40))
+      let previousX = 0,
+        previousY = 0
+      for (let i = 1; i <= steps; i++) {
+        const x = Math.round((dx * i) / steps),
+          y = Math.round((dy * i) / steps)
+        canvas.dispatchEvent(
+          new MouseEvent("mousemove", {
+            movementX: x - previousX,
+            movementY: y - previousY,
+            clientX: 300 + x,
+            clientY: 300 + y,
+            bubbles: true,
+          }),
+        )
+        previousX = x
+        previousY = y
+      }
     },
     { dx: delta / 0.002, dy: (angle - pitch) / 0.002 },
   )
   await expect
-    .poll(async () => Math.abs(Number(await c.getAttribute("data-yaw")) - (yaw + delta)), {
-      timeout: 10000,
-    })
+    .poll(
+      async () => {
+        const difference = Number(await c.getAttribute("data-yaw")) - (yaw + delta)
+        return Math.abs(Math.atan2(Math.sin(difference), Math.cos(difference)))
+      },
+      {
+        timeout: 10000,
+      },
+    )
     .toBeLessThan(0.004)
 }
 export async function approachFirstTerminal(page: Page) {

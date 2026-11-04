@@ -56,14 +56,6 @@ export function ThreeSettings() {
           <option value="high">Élevée · ombres détaillées</option>
         </select>
       </label>
-      <label className="settings-check">
-        <input
-          type="checkbox"
-          checked={s.motion}
-          onChange={(e) => change("motion", e.target.checked)}
-        />
-        Balancement de la caméra
-      </label>
       <p className="settings-help">
         ZQSD / WASD : marcher · souris : regarder · E : interagir · Maj : courir · Ctrl :
         s’accroupir · M : carte · I : inventaire · Échap : pause.
