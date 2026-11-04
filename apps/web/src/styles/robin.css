@@ -1,0 +1,135 @@
+.campus-hud {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  right: 24px;
+  max-width: min(460px, calc(100vw - 48px));
+  display: grid;
+  gap: 10px;
+  color: white;
+  pointer-events: none;
+}
+.campus-hud > div,
+.campus-interaction {
+  background: #1b1030ec;
+  border: 1px solid #9383ce;
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+.campus-hud strong {
+  font-size: 19px;
+}
+.campus-hud p {
+  font-size: 12px;
+  margin-top: 6px;
+}
+.campus-audio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  pointer-events: auto;
+  font-size: 12px;
+}
+.campus-audio button {
+  cursor: pointer;
+  color: #ffd93b;
+  font-weight: 800;
+}
+.campus-audio label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.campus-audio input {
+  width: 110px;
+  accent-color: #2ee6ff;
+}
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  background: #100d2bc4;
+  padding: 24px;
+  backdrop-filter: blur(6px);
+}
+.dialog-card {
+  width: min(650px, 100%);
+  max-height: calc(100dvh - 48px);
+  overflow-y: auto;
+  background: #f4f6ff;
+  color: #1b1030;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 20px 80px #0008;
+}
+.dialog-card h2 {
+  font:
+    28px "Lilita One",
+    sans-serif;
+  margin-bottom: 18px;
+}
+.dialog-card h3 {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.dialog-card p {
+  line-height: 1.6;
+  margin: 10px 0;
+}
+.campus-document {
+  background: #fff8e4;
+  border-top: 3px solid #ffd93b;
+  padding: 18px;
+  margin: 15px 0;
+}
+.campus-document p {
+  white-space: pre-line;
+}
+.dialog-card pre {
+  overflow-x: auto;
+  font-size: 12px;
+  padding: 12px;
+  background: #1b1030;
+  color: #2ee6ff;
+}
+.dialog-card summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 22px;
+}
+.ui-button {
+  border: 0;
+  background: #2d6bff;
+  color: white;
+  border-radius: 7px;
+  padding: 12px 20px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.campus-hud button:focus-visible,
+.dialog-card button:focus-visible {
+  outline: 3px solid #ff3e7f;
+  outline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .campus-hud {
+    top: auto;
+    bottom: 20px;
+    right: 16px;
+    left: 16px;
+    max-width: none;
+  }
+  .campus-hud strong {
+    font-size: 16px;
+  }
+  .campus-hud p {
+    font-size: 11px;
+  }
+}
