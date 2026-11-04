@@ -28,7 +28,6 @@ export class FpsController {
   pitch = 0
   private vx = 0
   private vy = 0
-  private phase = 0
   moving = false
   constructor(
     private camera: UniversalCamera,
@@ -36,6 +35,8 @@ export class FpsController {
   ) {
     this.position = canWalkAt(position) ? { ...position } : { ...START_POSITION }
     this.camera.inputs.clear()
+    this.camera.inertia = 0
+    this.camera.rotationQuaternion = null
     this.camera.minZ = 0.08
     this.camera.maxZ = 110
 
@@ -52,8 +53,15 @@ export class FpsController {
     this.sync(1.72)
   }
   look(dx: number, dy: number, sensitivity: number) {
-    this.yaw += dx * 0.002 * sensitivity
-    this.pitch = Math.max(-1.35, Math.min(1.35, this.pitch + dy * 0.002 * sensitivity))
+    if (![dx, dy, sensitivity].every(Number.isFinite) || Math.abs(dx) > 1000 || Math.abs(dy) > 1000)
+      return
+    const speed = 0.002 * Math.max(0.25, Math.min(2.5, sensitivity))
+    this.setLook(this.yaw + dx * speed, this.pitch + dy * speed)
+  }
+  setLook(yaw: number, pitch: number) {
+    if (!Number.isFinite(yaw) || !Number.isFinite(pitch)) return
+    this.yaw = Math.atan2(Math.sin(yaw), Math.cos(yaw))
+    this.pitch = Math.max(-1.35, Math.min(1.35, pitch))
   }
   stop() {
     this.keys.clear()
@@ -113,14 +121,11 @@ export class FpsController {
     }
     this.moving =
       enabled && Math.hypot(this.position.x - before.x, this.position.y - before.y) > 0.04
-    if (this.moving) this.phase += dt * (sprint ? 14 : 10)
-    const bob = settings.motion && this.moving ? Math.sin(this.phase) * 0.025 : 0
     const targetHeight = crouch ? 1.05 : 1.72
     const height =
       this.camera.position.y + (targetHeight - this.camera.position.y) * (1 - Math.exp(-dt * 12))
-    this.sync(height + bob)
-    this.camera.fov = ((settings.fov + (sprint && this.moving ? 4 : 0)) * Math.PI) / 180
-    this.camera.rotation.z = settings.motion && this.moving ? Math.cos(this.phase * 0.5) * 0.003 : 0
+    this.sync(height)
+    this.camera.fov = (settings.fov * Math.PI) / 180
   }
   forward() {
     return new Vector3(Math.sin(this.yaw), 0, Math.cos(this.yaw))

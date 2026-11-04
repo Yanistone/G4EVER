@@ -8,7 +8,48 @@ import { FpsController } from "../../apps/web/src/jeu/three/controller"
 import { WORLD_DOORS, WORLD_ROOMS, canWalkAt } from "../../apps/web/src/jeu/game/world"
 import { enterCampus, lookAt } from "./fps-helpers"
 import { createSession } from "../../apps/web/src/jeu/game/session"
+import { MouseLook } from "../../apps/web/src/jeu/three/mouseLook"
 const settings = { sensitivity: 1, fov: 80, volume: 0, quality: "eco" as const, motion: false }
+test("la caméra reste droite, borne les rotations et ignore les déplacements aberrants", () => {
+  const engine = new NullEngine(),
+    scene = new Scene(engine)
+  const camera = new UniversalCamera("simple", Vector3.Zero(), scene)
+  const controller = new FpsController(camera, { x: 690, y: 590 })
+  controller.setLook(0, 0)
+  controller.look(80, 30, 1)
+  expect(controller.yaw).toBeCloseTo(0.16)
+  expect(controller.pitch).toBeCloseTo(0.06)
+  const before = { yaw: controller.yaw, pitch: controller.pitch }
+  controller.look(99999, 0, 1)
+  controller.look(NaN, 0, 1)
+  expect({ yaw: controller.yaw, pitch: controller.pitch }).toEqual(before)
+  for (let i = 0; i < 500; i++) controller.look(40, 40, 1)
+  expect(Math.abs(controller.yaw)).toBeLessThanOrEqual(Math.PI)
+  expect(controller.pitch).toBe(1.35)
+  controller.keys.add("KeyW")
+  controller.keys.add("ShiftLeft")
+  for (let i = 0; i < 100; i++) {
+    controller.update(0.016, true, { ...settings, motion: true }, [], [])
+    expect(camera.rotation.z).toBe(0)
+    expect(camera.position.y).toBe(1.72)
+    expect(camera.fov).toBeCloseTo((80 * Math.PI) / 180)
+  }
+  engine.dispose()
+})
+test("le mode souris libre utilise les coordonnées et réinitialise son point de départ", () => {
+  const input = new MouseLook()
+  const event = (x: number, y: number) =>
+    ({ clientX: x, clientY: y, movementX: 99999, movementY: -99999 }) as MouseEvent
+  expect(input.move(event(400, 300), false, true)).toBeNull()
+  expect(input.move(event(425, 310), false, true)).toEqual({ dx: 25, dy: 10 })
+  expect(input.move(event(1200, 50), false, false)).toBeNull()
+  expect(input.move(event(900, 500), false, true)).toBeNull()
+  input.reset()
+  expect(input.move(event(10, 10), true, true)).toBeNull()
+  expect(
+    input.move({ ...event(10, 10), movementX: 8, movementY: 2 } as MouseEvent, true, true),
+  ).toEqual({ dx: 8, dy: 2 })
+})
 test("FPS controller blocks every closed door, crosses open thresholds and stops at furniture", () => {
   const engine = new NullEngine(),
     scene = new Scene(engine),
@@ -114,6 +155,57 @@ test("3D world, real raycast terminal, NPC animation, inventory, settings and pa
   await page.getByRole("button", { name: "REPRENDRE", exact: true }).click()
   await page.screenshot({ path: "docs/3d/verified-game.png" })
   expect(errors).toEqual([])
+})
+test("la souris tourne sans maintenir le clic quand la capture est indisponible", async ({
+  page,
+}) => {
+  await page.addInitScript(
+    (save) => {
+      HTMLCanvasElement.prototype.requestPointerLock = () =>
+        Promise.reject(new DOMException("Capture indisponible", "NotSupportedError"))
+      const p = { id: "camera-simple", nickname: "Caméra", createdAt: new Date().toISOString() }
+      localStorage.setItem(
+        "g4-ever:profiles:v1",
+        JSON.stringify({ profiles: [p], activeProfileId: p.id }),
+      )
+      localStorage.setItem("g4-ever:save:camera-simple", JSON.stringify(save))
+      localStorage.setItem(
+        "g4:3d:settings",
+        JSON.stringify({ sensitivity: 1, fov: 80, volume: 0, quality: "eco", motion: true }),
+      )
+    },
+    { ...createSession("camera-simple"), started: true, playerPosition: { x: 730, y: 600 } },
+  )
+  await page.goto("/#explore")
+  await enterCampus(page)
+  const canvas = page.locator(".fps-canvas")
+  await expect(canvas).toHaveAttribute("data-input-mode", "mouse")
+  await page.mouse.move(500, 400)
+  const yaw = Number(await canvas.getAttribute("data-yaw")),
+    pitch = Number(await canvas.getAttribute("data-pitch"))
+  await page.mouse.move(560, 420, { steps: 6 })
+  await expect
+    .poll(async () => Number(await canvas.getAttribute("data-yaw")))
+    .toBeCloseTo(yaw + 0.12, 3)
+  await expect
+    .poll(async () => Number(await canvas.getAttribute("data-pitch")))
+    .toBeCloseTo(pitch + 0.04, 3)
+  await page.keyboard.press("Escape")
+  await expect(page.getByRole("dialog", { name: "PAUSE", exact: true })).toBeVisible()
+  const pausedYaw = await canvas.getAttribute("data-yaw")
+  await page.mouse.move(900, 500)
+  await expect(canvas).toHaveAttribute("data-yaw", pausedYaw!)
+  await page.getByRole("button", { name: "REPRENDRE", exact: true }).click()
+  await enterCampus(page)
+  const resumedYaw = Number(await canvas.getAttribute("data-yaw"))
+  await page.mouse.move(600, 400)
+  await expect
+    .poll(async () => Number(await canvas.getAttribute("data-yaw")))
+    .toBeCloseTo(resumedYaw, 3)
+  await page.mouse.move(620, 400, { steps: 2 })
+  await expect
+    .poll(async () => Number(await canvas.getAttribute("data-yaw")))
+    .toBeCloseTo(resumedYaw + 0.04, 3)
 })
 test("documents are collected and examined; a live NPC gives guidance", async ({ page }) => {
   test.setTimeout(90000)

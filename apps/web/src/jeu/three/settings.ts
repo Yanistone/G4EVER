@@ -10,7 +10,7 @@ const defaults: GameSettings = {
   fov: 80,
   volume: 0.35,
   quality: "balanced",
-  motion: true,
+  motion: false,
 }
 export function readSettings(): GameSettings {
   try {
@@ -22,7 +22,7 @@ export function readSettings(): GameSettings {
       fov: clamp(v.fov, 65, 105, 80),
       volume: clamp(v.volume, 0, 1, 0.35),
       quality: ["eco", "balanced", "high"].includes(v.quality) ? v.quality : "balanced",
-      motion: typeof v.motion === "boolean" ? v.motion : true,
+      motion: false,
     }
   } catch {
     return { ...defaults }

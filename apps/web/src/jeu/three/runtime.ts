@@ -10,6 +10,7 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector.js"
 import { WORLD_ROOMS, INTERACTION_RADIUS } from "../game/world"
 import type { PlayerPosition } from "../types/game"
 import { FpsController } from "./controller"
+import { MouseLook } from "./mouseLook"
 import { buildWorld, doorIntersectsPosition } from "./world"
 import type { Interaction } from "./world"
 import { createNpcs } from "./npc"
@@ -56,7 +57,7 @@ export function createCampusRuntime(
     disposed = false,
     locked = false,
     freeLook = false,
-    dragging = false,
+    enterPending = false,
     suppressUnlock = false,
     lastTarget = "",
     time = 0,
@@ -67,6 +68,7 @@ export function createCampusRuntime(
     camera = new UniversalCamera("noah-eyes", new Vector3(0, 1.72, 0), scene)
   scene.activeCamera = camera
   const controller = new FpsController(camera, state.position)
+  const mouseLook = new MouseLook()
   const world = buildWorld(scene, settings, state.documents),
     npcs = createNpcs(scene, world.materials, world.shadow),
     audio = new CampusAudio()
@@ -132,8 +134,7 @@ export function createCampusRuntime(
       Number.isFinite(v.yaw) &&
       Number.isFinite(v.pitch)
     ) {
-      controller.yaw = v.yaw
-      controller.pitch = Math.max(-1.35, Math.min(1.35, v.pitch))
+      controller.setLook(v.yaw, v.pitch)
     }
   } catch {}
   const roomLocked = (id: string) =>
@@ -174,7 +175,8 @@ export function createCampusRuntime(
   function unlock(pause = false) {
     controller.stop()
     freeLook = false
-    dragging = false
+    enterPending = false
+    mouseLook.reset()
     cb.lock(false)
     if (document.pointerLockElement === canvas) {
       suppressUnlock = !pause
@@ -185,20 +187,26 @@ export function createCampusRuntime(
     }
   }
   function enter() {
-    if (backdrop || !state.active || disposed) return
+    if (backdrop || !state.active || disposed || locked || freeLook || enterPending) return
     audio.resume()
     canvas.focus()
-    const fallback = () => {
-      freeLook = true
-      cb.lock(true)
-      cb.toast("Souris libre · maintiens le clic dans le jeu pour regarder. Échap : pause.")
-    }
+    controller.stop()
+    mouseLook.reset()
+    enterPending = true
     try {
       const p = canvas.requestPointerLock()
-      if (p) p.catch(fallback)
+      if (p) p.catch(enterFreeLook)
     } catch {
-      fallback()
+      enterFreeLook()
     }
+  }
+  function enterFreeLook() {
+    if (!enterPending || disposed || !state.active || document.pointerLockElement === canvas) return
+    enterPending = false
+    freeLook = true
+    mouseLook.reset()
+    cb.lock(true)
+    cb.toast("Bouge la souris dans le jeu pour regarder. Échap : pause.")
   }
   function interact() {
     if (!state.active || !target || backdrop) return
@@ -257,6 +265,13 @@ export function createCampusRuntime(
     listen(document, "pointerlockchange", () => {
       const was = locked
       locked = document.pointerLockElement === canvas
+      if (locked && (!state.active || disposed)) {
+        unlock()
+        return
+      }
+      enterPending = false
+      freeLook = false
+      mouseLook.reset()
       cb.lock(locked)
       if (was && !locked) {
         controller.stop()
@@ -265,15 +280,12 @@ export function createCampusRuntime(
       }
       suppressUnlock = false
     })
-    listen(canvas, "mousedown", () => {
-      dragging = true
-    })
-    listen(window, "mouseup", () => {
-      dragging = false
-    })
+    listen(document, "pointerlockerror", enterFreeLook)
+    listen(canvas, "mouseleave", () => mouseLook.reset())
     listen(document, "mousemove", ((e: MouseEvent) => {
-      if ((locked || (freeLook && dragging)) && state.active)
-        controller.look(e.movementX, e.movementY, settings.sensitivity)
+      if ((!locked && !freeLook) || !state.active) return
+      const movement = mouseLook.move(e, locked, e.target === canvas)
+      if (movement) controller.look(movement.dx, movement.dy, settings.sensitivity)
     }) as EventListener)
     listen(window, "keydown", ((e: KeyboardEvent) => {
       if (
@@ -400,7 +412,7 @@ export function createCampusRuntime(
         lastTarget = k
         cb.target(target)
       }
-      canvas.dataset.inputMode = locked ? "pointer-lock" : freeLook ? "drag" : "idle"
+      canvas.dataset.inputMode = locked ? "pointer-lock" : freeLook ? "mouse" : "idle"
       canvas.dataset.position = JSON.stringify(controller.position)
       canvas.dataset.yaw = String(controller.yaw)
       canvas.dataset.pitch = String(controller.pitch)
