@@ -1,5 +1,5 @@
 import { Button } from "../components/Button"
-import { PhaserGame } from "../components/PhaserGame"
+import { CampaignPanel } from "../components/game/CampaignPanel"
 
 export function GameScreen() {
   return (
@@ -8,7 +8,7 @@ export function GameScreen() {
         RETOUR
       </Button>
 
-      <PhaserGame />
+      <CampaignPanel />
     </main>
   )
 }

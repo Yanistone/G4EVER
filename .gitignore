@@ -1,5 +1,9 @@
 node_modules/
 dist/
+*.tsbuildinfo
+test-results/
+playwright-report/
+*.[mM][dD]
 .env
 .env.*
 !.env.example

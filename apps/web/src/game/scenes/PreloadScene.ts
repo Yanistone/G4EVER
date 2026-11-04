@@ -5,9 +5,7 @@ export class PreloadScene extends Phaser.Scene {
     super("PreloadScene")
   }
 
-  preload() {
-    // Chargement des assets
-  }
+  preload() {}
 
   create() {
     this.scene.start("GameScene")
