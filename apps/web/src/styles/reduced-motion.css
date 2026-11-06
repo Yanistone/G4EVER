@@ -1,0 +1,126 @@
+.motion-reduced .sp-all,
+.motion-reduced .sp-spin,
+.motion-reduced .sp-bob,
+.motion-reduced .sp-pulse,
+.motion-reduced .wk2 > div {
+  animation: none;
+}
+.motion-reduced .sp-term,
+.motion-reduced .sp-flash,
+.motion-reduced .sp-split,
+.motion-reduced .sp-bar,
+.motion-reduced .sp-walk {
+  animation: none;
+  opacity: 0;
+}
+.motion-reduced .sp-rays,
+.motion-reduced .sp-press,
+.motion-reduced .sp-spark {
+  animation: none;
+  opacity: 1;
+}
+.motion-reduced .sp-logo {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+.motion-reduced .wk2 > div:nth-child(1) {
+  opacity: 1;
+}
+.motion-reduced .m-pan,
+.motion-reduced .m-walk,
+.motion-reduced .m-glow,
+.motion-reduced .m-glitch,
+.motion-reduced .m-nudge,
+.motion-reduced .m-fill,
+.motion-reduced .m-flash,
+.motion-reduced .m-blink,
+.motion-reduced .m-ticker {
+  animation: none;
+}
+.motion-reduced .m-in {
+  opacity: 1;
+  animation: none;
+}
+.motion-reduced .fb-spin,
+.motion-reduced .fb-cf {
+  animation: none;
+}
+.motion-reduced .fb-cf {
+  display: none;
+}
+.motion-reduced .fb-pop,
+.motion-reduced .fb-pop2 {
+  animation: none;
+  transform: rotate(-3deg);
+}
+.motion-reduced .fb-pop2 {
+  transform: none;
+}
+.motion-reduced .fb-in1,
+.motion-reduced .fb-in2,
+.motion-reduced .fb-in3 {
+  animation: none;
+  opacity: 1;
+}
+.motion-reduced .fb-draw path {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+.motion-reduced .fb-shake,
+.motion-reduced .fb-gl,
+.motion-reduced .fb-glow {
+  animation: none;
+}
+.motion-reduced .fb-tick {
+  animation: none;
+  background: #ff4b3e;
+}
+.motion-reduced .fb-pop,
+.motion-reduced .fb-pop2 {
+  animation: none;
+  transform: rotate(-3deg);
+}
+.motion-reduced .fb-pop2 {
+  transform: none;
+}
+.motion-reduced .fb-in1,
+.motion-reduced .fb-in2,
+.motion-reduced .fb-in3 {
+  animation: none;
+  opacity: 1;
+}
+.motion-reduced .fn-spin,
+.motion-reduced .fn-glow,
+.motion-reduced .fn-l,
+.motion-reduced .fn-r {
+  animation: none;
+}
+.motion-reduced .fn-cf,
+.motion-reduced .fn-t1,
+.motion-reduced .fn-t2 {
+  display: none;
+}
+.motion-reduced .fn-t3 {
+  animation: none;
+  opacity: 1;
+}
+.motion-reduced .fn-title {
+  animation: none;
+  opacity: 1;
+  transform: rotate(-2deg);
+}
+.motion-reduced .fn-s1,
+.motion-reduced .fn-s2,
+.motion-reduced .fn-s3,
+.motion-reduced .fn-s4,
+.motion-reduced .fn-e,
+.motion-reduced .fn-b {
+  animation: none;
+  opacity: 1;
+}
+.motion-reduced .fn-rank {
+  animation: none;
+  opacity: 1;
+  transform: rotate(-8deg);
+}

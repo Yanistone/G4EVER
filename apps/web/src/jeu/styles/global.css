@@ -1,0 +1,121 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "./fonts.css";
+@import "./reduced-motion.css";
+@import "./responsive.css";
+
+:root {
+  font-family: "Nunito", system-ui, sans-serif;
+  color: #1b1030;
+  background: #160f38;
+  font-synthesis: none;
+}
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+button {
+  font: inherit;
+  color: inherit;
+}
+.game-button {
+  appearance: none;
+  padding: 0;
+  text-align: inherit;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  line-height: normal;
+  transition:
+    filter 120ms ease,
+    translate 120ms ease;
+}
+.game-button:not(:disabled):hover {
+  filter: brightness(1.06);
+}
+.game-button:not(:disabled):active {
+  translate: 0 3px;
+}
+.game-button:focus-visible,
+[role="button"]:focus-visible {
+  outline: 4px solid #2ee6ff;
+  outline-offset: 6px;
+}
+.game-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+  opacity: 0.55;
+}
+.screen-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+.screen-stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center;
+}
+.screen-stage .screen-content > * {
+  width: 100%;
+  height: 100%;
+}
+.screen-stage .race-play .race-screen {
+  width: 100%;
+  height: 100%;
+}
+.dialog-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: #1b1030b3;
+  display: grid;
+  place-items: center;
+}
+.dialog-card {
+  width: 520px;
+  padding: 32px;
+  background: #f4f6ff;
+  border: 5px solid #1b1030;
+  border-radius: 24px;
+  box-shadow: 0 8px 0 #1b1030;
+  font-size: 20px;
+}
+.dialog-card h2 {
+  margin: 0 0 20px;
+  font:
+    36px "Lilita One",
+    sans-serif;
+}
+.dialog-card p {
+  line-height: 1.5;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+.ui-button {
+  border: 4px solid #1b1030;
+  border-radius: 16px;
+  background: linear-gradient(#fff27a, #ffaa00);
+  padding: 12px 24px;
+  box-shadow: 0 5px 0 #1b1030;
+  font:
+    24px "Lilita One",
+    sans-serif;
+}
+.motion-reduced .game-button {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-button {
+    transition: none;
+  }
+}

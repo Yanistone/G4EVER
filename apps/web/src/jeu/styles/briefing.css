@@ -1,0 +1,166 @@
+.briefing-page {
+  width: 1280px;
+  height: 720px;
+  box-sizing: border-box;
+  padding: 0;
+  position: relative;
+  background: #2d6bff;
+  color: #1b1030;
+  font-family: "Nunito", system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+}
+.briefing-rays {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.briefing-panel {
+  position: absolute;
+  left: 140px;
+  right: 140px;
+  top: 50px;
+  bottom: 50px;
+  background: #f4f6ff;
+  border: 5px solid #1b1030;
+  border-radius: 32px;
+  box-shadow: 0 12px 0 #1b1030;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.briefing-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 26px;
+  background: #ff4b3e;
+  border-bottom: 5px solid #1b1030;
+}
+.briefing-alert-title {
+  font-family: "Lilita One", "Arial Black", sans-serif;
+  font-weight: 400;
+  font-size: 24px;
+  color: #ffffff;
+}
+.briefing-deadline {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+}
+.briefing-body {
+  padding: 26px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  flex: 1;
+}
+.briefing-eyebrow {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  color: #2d6bff;
+}
+.briefing-title {
+  margin: 6px 0 0;
+  font-family: "Lilita One", "Arial Black", sans-serif;
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1.1;
+}
+.briefing-cards {
+  display: flex;
+  gap: 20px;
+}
+.briefing-card {
+  flex: 1;
+  background: #ffffff;
+  border: 4px solid #1b1030;
+  border-radius: 24px;
+  box-shadow: 0 6px 0 #1b1030;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.briefing-card-icon {
+  width: 56px;
+  height: 56px;
+  border: 4px solid #1b1030;
+  border-radius: 16px;
+  background: #f4f6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.briefing-card-title {
+  margin: 0;
+  font-family: "Lilita One", "Arial Black", sans-serif;
+  font-weight: 400;
+  font-size: 22px;
+  line-height: 1.15;
+}
+.briefing-card-description {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #3b3352;
+}
+.briefing-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+}
+.briefing-controls {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 800;
+}
+.briefing-control {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.briefing-keycap {
+  display: inline-flex;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid #1b1030;
+  border-radius: 9px;
+  background: #ffffff;
+  box-shadow: 0 3px 0 #1b1030;
+  font-size: 15px;
+  font-weight: 800;
+  color: #1b1030;
+}
+.game-button.briefing-start {
+  width: 330px;
+  height: 72px;
+  box-sizing: border-box;
+  border: 5px solid #1b1030;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fff27a, #ffaa00);
+  box-shadow: 0 8px 0 #1b1030;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "Lilita One", "Arial Black", sans-serif;
+  font-weight: 400;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: 1px;
+  color: #1b1030;
+  text-align: center;
+}

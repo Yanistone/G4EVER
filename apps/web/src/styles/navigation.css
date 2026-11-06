@@ -1,0 +1,271 @@
+.campus-mini {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: #1b1030;
+  font-family: "Nunito", sans-serif;
+  text-align: left;
+}
+.mini-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font:
+    17px "Lilita One",
+    sans-serif;
+  padding: 0 2px 5px;
+}
+.mini-title small {
+  font:
+    800 9px "Nunito",
+    sans-serif;
+  color: #6b6585;
+}
+.campus-mini > svg {
+  display: block;
+  width: 100%;
+  height: 142px;
+  background: #ded9f5;
+  border: 3px solid #1b1030;
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+.mini-caption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: 10px;
+  font-weight: 900;
+}
+.mini-caption > i {
+  width: 9px;
+  height: 9px;
+  background: #ffd93b;
+  border: 2px solid #1b1030;
+  border-radius: 50%;
+}
+.mini-caption > span {
+  margin-left: auto;
+  color: #2d6bff;
+}
+.navigator-screen {
+  width: 1280px;
+  height: 720px;
+  box-sizing: border-box;
+  background: #2d6bff url("/assets/blue-burst.svg") center/cover;
+  color: #1b1030;
+  font-family: "Nunito", sans-serif;
+  padding: 20px 24px;
+}
+.navigator-screen * {
+  box-sizing: border-box;
+}
+.navigator-screen header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 70px;
+  margin-bottom: 15px;
+  color: #fff;
+}
+.navigator-screen header small {
+  font-weight: 900;
+  letter-spacing: 2px;
+  font-size: 11px;
+}
+.navigator-screen h1 {
+  font:
+    29px "Lilita One",
+    sans-serif;
+  margin: 5px 0;
+  text-shadow: 0 3px #1b1030;
+}
+.navigator-layout {
+  display: grid;
+  grid-template-columns: 1fr 330px;
+  gap: 20px;
+  height: 535px;
+}
+.navigator-map {
+  background: #160f38;
+  border: 5px solid #1b1030;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow: 0 7px 0 #1b1030;
+}
+.navigator-map > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.navigator-room {
+  cursor: pointer;
+  outline: none;
+}
+.navigator-room:hover > rect,
+.navigator-room:focus-visible > rect {
+  stroke: #ffd93b;
+  stroke-width: 14;
+  fill: #ffffff15;
+}
+.navigator-sidebar {
+  border: 4px solid #1b1030;
+  background: #fff;
+  border-radius: 22px;
+  padding: 16px;
+  box-shadow: 0 7px 0 #1b1030;
+  overflow: auto;
+}
+.navigator-status {
+  background: #fff0a0;
+  border: 3px solid #1b1030;
+  border-radius: 14px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.navigator-status > span {
+  font-size: 10px;
+  letter-spacing: 2px;
+  font-weight: 900;
+}
+.navigator-status strong {
+  font:
+    22px "Lilita One",
+    sans-serif;
+}
+.navigator-status small {
+  font-size: 12px;
+  font-weight: 800;
+}
+.navigator-sidebar > p {
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 700;
+  color: #6b6585;
+  margin: 13px 0;
+}
+.navigator-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.navigator-list button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f4f6ff;
+  border: 3px solid #1b1030;
+  border-radius: 12px;
+  padding: 7px 9px;
+  color: #1b1030;
+  cursor: pointer;
+  text-align: left;
+}
+.navigator-list button.is-target {
+  background: #2ee6ff;
+}
+.navigator-list button > b {
+  font:
+    20px "Lilita One",
+    sans-serif;
+  width: 26px;
+  flex: none;
+  text-align: center;
+}
+.navigator-list button > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.navigator-list strong {
+  font:
+    16px "Lilita One",
+    sans-serif;
+}
+.navigator-list small {
+  font:
+    700 10px "Nunito",
+    sans-serif;
+  color: #6b6585;
+}
+.navigator-list i {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 20px;
+}
+.navigator-screen footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  height: 45px;
+  background: #fff;
+  border: 3px solid #1b1030;
+  border-radius: 12px;
+  margin-top: 16px;
+  padding: 0 18px;
+  font-size: 11px;
+  font-weight: 900;
+}
+.navigator-screen footer > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.map-key {
+  width: 13px;
+  height: 13px;
+  border: 2px solid #1b1030;
+  border-radius: 4px;
+}
+.key-yellow {
+  background: #ffd93b;
+}
+.key-green {
+  background: #3ddc6a;
+}
+.key-cyan {
+  background: #2ee6ff;
+}
+.key-pink {
+  background: #ff3e7f;
+}
+.navigator-screen footer > b {
+  color: #2d6bff;
+  font-size: 10px;
+}
+.navigator-status {
+  padding: 8px;
+  gap: 3px;
+}
+.navigator-status strong {
+  font-size: 20px;
+}
+.navigator-sidebar > p {
+  font-size: 11px;
+  margin: 8px 0;
+}
+.navigator-list {
+  gap: 6px;
+}
+.navigator-list button {
+  padding: 4px 7px;
+  gap: 8px;
+}
+.navigator-list button > span {
+  gap: 1px;
+}
+.navigator-list strong {
+  font-size: 14px;
+  line-height: 17px;
+}
+.navigator-list small {
+  font-size: 9px;
+  line-height: 11px;
+}
+.navigator-list button > b {
+  font-size: 18px;
+}

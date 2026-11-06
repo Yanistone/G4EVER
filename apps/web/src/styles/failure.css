@@ -1,0 +1,200 @@
+.feedback-failure .fb-pop {
+  transform: scale(0);
+  animation: fbpop 6s cubic-bezier(0.2, 1.5, 0.4, 1) 1 forwards;
+}
+.feedback-failure .fb-pop2 {
+  transform: scale(0);
+  animation: fbpop2 6s cubic-bezier(0.2, 1.6, 0.4, 1) 1 forwards;
+}
+.feedback-failure .fb-in1,
+.feedback-failure .fb-in2,
+.feedback-failure .fb-in3 {
+  opacity: 0;
+  animation: fbin 6s ease-out 1 forwards;
+}
+.feedback-failure .fb-in2 {
+  animation-name: fbin2;
+}
+.feedback-failure .fb-in3 {
+  animation-name: fbin3;
+}
+.feedback-failure .fb-draw path {
+  stroke-dashoffset: 1;
+  animation: fbdraw 6s ease-out 1 forwards;
+}
+@keyframes fbpop {
+  0%,
+  4% {
+    transform: scale(0) rotate(-3deg);
+  }
+  12% {
+    transform: scale(1.15) rotate(-3deg);
+  }
+  18%,
+  100% {
+    transform: scale(1) rotate(-3deg);
+  }
+}
+@keyframes fbpop2 {
+  0%,
+  14% {
+    transform: scale(0);
+  }
+  22% {
+    transform: scale(1.3);
+  }
+  28%,
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes fbin {
+  0%,
+  22% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  30%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fbin2 {
+  0%,
+  30% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  38%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fbin3 {
+  0%,
+  38% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  46%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fbdraw {
+  0%,
+  16% {
+    stroke-dashoffset: 1;
+  }
+  26%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.feedback-failure .fb-shake {
+  animation: fbshake 6s ease-in-out 1 forwards;
+}
+.feedback-failure .fb-gl {
+  opacity: 0;
+  animation: fbgl 1.8s steps(1) infinite;
+}
+.feedback-failure .fb-tick {
+  animation: fbtick 6s ease-out 1 forwards;
+}
+.feedback-failure .fb-glow {
+  animation: fbglow 1.4s ease-in-out infinite alternate;
+}
+@keyframes fbshake {
+  0%,
+  4% {
+    transform: none;
+  }
+  6% {
+    transform: translateX(-16px);
+  }
+  8% {
+    transform: translateX(14px);
+  }
+  10% {
+    transform: translateX(-10px);
+  }
+  12% {
+    transform: translateX(6px);
+  }
+  14%,
+  100% {
+    transform: none;
+  }
+}
+@keyframes fbgl {
+  0%,
+  60% {
+    opacity: 0;
+  }
+  62% {
+    opacity: 1;
+  }
+  70% {
+    opacity: 0;
+  }
+  76% {
+    opacity: 0.8;
+  }
+  80% {
+    opacity: 0;
+  }
+}
+@keyframes fbtick {
+  0%,
+  22% {
+    background: #2ee6ff;
+  }
+  28% {
+    background: #ff4b3e;
+  }
+  40%,
+  100% {
+    background: #ff4b3e;
+  }
+}
+@keyframes fbglow {
+  from {
+    box-shadow:
+      0 6px 0 #1b1030,
+      0 0 0 rgba(255, 217, 59, 0);
+  }
+  to {
+    box-shadow:
+      0 6px 0 #1b1030,
+      0 0 26px rgba(255, 217, 59, 0.9);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .feedback-failure .fb-shake,
+  .feedback-failure .fb-gl,
+  .feedback-failure .fb-glow {
+    animation: none;
+  }
+  .feedback-failure .fb-tick {
+    animation: none;
+    background: #ff4b3e;
+  }
+  .feedback-failure .fb-pop,
+  .feedback-failure .fb-pop2 {
+    animation: none;
+    transform: rotate(-3deg);
+  }
+  .feedback-failure .fb-pop2 {
+    transform: none;
+  }
+  .feedback-failure .fb-in1,
+  .feedback-failure .fb-in2,
+  .feedback-failure .fb-in3 {
+    animation: none;
+    opacity: 1;
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "id": "CoffeeCart_01",
+  "url": "https://polyhaven.com/a/CoffeeCart_01",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://polyhaven.com/license",
+  "authors": {
+    "Joe Seabuhr": "All"
+  },
+  "description": "Free 4K model - industrial metal coffee cart with commercial brewer, glass carafes, storage cabinet, lower shelf bin, power cord and red caster wheels.",
+  "gltf": "CoffeeCart_01_1k.gltf",
+  "files": [
+    "CoffeeCart_01_1k.gltf",
+    "textures/CoffeeCart_01_cart_arm_1k.jpg",
+    "textures/CoffeeCart_01_props_arm_1k.jpg",
+    "CoffeeCart_01.bin",
+    "textures/CoffeeCart_01_props_nor_gl_1k.jpg",
+    "textures/CoffeeCart_01_cart_nor_gl_1k.jpg",
+    "textures/CoffeeCart_01_cart_diff_1k.jpg",
+    "textures/CoffeeCart_01_props_diff_1k.jpg"
+  ],
+  "size": 1835504,
+  "bounds": {
+    "min": [
+      -1.397074580192566,
+      0.004307919647544622,
+      -0.5575034618377686
+    ],
+    "max": [
+      0.7705622315406799,
+      1.721980333328247,
+      0.5157865881919861
+    ],
+    "size": [
+      2.167636811733246,
+      1.7176724136807024,
+      1.0732900500297546
+    ],
+    "nodes": [
+      {
+        "name": "CoffeeCart_01_cart",
+        "min": [
+          -0.6708963513374329,
+          0.004307919647544622,
+          -0.20712579786777496
+        ],
+        "max": [
+          0.7705622315406799,
+          1.0565910339355469,
+          0.5094195008277893
+        ]
+      },
+      {
+        "name": "CoffeeCart_01_props",
+        "min": [
+          -1.397074580192566,
+          0.17277592420578003,
+          -0.5575034618377686
+        ],
+        "max": [
+          0.6110244393348694,
+          1.721980333328247,
+          0.5157865881919861
+        ]
+      },
+      {
+        "name": "CoffeeCart_01_mugs",
+        "min": [
+          0.20148180425167084,
+          1.0557500123977661,
+          -0.11585871875286102
+        ],
+        "max": [
+          0.6225864291191101,
+          1.1751478910446167,
+          0.4638267457485199
+        ]
+      }
+    ]
+  },
+  "orientation": {
+    "up": "+Y",
+    "units": "metres"
+  }
+}

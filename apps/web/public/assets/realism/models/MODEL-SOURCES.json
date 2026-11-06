@@ -1,0 +1,321 @@
+[
+  {
+    "id": "metal_office_desk",
+    "url": "https://polyhaven.com/a/metal_office_desk",
+    "license": "CC0-1.0",
+    "gltf": "metal_office_desk_1k.gltf",
+    "size": 1606530,
+    "files": [
+      "metal_office_desk_1k.gltf",
+      "textures/metal_office_desk_nor_gl_1k.jpg",
+      "textures/metal_office_desk_diff_1k.jpg",
+      "textures/metal_office_desk_arm_1k.jpg",
+      "metal_office_desk.bin"
+    ],
+    "nodes": [
+      {
+        "mesh": 0,
+        "name": "metal_office_desk_drawer_06"
+      },
+      {
+        "mesh": 1,
+        "name": "metal_office_desk_tray_01"
+      },
+      {
+        "mesh": 2,
+        "name": "metal_office_desk"
+      },
+      {
+        "mesh": 3,
+        "name": "metal_office_desk_drawer_04"
+      },
+      {
+        "mesh": 4,
+        "name": "metal_office_desk_drawer_03"
+      },
+      {
+        "mesh": 5,
+        "name": "metal_office_desk_drawer_05"
+      },
+      {
+        "mesh": 6,
+        "name": "metal_office_desk_drawer_02"
+      },
+      {
+        "mesh": 7,
+        "name": "metal_office_desk_drawer_01"
+      },
+      {
+        "mesh": 8,
+        "name": "metal_office_desk_tray_02"
+      }
+    ],
+    "bounds": [
+      {
+        "mesh": "Cube.009",
+        "vertices": 412,
+        "min": [
+          -0.9234539866447449,
+          0.22182446718215942,
+          -0.30513879656791687
+        ],
+        "max": [
+          -0.5121210217475891,
+          0.38375240564346313,
+          0.47354644536972046
+        ]
+      },
+      {
+        "mesh": "Cube.011",
+        "vertices": 232,
+        "min": [
+          -0.9245937466621399,
+          0.7276765704154968,
+          -0.112893246114254
+        ],
+        "max": [
+          -0.5111402273178101,
+          0.7504372596740723,
+          0.4390096664428711
+        ]
+      },
+      {
+        "mesh": "Plane.006",
+        "vertices": 3134,
+        "min": [
+          -1.0000008344650269,
+          0,
+          -0.4691101610660553
+        ],
+        "max": [
+          0.9999995231628418,
+          0.7875000238418579,
+          0.4479723274707794
+        ]
+      },
+      {
+        "mesh": "Cube.002",
+        "vertices": 412,
+        "min": [
+          -0.9234539866447449,
+          0.5472996234893799,
+          -0.3024718463420868
+        ],
+        "max": [
+          -0.5121210217475891,
+          0.7092275619506836,
+          0.4762135446071625
+        ]
+      },
+      {
+        "mesh": "Cube.004",
+        "vertices": 412,
+        "min": [
+          0.512119710445404,
+          0.22182446718215942,
+          -0.3051392734050751
+        ],
+        "max": [
+          0.9234526753425598,
+          0.38375240564346313,
+          0.47354596853256226
+        ]
+      },
+      {
+        "mesh": "Cube.006",
+        "vertices": 412,
+        "min": [
+          -0.9233784079551697,
+          0.38426628708839417,
+          -0.30513879656791687
+        ],
+        "max": [
+          -0.5120454430580139,
+          0.5461941957473755,
+          0.47354647517204285
+        ]
+      },
+      {
+        "mesh": "Cube.008",
+        "vertices": 412,
+        "min": [
+          0.513266384601593,
+          0.38690727949142456,
+          -0.30223533511161804
+        ],
+        "max": [
+          0.9245993494987488,
+          0.5488352179527283,
+          0.4764499366283417
+        ]
+      },
+      {
+        "mesh": "Cube.012",
+        "vertices": 412,
+        "min": [
+          0.512235701084137,
+          0.5503316521644592,
+          -0.30058202147483826
+        ],
+        "max": [
+          0.9235686659812927,
+          0.7122595310211182,
+          0.478103369474411
+        ]
+      },
+      {
+        "mesh": "Cube.014",
+        "vertices": 232,
+        "min": [
+          0.5111696124076843,
+          0.7276765704154968,
+          -0.11541026830673218
+        ],
+        "max": [
+          0.9246230125427246,
+          0.7504372596740723,
+          0.4364926815032959
+        ]
+      }
+    ]
+  },
+  {
+    "id": "plastic_monobloc_chair_01",
+    "url": "https://polyhaven.com/a/plastic_monobloc_chair_01",
+    "license": "CC0-1.0",
+    "gltf": "plastic_monobloc_chair_01_1k.gltf",
+    "size": 1952867,
+    "files": [
+      "plastic_monobloc_chair_01_1k.gltf",
+      "plastic_monobloc_chair_01.bin",
+      "textures/plastic_monobloc_chair_01_arm_1k.jpg",
+      "textures/plastic_monobloc_chair_01_diff_1k.jpg",
+      "textures/plastic_monobloc_chair_01_nor_gl_1k.jpg"
+    ],
+    "nodes": [
+      {
+        "mesh": 0,
+        "name": "plastic_monobloc_chair_01"
+      }
+    ],
+    "bounds": [
+      {
+        "mesh": "Plane.002",
+        "vertices": 3271,
+        "min": [
+          -0.3209305703639984,
+          -0.00001953914761543274,
+          -0.335950642824173
+        ],
+        "max": [
+          0.3209305703639984,
+          0.8798216581344604,
+          0.2916412651538849
+        ]
+      }
+    ]
+  },
+  {
+    "id": "potted_plant_01",
+    "url": "https://polyhaven.com/a/potted_plant_01",
+    "license": "CC0-1.0",
+    "gltf": "potted_plant_01_1k.gltf",
+    "size": 6325139,
+    "files": [
+      "potted_plant_01_1k.gltf",
+      "textures/potted_plant_01_pot_rough_1k.jpg",
+      "textures/potted_plant_01_leaves_nor_gl_1k.jpg",
+      "textures/potted_plant_01_pot_diff_1k.jpg",
+      "potted_plant_01.bin",
+      "textures/potted_plant_01_leaves_rough_1k.jpg",
+      "textures/potted_plant_01_pot_nor_gl_1k.jpg",
+      "textures/potted_plant_01_leaves_diff_1k.jpg"
+    ],
+    "nodes": [
+      {
+        "mesh": 0,
+        "name": "potted_plant_01_stem"
+      },
+      {
+        "mesh": 1,
+        "name": "potted_plant_01_pebbles",
+        "scale": [
+          1.0021867752075195,
+          1.0021867752075195,
+          1.0021867752075195
+        ],
+        "translation": [
+          0,
+          -0.013706685975193977,
+          0
+        ]
+      },
+      {
+        "mesh": 2,
+        "name": "potted_plant_01_pot"
+      },
+      {
+        "mesh": 3,
+        "name": "potted_plant_01_leaves"
+      }
+    ],
+    "bounds": [
+      {
+        "mesh": "potted_plant_01_base_low",
+        "vertices": 4301,
+        "min": [
+          -0.23460757732391357,
+          0.41102948784828186,
+          -0.21713386476039886
+        ],
+        "max": [
+          0.13674156367778778,
+          1.266984224319458,
+          0.17607749998569489
+        ]
+      },
+      {
+        "mesh": "Circle.008",
+        "vertices": 36575,
+        "min": [
+          -0.21813175082206726,
+          6.146728992462158e-8,
+          -0.21738101541996002
+        ],
+        "max": [
+          0.2112395167350769,
+          0.5428022146224976,
+          0.21265316009521484
+        ]
+      },
+      {
+        "mesh": "Circle.002",
+        "vertices": 3229,
+        "min": [
+          -0.23310250043869019,
+          0,
+          -0.23310253024101257
+        ],
+        "max": [
+          0.23310254514217377,
+          0.53143310546875,
+          0.233102485537529
+        ]
+      },
+      {
+        "mesh": "Plane.070",
+        "vertices": 69846,
+        "min": [
+          -0.33836793899536133,
+          0.5832836627960205,
+          -0.36367878317832947
+        ],
+        "max": [
+          0.24901919066905975,
+          1.336457371711731,
+          0.2698860168457031
+        ]
+      }
+    ]
+  }
+]

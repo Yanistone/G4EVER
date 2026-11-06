@@ -1,0 +1,33 @@
+export const screenIds = [
+  "auth",
+  "explore",
+  "puzzle",
+  "race",
+  "quiz",
+  "launch",
+  "menu",
+  "intro",
+  "campus",
+  "briefing",
+  "game",
+  "success",
+  "failure",
+  "end",
+] as const
+export type ScreenId = (typeof screenIds)[number]
+export const screenLabels: Record<ScreenId, string> = {
+  race: "Course entre amis",
+  auth: "Connexion · Profils locaux",
+  explore: "Explorer le campus",
+  puzzle: "Énigme du campus",
+  quiz: "06 · Exemple : écran de quiz",
+  launch: "0 · Écran de lancement animé",
+  menu: "A · Menu principal",
+  intro: "B · Intro narrative (1/4)",
+  campus: "D2 · Carte complète du campus",
+  briefing: "C · Briefing de mission",
+  game: "D · En jeu : vue de haut + HUD",
+  success: "E1 · Feedback bonne réponse",
+  failure: "E2 · Feedback mauvaise réponse",
+  end: "F · Écran de fin",
+}

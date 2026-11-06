@@ -1,0 +1,294 @@
+.fn-spin {
+  transform-origin: 640px 360px;
+  animation: fnspin 40s linear infinite;
+}
+.fn-cf {
+  opacity: 0;
+  animation-name: fnfall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.fn-t1 {
+  animation: fnt1 8s steps(1) 1 forwards;
+}
+.fn-t2 {
+  opacity: 0;
+  animation: fnt2 8s steps(1) 1 forwards;
+}
+.fn-t3 {
+  opacity: 0;
+  animation: fnt3 8s steps(1) 1 forwards;
+}
+.fn-l {
+  animation: fnl 8s cubic-bezier(0.3, 1.4, 0.5, 1) 1 forwards;
+}
+.fn-r {
+  animation: fnr 8s cubic-bezier(0.3, 1.4, 0.5, 1) 1 forwards;
+}
+.fn-title {
+  opacity: 0;
+  transform: scale(0);
+  animation: fntitle 8s cubic-bezier(0.2, 1.5, 0.4, 1) 1 forwards;
+}
+.fn-s1,
+.fn-s2,
+.fn-s3,
+.fn-s4,
+.fn-e,
+.fn-b {
+  opacity: 0;
+  animation: fnin 8s ease-out 1 forwards;
+}
+.fn-s2 {
+  animation-name: fnin2;
+}
+.fn-s3 {
+  animation-name: fnin3;
+}
+.fn-s4 {
+  animation-name: fnin4;
+}
+.fn-e {
+  animation-name: fnin5;
+}
+.fn-b {
+  animation-name: fnin6;
+}
+.fn-rank {
+  opacity: 0;
+  transform: scale(0) rotate(-30deg);
+  animation: fnrank 8s cubic-bezier(0.2, 1.6, 0.4, 1) 1 forwards;
+}
+.fn-glow {
+  animation: fnglow 1.6s ease-in-out infinite alternate;
+}
+@keyframes fnspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fnfall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(780px) rotate(540deg);
+  }
+}
+@keyframes fnt1 {
+  0%,
+  14% {
+    opacity: 1;
+  }
+  15%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fnt2 {
+  0%,
+  14% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  17% {
+    opacity: 0.2;
+  }
+  19% {
+    opacity: 1;
+  }
+  21% {
+    opacity: 0.3;
+  }
+  23% {
+    opacity: 1;
+  }
+  26%,
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fnt3 {
+  0%,
+  25% {
+    opacity: 0;
+  }
+  26%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fnl {
+  0%,
+  26% {
+    transform: none;
+  }
+  34%,
+  100% {
+    transform: translate(-14px, 10px) rotate(-18deg);
+  }
+}
+@keyframes fnr {
+  0%,
+  26% {
+    transform: none;
+  }
+  34%,
+  100% {
+    transform: translate(14px, -10px) rotate(18deg);
+  }
+}
+@keyframes fntitle {
+  0%,
+  28% {
+    opacity: 0;
+    transform: scale(0) rotate(-2deg);
+  }
+  34% {
+    opacity: 1;
+    transform: scale(1.12) rotate(-2deg);
+  }
+  38%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-2deg);
+  }
+}
+@keyframes fnin {
+  0%,
+  38% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  43%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fnin2 {
+  0%,
+  42% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  47%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fnin3 {
+  0%,
+  46% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  51%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fnin4 {
+  0%,
+  50% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  55%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fnin5 {
+  0%,
+  56% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  62%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fnin6 {
+  0%,
+  62% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  68%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fnrank {
+  0%,
+  66% {
+    opacity: 0;
+    transform: scale(0) rotate(-30deg);
+  }
+  72% {
+    opacity: 1;
+    transform: scale(1.25) rotate(8deg);
+  }
+  77%,
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(-8deg);
+  }
+}
+@keyframes fnglow {
+  from {
+    opacity: 0.55;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fn-spin,
+  .fn-glow,
+  .fn-l,
+  .fn-r {
+    animation: none;
+  }
+  .fn-cf,
+  .fn-t1,
+  .fn-t2 {
+    display: none;
+  }
+  .fn-t3 {
+    animation: none;
+    opacity: 1;
+  }
+  .fn-title {
+    animation: none;
+    opacity: 1;
+    transform: rotate(-2deg);
+  }
+  .fn-s1,
+  .fn-s2,
+  .fn-s3,
+  .fn-s4,
+  .fn-e,
+  .fn-b {
+    animation: none;
+    opacity: 1;
+  }
+  .fn-rank {
+    animation: none;
+    opacity: 1;
+    transform: rotate(-8deg);
+  }
+}

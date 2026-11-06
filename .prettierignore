@@ -3,3 +3,7 @@ dist
 coverage
 package-lock.json
 public/assets
+**/public/assets
+**/dist
+test-results
+playwright-report

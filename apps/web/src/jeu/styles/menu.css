@@ -1,0 +1,159 @@
+.m-pan {
+  animation: mpan 18s ease-in-out infinite alternate;
+}
+.m-walk {
+  animation: mwalk 9s linear infinite;
+}
+.m-glow {
+  animation: mglow 2.4s ease-in-out infinite alternate;
+}
+.m-glitch {
+  animation: mglitch 1.7s steps(1) infinite;
+}
+.m-in {
+  opacity: 0;
+  animation: min 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+.m-nudge {
+  display: inline-block;
+  animation: mnudge 0.8s ease-in-out infinite alternate;
+}
+.m-fill {
+  animation: mfill 7s linear infinite;
+}
+.m-flash {
+  animation: mflash 7s linear infinite;
+}
+.m-blink {
+  animation: mblink 1s steps(1) infinite;
+}
+.m-ticker {
+  animation: mticker 26s linear infinite;
+}
+@keyframes mpan {
+  from {
+    transform: translate(0, 0);
+  }
+  to {
+    transform: translate(-200px, -110px);
+  }
+}
+@keyframes mwalk {
+  0% {
+    transform: translate(520px, 780px);
+  }
+  25% {
+    transform: translate(520px, 380px);
+  }
+  50% {
+    transform: translate(1080px, 380px);
+  }
+  75% {
+    transform: translate(1080px, 780px);
+  }
+  100% {
+    transform: translate(520px, 780px);
+  }
+}
+@keyframes mglow {
+  from {
+    opacity: 0.45;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes mglitch {
+  0%,
+  70% {
+    opacity: 0;
+  }
+  72% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  86% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0;
+  }
+}
+@keyframes min {
+  from {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes mnudge {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(8px);
+  }
+}
+@keyframes mfill {
+  0% {
+    width: 0;
+  }
+  92% {
+    width: 100%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+@keyframes mflash {
+  0%,
+  92% {
+    opacity: 0;
+  }
+  94% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes mblink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0.15;
+  }
+}
+@keyframes mticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .m-pan,
+  .m-walk,
+  .m-glow,
+  .m-glitch,
+  .m-nudge,
+  .m-fill,
+  .m-flash,
+  .m-blink,
+  .m-ticker {
+    animation: none;
+  }
+  .m-in {
+    opacity: 1;
+    animation: none;
+  }
+}

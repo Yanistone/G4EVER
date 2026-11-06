@@ -1,0 +1,42 @@
+{
+  "id": "Carpet012",
+  "url": "https://ambientcg.com/a/Carpet012",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://docs.ambientcg.com/license/",
+  "author": "ambientCG / Lennart Demes",
+  "sourceArchive": "https://ambientcg.com/get?file=Carpet012_1K-JPG.zip",
+  "description": "Plain short-pile blue-grey carpet PBR. No tile pattern. 1024 × 1024 maps; original downloads unchanged.",
+  "resolution": [
+    1024,
+    1024
+  ],
+  "maps": {
+    "color": "Carpet012_1K-JPG_Color.jpg",
+    "normalGL": "Carpet012_1K-JPG_NormalGL.jpg",
+    "roughness": "Carpet012_1K-JPG_Roughness.jpg",
+    "ambientOcclusion": "Carpet012_1K-JPG_AmbientOcclusion.jpg"
+  },
+  "files": [
+    {
+      "name": "Carpet012_1K-JPG_AmbientOcclusion.jpg",
+      "size": 869062,
+      "sha256": "dd4e4387c0cf4b8fe3c24a62bbaf4b49ce31ddfdab47044b05b7e51f96bbbb3c"
+    },
+    {
+      "name": "Carpet012_1K-JPG_Color.jpg",
+      "size": 1765438,
+      "sha256": "3c4af04d67ad6803be57c82ba4ee2939c24b437dae903061ec3dd1082d0563c5"
+    },
+    {
+      "name": "Carpet012_1K-JPG_NormalGL.jpg",
+      "size": 2648306,
+      "sha256": "a4be6281a932a071ec0388d024119cacefdb64c9f1dae898b5e4331652e4b9d8"
+    },
+    {
+      "name": "Carpet012_1K-JPG_Roughness.jpg",
+      "size": 604450,
+      "sha256": "655b590ba7594302e4a0e1b556e26beaee16b798de4d261f1a66bce71c80c222"
+    }
+  ],
+  "totalBytes": 5887256
+}

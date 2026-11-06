@@ -1,0 +1,82 @@
+{
+  "license": "CC0",
+  "licenseURL": "https://polyhaven.com/license",
+  "assets": [
+    {
+      "id": "large_floor_tiles_02",
+      "type": "Diffuse",
+      "file": "color.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/large_floor_tiles_02/large_floor_tiles_02_diff_1k.jpg"
+    },
+    {
+      "id": "painted_plaster_wall",
+      "type": "Diffuse",
+      "file": "color.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_diff_1k.jpg"
+    },
+    {
+      "id": "plank_flooring_03",
+      "type": "Diffuse",
+      "file": "color.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/plank_flooring_03/plank_flooring_03_diff_1k.jpg"
+    },
+    {
+      "id": "wood_table_001",
+      "type": "Diffuse",
+      "file": "color.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_001/wood_table_001_diff_1k.jpg"
+    },
+    {
+      "id": "painted_plaster_wall",
+      "type": "nor_gl",
+      "file": "normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_nor_gl_1k.jpg"
+    },
+    {
+      "id": "wood_table_001",
+      "type": "nor_gl",
+      "file": "normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_001/wood_table_001_nor_gl_1k.jpg"
+    },
+    {
+      "id": "plank_flooring_03",
+      "type": "nor_gl",
+      "file": "normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/plank_flooring_03/plank_flooring_03_nor_gl_1k.jpg"
+    },
+    {
+      "id": "painted_plaster_wall",
+      "type": "Rough",
+      "file": "roughness.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/painted_plaster_wall/painted_plaster_wall_rough_1k.jpg"
+    },
+    {
+      "id": "wood_table_001",
+      "type": "Rough",
+      "file": "roughness.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/wood_table_001/wood_table_001_rough_1k.jpg"
+    },
+    {
+      "id": "large_floor_tiles_02",
+      "type": "nor_gl",
+      "file": "normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/large_floor_tiles_02/large_floor_tiles_02_nor_gl_1k.jpg"
+    },
+    {
+      "id": "plank_flooring_03",
+      "type": "Rough",
+      "file": "roughness.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/plank_flooring_03/plank_flooring_03_rough_1k.jpg"
+    },
+    {
+      "id": "large_floor_tiles_02",
+      "type": "Rough",
+      "file": "roughness.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/large_floor_tiles_02/large_floor_tiles_02_rough_1k.jpg"
+    },
+    {
+      "id": "studio_small_09",
+      "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr"
+    }
+  ]
+}

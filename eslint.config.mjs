@@ -5,12 +5,13 @@ import globals from "globals"
 
 export default tseslint.config(
   {
-    ignores: ["dist", "node_modules"],
+    ignores: ["**/dist/**", "**/node_modules/**", "test-results/**", "playwright-report/**"],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ["**/*.{js,mjs,ts}"],
+    files: ["**/*.{js,mjs,ts,tsx}"],
+    rules: { "no-empty": ["error", { allowEmptyCatch: true }] },
     languageOptions: {
       globals: {
         ...globals.browser,

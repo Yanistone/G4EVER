@@ -1,0 +1,14 @@
+{
+  "id": "green_point_park",
+  "source": "https://polyhaven.com/a/green_point_park",
+  "license": "CC0-1.0",
+  "file": "campus-daylight.hdr",
+  "size": 1664799,
+  "md5": "850e2b9b07c72eb2ae1fc8e13d12ab85",
+  "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/green_point_park_1k.hdr",
+  "panorama": {
+    "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/extra/Tonemapped%20JPG/green_point_park.jpg",
+    "file": "campus-panorama.jpg",
+    "resize": "2048 × 1024, optimisé pour le navigateur"
+  }
+}
