@@ -235,7 +235,7 @@ export function createNpcs(
         talkUntil = performance.now() + 5000
         npc.state = "talk"
         if (s.role === "guardian")
-          return "En aventure, le correctif se prépare au Co-working. Dans la course, cette console valide l’arrivée après les cinq salles. Le carnet garde tes souvenirs entre deux boucles."
+          return "En aventure, la porte de sortie s’ouvre après cinq énigmes. Dans la course, cette console valide l’arrivée après les cinq salles. Le carnet garde tes souvenirs entre deux boucles."
         if (s.roomId === "classroom")
           return "Le terminal de Sugiton utilise le souvenir du café. Lis ensuite le journal d’erreur : le crash et la restauration y laissent des traces."
         if (s.roomId === "cowork")

@@ -147,7 +147,12 @@ export function createCampusRuntime(
   try {
     const saved = JSON.parse(sessionStorage.getItem(doorKey) || "[]")
     for (const d of world.doors)
-      if (Array.isArray(saved) && saved.includes(d.id) && !roomLocked(d.roomId))
+      if (
+        d.id !== "sormiou-north" &&
+        Array.isArray(saved) &&
+        saved.includes(d.id) &&
+        !roomLocked(d.roomId)
+      )
         d.desired = d.openness = 1
   } catch {}
   for (const d of world.doors)
@@ -246,6 +251,9 @@ export function createCampusRuntime(
             : "Porte ouverte · vise le cadre et appuie sur E pour fermer."
           : "Porte fermée",
       )
+      if (d.roomId === "sormiou" && d.desired) {
+        window.setTimeout(() => cb.interact("sormiou-exit"), 600)
+      }
     } else if (target.kind === "station") {
       const room = WORLD_ROOMS.find((r) => r.id === target!.id)!
       if (

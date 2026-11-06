@@ -192,6 +192,6 @@ export function unlockedRooms(solved: readonly string[]): string[] {
   if (solved.includes("journal-erreur")) ids.push("amphitheater")
   if (solved.includes("planning-g4")) ids.push("gaming")
   if (solved.includes("avant-apres")) ids.push("cowork")
-  if (solved.includes("correctif")) ids.push("sormiou")
+  if (solved.length >= 5) ids.push("sormiou")
   return ids
 }

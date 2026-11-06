@@ -90,6 +90,7 @@ export function App() {
   const [submitted, setSubmitted] = useState<SubmittedAnswer | null>(null)
   const [notice, setNotice] = useState("")
   const [clueText, setClueText] = useState("")
+  const [exitThroughDoor, setExitThroughDoor] = useState(false)
   const [referencePosition, setReferencePosition] = useState(mockGameData.playerPosition)
   const overlayTrigger = useRef<HTMLElement | null>(null)
   const openOverlay = useCallback((next: Exclude<Overlay, null>) => {
@@ -133,6 +134,7 @@ export function App() {
       return
     }
     begin()
+    setExitThroughDoor(false)
     setIntroIndex(0)
     setSelectedAnswerId(null)
     setSubmitted(null)
@@ -158,7 +160,20 @@ export function App() {
       return
     }
     if (roomId === "sormiou") {
+      const remaining = Math.max(0, 5 - session.solvedPuzzleIds.length)
+      setClueText(
+        remaining === 0
+          ? "La sortie est déverrouillée. Approche-toi de la porte finale de Sormiou et ouvre-la pour terminer la partie."
+          : `Résous encore ${remaining} énigme${remaining > 1 ? "s" : ""} pour déverrouiller la porte finale.`,
+      )
       openOverlay("terminal")
+      return
+    }
+    if (roomId === "sormiou-exit") {
+      if (session.solvedPuzzleIds.length < 5) return
+      setExitThroughDoor(true)
+      finish(session.procedureValidated ? 1 : 2)
+      navigate("end")
       return
     }
     const next = availablePuzzle(session.solvedPuzzleIds)
@@ -235,6 +250,7 @@ export function App() {
       (!session.procedureValidated || !validateScenario("correctif", selectedAnswerId ?? ""))
     )
       return
+    setExitThroughDoor(false)
     finish(ending)
     navigate("end")
   }
@@ -271,6 +287,7 @@ export function App() {
           ...demoFailureFeedback,
           ...(submitted ? { answer: submitted.answer } : {}),
         }
+  const exitEnding = exitThroughDoor && session.ending === 2
   const ending: EndResult = session.ending
     ? {
         ...demoEndResult,
@@ -285,11 +302,18 @@ export function App() {
         solved: session.solvedPuzzleIds.length,
         hints: session.hintUses,
         endingNumber: session.ending,
-        endingTitle: session.ending === 1 ? "Le correctif complet" : "Tout couper · fin partielle",
+        headline: exitEnding ? "TU AS TROUVÉ LA SORTIE !" : demoEndResult.headline,
+        endingTitle: exitEnding
+          ? "La porte de Sormiou"
+          : session.ending === 1
+            ? "Le correctif complet"
+            : "Tout couper · fin partielle",
         endingDescription:
-          session.ending === 1
-            ? "Sauvegarde, correction, tests et déploiement : les huit énigmes sont résolues. G4-OS est réparé et la journée dépasse enfin 16h00."
-            : "Tu as coupé l’alimentation. La boucle est interrompue, mais G4-OS reste en panne : le correctif n’a pas été déployé.",
+          exitEnding
+            ? "Après cinq énigmes, tu as franchi la porte finale et quitté le campus. Tu peux revenir au menu ou poursuivre une nouvelle partie."
+            : session.ending === 1
+              ? "Sauvegarde, correction, tests et déploiement : les huit énigmes sont résolues. G4-OS est réparé et la journée dépasse enfin 16h00."
+              : "Tu as coupé l’alimentation. La boucle est interrompue, mais G4-OS reste en panne : le correctif n’a pas été déployé.",
         otherEndingUnlocked: session.unlockedEndings.includes(session.ending === 1 ? 2 : 1),
         lockedEndingNumber: session.ending === 1 ? 2 : 1,
         lockedEndingTitle: session.unlockedEndings.includes(session.ending === 1 ? 2 : 1)
@@ -374,11 +398,21 @@ export function App() {
         }}
         helpCost="−5 min campus (gratuit si déjà mémorisé ou aide de Léa)"
         unlockedRoomIds={unlockedRooms(session.solvedPuzzleIds)}
-        progress={{ solved: session.solvedPuzzleIds.length, total: 8 }}
+        progress={{
+          solved: session.solvedPuzzleIds.length,
+          total: 8,
+          missionRooms: puzzles.map((p) => p.scenario?.room ?? p.roomId),
+        }}
         objectiveLabel={
-          availablePuzzle(session.solvedPuzzleIds)?.title ?? "Appliquer le correctif au Co-working"
+          session.solvedPuzzleIds.length >= 5
+            ? "Vous pouvez sortir par la porte de Sormiou"
+            : (availablePuzzle(session.solvedPuzzleIds)?.title ?? "Appliquer le correctif au Co-working")
         }
-        targetRoomId={availablePuzzle(session.solvedPuzzleIds)?.roomId ?? "cowork"}
+        targetRoomId={
+          session.solvedPuzzleIds.length >= 5
+            ? "sormiou"
+            : (availablePuzzle(session.solvedPuzzleIds)?.roomId ?? "cowork")
+        }
         onJournal={() => openOverlay("journal")}
         inventoryKey={inventoryKey}
         escapeDocuments={escapeDocuments}

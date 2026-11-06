@@ -1378,7 +1378,8 @@
 }
 
 .screen-viewport.is-responsive .fps-objective {
-  max-width: min(280px, 35vw);
+  width: min(560px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
   max-height: 34dvh;
   overflow-y: auto;
 }

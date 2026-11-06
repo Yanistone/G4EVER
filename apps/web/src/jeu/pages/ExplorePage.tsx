@@ -24,7 +24,7 @@ export interface ExplorePageProps {
   onInteract: (id: string) => void
   solvedRoomIds: readonly string[]
   unlockedRoomIds?: readonly string[]
-  progress?: { solved: number; total: number }
+  progress?: { solved: number; total: number; missionRooms?: readonly string[] }
   active: boolean
   mapOpen?: boolean
   gameTime: string
@@ -221,6 +221,7 @@ export function ExplorePage(p: ExplorePageProps) {
   const room = getRoomAt(p.playerPosition),
     complete = p.progress?.solved ?? p.solvedRoomIds.length,
     total = p.progress?.total ?? 5
+  const missionRooms = p.progress?.missionRooms
   const close = () => {
     setInventory(false)
     setTalk(null)
@@ -288,23 +289,32 @@ export function ExplorePage(p: ExplorePageProps) {
         <p>
           {p.objectiveLabel ||
             (complete >= 5
-              ? "Rejoindre la console de Sormiou"
+              ? "Vous pouvez sortir par la porte de Sormiou"
               : "Restaurer les cinq modules du campus")}
         </p>
         <div className="fragment-dots">
           {p.progress
-            ? Array.from({ length: total }, (_, i) => (
-                <span key={i} className={i < complete ? "done" : ""} title={`Énigme ${i + 1}`}>
-                  {i < complete ? "✓" : String(i + 1).padStart(2, "0")}
-                </span>
-              ))
+            ? Array.from({ length: total }, (_, i) => {
+                const roomName = missionRooms?.[i]
+                const label = roomName ?? `Mission ${i + 1}`
+                return (
+                  <span
+                    key={i}
+                    className={i < complete ? "done" : ""}
+                    title={`Mission ${i + 1} · ${label}`}
+                    aria-label={`Mission ${i + 1}, ${label}`}
+                  >
+                    {i < complete ? `✓ ${label}` : label}
+                  </span>
+                )
+              })
             : WORLD_ROOMS.filter((r) => r.kind === "puzzle").map((r, i) => (
                 <span
                   key={r.id}
                   className={p.solvedRoomIds.includes(r.id) ? "done" : ""}
                   title={r.label}
                 >
-                  {p.solvedRoomIds.includes(r.id) ? "✓" : String(i + 1).padStart(2, "0")}
+                  {p.solvedRoomIds.includes(r.id) ? `✓ ${r.label}` : r.label}
                 </span>
               ))}
           <b>
