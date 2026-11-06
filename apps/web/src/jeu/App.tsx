@@ -107,7 +107,7 @@ export function App() {
   const feedbackPuzzle = puzzles.find((p) => p.id === submitted?.puzzleId)
 
   useEffect(() => {
-    document.title = "G4 Ever"
+    document.title = "G4EVER"
     setOverlay(null)
   }, [screen])
   useEffect(() => {
@@ -308,12 +308,11 @@ export function App() {
           : session.ending === 1
             ? "Le correctif complet"
             : "Tout couper · fin partielle",
-        endingDescription:
-          exitEnding
-            ? "Après cinq énigmes, tu as franchi la porte finale et quitté le campus. Tu peux revenir au menu ou poursuivre une nouvelle partie."
-            : session.ending === 1
-              ? "Sauvegarde, correction, tests et déploiement : les huit énigmes sont résolues. G4-OS est réparé et la journée dépasse enfin 16h00."
-              : "Tu as coupé l’alimentation. La boucle est interrompue, mais G4-OS reste en panne : le correctif n’a pas été déployé.",
+        endingDescription: exitEnding
+          ? "Après cinq énigmes, tu as franchi la porte finale et quitté le campus. Tu peux revenir au menu ou poursuivre une nouvelle partie."
+          : session.ending === 1
+            ? "Sauvegarde, correction, tests et déploiement : les huit énigmes sont résolues. G4-OS est réparé et la journée dépasse enfin 16h00."
+            : "Tu as coupé l’alimentation. La boucle est interrompue, mais G4-OS reste en panne : le correctif n’a pas été déployé.",
         otherEndingUnlocked: session.unlockedEndings.includes(session.ending === 1 ? 2 : 1),
         lockedEndingNumber: session.ending === 1 ? 2 : 1,
         lockedEndingTitle: session.unlockedEndings.includes(session.ending === 1 ? 2 : 1)
@@ -337,9 +336,7 @@ export function App() {
       }
     : { ...mockCampusData, playerPosition: referencePosition }
   const pages = {
-    launch: (
-      <LaunchPage data={launchData} onStart={() => navigate("auth")} />
-    ),
+    launch: <LaunchPage data={launchData} onStart={() => navigate("auth")} />,
     auth: (
       <AuthPage
         profiles={profiles.profiles}
@@ -406,7 +403,8 @@ export function App() {
         objectiveLabel={
           session.solvedPuzzleIds.length >= 5
             ? "Vous pouvez sortir par la porte de Sormiou"
-            : (availablePuzzle(session.solvedPuzzleIds)?.title ?? "Appliquer le correctif au Co-working")
+            : (availablePuzzle(session.solvedPuzzleIds)?.title ??
+              "Appliquer le correctif au Co-working")
         }
         targetRoomId={
           session.solvedPuzzleIds.length >= 5
@@ -598,9 +596,9 @@ export function App() {
           )}
           {overlay === "credits" && (
             <>
-              <p>G4 Ever · Institut G4</p>
+              <p>G4EVER · Institut G4</p>
               <p>
-                Illustrations, personnages et cycles de marche : document G4 Ever fourni par
+                Illustrations, personnages et cycles de marche : document G4EVER fourni par
                 l’équipe.
               </p>
               <p>Polices Lilita One et Nunito, sous licence SIL Open Font License.</p>

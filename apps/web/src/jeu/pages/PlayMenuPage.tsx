@@ -27,7 +27,7 @@ export function PlayMenuPage(p: Props) {
         </div>
       </header>
       <section className="immersive-home-content">
-        <span className="edition-tag">G4 EVER / L’EXPÉRIENCE 3D</span>
+        <span className="edition-tag">G4EVER / L’EXPÉRIENCE 3D</span>
         <h1>
           Le campus
           <br />a besoin

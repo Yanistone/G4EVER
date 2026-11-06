@@ -23,13 +23,9 @@
   min-height: 100dvh;
 }
 
-.screen-viewport.is-responsive .screen-content > :not(
-    .campus-world-layer,
-    .campus-map-layer,
-    .fps-page,
-    .game-page,
-    .race-play
-  ) {
+.screen-viewport.is-responsive
+  .screen-content
+  > :not(.campus-world-layer, .campus-map-layer, .fps-page, .game-page, .race-play) {
   width: 100% !important;
   height: auto !important;
   min-height: 100dvh;
@@ -620,7 +616,9 @@
   border-radius: 0;
   background: transparent;
   display: block;
-  font: 15px/1.55 "Nunito", sans-serif;
+  font:
+    15px/1.55 "Nunito",
+    sans-serif;
 }
 
 .screen-viewport.is-responsive .ending-stats,
@@ -1184,7 +1182,9 @@
   border-radius: 13px;
   background: #19132cbb;
   color: #fff;
-  font: 25px "Lilita One", sans-serif;
+  font:
+    25px "Lilita One",
+    sans-serif;
   box-shadow: 0 3px 10px #0005;
   touch-action: none;
   user-select: none;
@@ -1727,9 +1727,7 @@
 
   .screen-viewport.is-responsive .dialog-card--pause {
     width: min(100%, 460px);
-    max-height: calc(
-      100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px
-    );
+    max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px);
     padding: 16px;
     border-radius: 18px;
   }

@@ -6,7 +6,7 @@ export function BrandMark() {
         <LaunchArtwork1 />
       </span>
       <span>
-        G4 EVER<small>LA COURSE AU REBOOT</small>
+        G4EVER<small>LA COURSE AU REBOOT</small>
       </span>
     </span>
   )

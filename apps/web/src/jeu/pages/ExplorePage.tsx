@@ -308,7 +308,7 @@ export function ExplorePage(p: ExplorePageProps) {
                   </span>
                 )
               })
-            : WORLD_ROOMS.filter((r) => r.kind === "puzzle").map((r, i) => (
+            : WORLD_ROOMS.filter((r) => r.kind === "puzzle").map((r) => (
                 <span
                   key={r.id}
                   className={p.solvedRoomIds.includes(r.id) ? "done" : ""}

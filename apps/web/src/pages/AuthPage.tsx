@@ -119,7 +119,7 @@ export function AuthPage({
           Enregistrés sur cet appareil, sans mot de passe ni compte serveur.
         </p>
       </section>
-      <p className="auth-footer">Institut G4 · G4 Ever</p>
+      <p className="auth-footer">Institut G4 · G4EVER</p>
     </div>
   )
 }

@@ -311,10 +311,7 @@ export async function transact(
     if (!me || me.left)
       throw new GameError("Ta session de salon a expiré. Rejoins une nouvelle partie.", 401)
     me.lastSeen = now
-    if (
-      me.pauseStartedAt !== null &&
-      !["pause", "resume", "state", "leave"].includes(action)
-    )
+    if (me.pauseStartedAt !== null && !["pause", "resume", "state", "leave"].includes(action))
       throw new GameError("La partie est en pause. Reprends pour continuer.", 409)
     const currentHost = room.players.find((p) => p.id === room.hostId)
     if (!currentHost || currentHost.left || now - currentHost.lastSeen > 30000) {
@@ -391,8 +388,7 @@ export async function transact(
         const playerNow = playerClockTime(me, now)
         me.finishedAt = playerNow
         me.score +=
-          Math.floor(remainingMilliseconds(room.startsAt!, playerNow, me.penaltyMinutes) / 1000) *
-          2
+          Math.floor(remainingMilliseconds(room.startsAt!, playerNow, me.penaltyMinutes) / 1000) * 2
         if (!room.winnerId) {
           room.winnerId = me.id
         }
@@ -502,8 +498,7 @@ export async function transact(
               me.mistakes++
               me.penaltyMinutes += WRONG_ANSWER_MINUTES
               me.wrong[q.id] = (me.wrong[q.id] ?? 0) + 1
-              if (me.wrong[q.id] % 3 === 0)
-                (me.lockouts ??= {})[q.id] = playerNow + PUZZLE_LOCK_MS
+              if (me.wrong[q.id] % 3 === 0) (me.lockouts ??= {})[q.id] = playerNow + PUZZLE_LOCK_MS
             }
             lastResult = {
               correct,

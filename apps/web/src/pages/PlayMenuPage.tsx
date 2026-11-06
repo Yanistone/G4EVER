@@ -12,10 +12,10 @@ export function PlayMenuPage({ canContinue, onCampaign, onContinue }: Props) {
       <CampusBackdrop />
       <div className="home-shade" />
       <header className="immersive-header">
-        <span className="brand-mark">G4 EVER</span>
+        <span className="brand-mark">G4EVER</span>
       </header>
       <section className="immersive-home-content">
-        <span className="edition-tag">G4 EVER / LA COURSE AU REBOOT</span>
+        <span className="edition-tag">G4EVER / LA COURSE AU REBOOT</span>
         <h1>
           Le campus
           <br />a besoin

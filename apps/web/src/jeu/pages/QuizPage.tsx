@@ -29,7 +29,10 @@ export function QuizPage({
         overflow: "hidden",
       }}
     >
-      <div className="quiz-art-background" style={{ position: "absolute", inset: "0", overflow: "hidden" }}>
+      <div
+        className="quiz-art-background"
+        style={{ position: "absolute", inset: "0", overflow: "hidden" }}
+      >
         <QuizArtwork0 />
       </div>
       <div

@@ -38,7 +38,7 @@ export function LaunchPage({ data, onStart }: LaunchPageProps) {
       className="launch-page"
       onClick={start}
       role="region"
-      aria-label="Écran de lancement G4 Ever"
+      aria-label="Écran de lancement G4EVER"
       style={{
         width: "100%",
         height: "100%",

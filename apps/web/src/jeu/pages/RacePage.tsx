@@ -145,9 +145,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
     if (state) offset.current = state.serverNow - Date.now()
   }, [state])
   const time = now + offset.current
-  const playerTime = me
-    ? (me.pauseStartedAt ?? time) - (me.pausedMilliseconds ?? 0)
-    : time
+  const playerTime = me ? (me.pauseStartedAt ?? time) - (me.pausedMilliseconds ?? 0) : time
   const remaining = state?.startsAt
     ? remainingMilliseconds(state.startsAt, me?.finishedAt ?? playerTime, me?.penaltyMinutes ?? 0)
     : 0
@@ -157,10 +155,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
       ? campusMinuteAt(state.startsAt, me?.finishedAt ?? playerTime, me?.penaltyMinutes ?? 0)
       : 540
   const campusTime = formatCampusClock(campusMinute)
-  const lockedSeconds = Math.max(
-    0,
-    Math.ceil(((question?.lockedUntil ?? 0) - playerTime) / 1000),
-  )
+  const lockedSeconds = Math.max(0, Math.ceil(((question?.lockedUntil ?? 0) - playerTime) / 1000))
   const expired = !!me?.timedOut || (state?.phase === "playing" && remaining <= 0)
   const move = (position: { x: number; y: number }) => {
     setLocalPosition(position)
@@ -904,7 +899,9 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
           )}
           {dialog === "pause" && (
             <>
-              <p>Le chronomètre est suspendu pour toi. Les autres joueurs continuent leur course.</p>
+              <p>
+                Le chronomètre est suspendu pour toi. Les autres joueurs continuent leur course.
+              </p>
               <ThreeSettings />
               <div className="dialog-race-actions">
                 <button className="r-btn r-btn-gold" onClick={() => void resumeGame()}>

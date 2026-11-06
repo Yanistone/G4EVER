@@ -5,7 +5,7 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
   return (
     <main className="yanis-intro">
       <header>
-        <strong>G4 EVER</strong>
+        <strong>G4EVER</strong>
         <button onClick={onSkip}>PASSER ▸▸</button>
       </header>
       <section>

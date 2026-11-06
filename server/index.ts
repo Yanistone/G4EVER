@@ -104,7 +104,7 @@ createServer(async (req, res) => {
     res.writeHead(404).end("Introuvable")
   }
 }).listen(port, "0.0.0.0", () => {
-  console.log(`G4 Ever · http://localhost:${port}`)
+  console.log(`G4EVER · http://localhost:${port}`)
   for (const list of Object.values(networkInterfaces()))
     for (const address of list ?? [])
       if (address.family === "IPv4" && !address.internal)

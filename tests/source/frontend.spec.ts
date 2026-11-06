@@ -48,7 +48,7 @@ for (const viewport of [
     for (const screen of screens) {
       await test.step(screen.title, async () => {
         await openScreen(page, screen.route)
-        await expect(page).toHaveTitle(`${screen.title} — G4 Ever`)
+        await expect(page).toHaveTitle(`${screen.title} — G4EVER`)
         const main = page.getByRole("main", { name: screen.title, exact: true })
         await expect(main).toBeVisible()
         expect(await main.locator("svg,canvas,h1").count()).toBeGreaterThan(0)

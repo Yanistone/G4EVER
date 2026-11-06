@@ -20,8 +20,8 @@ export function ScreenViewport({
 }: ScreenViewportProps) {
   const container = useRef<HTMLElement>(null)
   const [layout, setLayout] = useState({ width, height, scale: 1 })
-  const [responsive, setResponsive] = useState(() =>
-    typeof window !== "undefined" && (window.innerWidth <= 1100 || window.innerHeight <= 640),
+  const [responsive, setResponsive] = useState(
+    () => typeof window !== "undefined" && (window.innerWidth <= 1100 || window.innerHeight <= 640),
   )
   useLayoutEffect(() => {
     const node = container.current
@@ -66,22 +66,22 @@ export function ScreenViewport({
                 transform: "none",
               }
             : fluid
-            ? {
-                position: "absolute",
-                inset: 0,
-                width: "100%",
-                height: "100%",
-                left: 0,
-                top: 0,
-                transform: "none",
-              }
-            : {
-                width: layout.width,
-                height: layout.height,
-                marginLeft: -layout.width / 2,
-                marginTop: -layout.height / 2,
-                transform: `scale(${layout.scale})`,
-              }
+              ? {
+                  position: "absolute",
+                  inset: 0,
+                  width: "100%",
+                  height: "100%",
+                  left: 0,
+                  top: 0,
+                  transform: "none",
+                }
+              : {
+                  width: layout.width,
+                  height: layout.height,
+                  marginLeft: -layout.width / 2,
+                  marginTop: -layout.height / 2,
+                  transform: `scale(${layout.scale})`,
+                }
         }
       >
         {children}
