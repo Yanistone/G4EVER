@@ -582,6 +582,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
           <div className="race-exploration" inert={view === "map"}>
             <ExplorePage
               helpCost="Un indice coûte 100 points, une seule fois par verrou. Le chrono continue."
+              canAffordHelp={me.score >= 100}
               onAskHelp={async (roomId) => {
                 const result = await race.act("assist", { roomId })
                 return result?.questions.find((q) => q.roomId === roomId)?.hint
@@ -723,10 +724,14 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                 <div className="question-actions">
                   <button
                     className="r-btn r-btn-ghost"
-                    disabled={pending || !!question.hint}
+                    disabled={pending || !!question.hint || me.score < 100}
                     onClick={hint}
                   >
-                    {question.hint ? "Indice affiché" : "Un indice ? −100 pts"}
+                    {question.hint
+                      ? "Indice affiché"
+                      : me.score < 100
+                        ? "100 pts requis"
+                        : "Un indice ? −100 pts"}
                   </button>
                   <span>
                     Bonne réponse : jusqu’à +1 000 pts · Erreur : −10 min campus et −150 pts

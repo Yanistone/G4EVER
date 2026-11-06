@@ -34,6 +34,7 @@ export interface ExplorePageProps {
   escapeDocuments?: readonly EscapeDocument[]
   onAskHelp?: (roomId: string) => Promise<string | undefined>
   helpCost?: string
+  canAffordHelp?: boolean
   onJournal?: () => void
   inventoryKey?: string
   raceInfo?: { code: string; remaining: string; score: number; rank: string; onBoard: () => void }
@@ -459,7 +460,7 @@ export function ExplorePage(p: ExplorePageProps) {
                   ) : (
                     <button
                       className="ui-button ask-help"
-                      disabled={helpPending}
+                      disabled={helpPending || p.canAffordHelp === false}
                       onClick={async () => {
                         setHelpPending(true)
                         try {
@@ -488,7 +489,11 @@ export function ExplorePage(p: ExplorePageProps) {
                         }
                       }}
                     >
-                      {helpPending ? "J’EXAMINE LE VERROU…" : "JE SUIS BLOQUÉ · UN INDICE ?"}
+                      {helpPending
+                        ? "J’EXAMINE LE VERROU…"
+                        : p.canAffordHelp === false
+                          ? "100 POINTS REQUIS"
+                          : "JE SUIS BLOQUÉ · UN INDICE ?"}
                     </button>
                   )}
                   <p className="help-cost">
