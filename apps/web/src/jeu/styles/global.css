@@ -2,6 +2,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "./fonts.css";
 @import "./reduced-motion.css";
+@import "./responsive.css";
 
 :root {
   font-family: "Nunito", system-ui, sans-serif;

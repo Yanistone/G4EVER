@@ -35,6 +35,7 @@ export function LaunchPage({ data, onStart }: LaunchPageProps) {
   }, [start])
   return (
     <div
+      className="launch-page"
       onClick={start}
       role="region"
       aria-label="Écran de lancement G4 Ever"
@@ -187,6 +188,7 @@ export function LaunchPage({ data, onStart }: LaunchPageProps) {
           />
         </div>
         <div
+          className="sp-logo-wrap"
           style={{
             position: "absolute",
             left: "490px",
@@ -261,7 +263,7 @@ export function LaunchPage({ data, onStart }: LaunchPageProps) {
           </div>
         </div>
         <div
-          className={"sp-press"}
+          className="sp-press sp-start-wrap"
           style={{
             position: "absolute",
             left: "0",
@@ -274,7 +276,7 @@ export function LaunchPage({ data, onStart }: LaunchPageProps) {
           <button
             type="button"
             className="game-button sp-pulse"
-            aria-label={data.startLabel}
+            aria-label="Commencer le jeu"
             style={{
               padding: "14px 34px",
               border: "5px solid #1B1030",
@@ -288,7 +290,8 @@ export function LaunchPage({ data, onStart }: LaunchPageProps) {
               color: "#1B1030",
             }}
           >
-            {data.startLabel}
+            <span className="launch-prompt-desktop">{data.startLabel}</span>
+            <span className="launch-prompt-touch">TOUCHER POUR COMMENCER</span>
           </button>
         </div>
         <div className={"sp-walk"} style={{ position: "absolute", left: "0", top: "560px" }}>

@@ -869,6 +869,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
             }
             setDialog(null)
           }}
+          className={dialog === "pause" ? "dialog-card--pause" : undefined}
         >
           {dialog === "help" && (
             <>
@@ -877,8 +878,12 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                 les verrous de chaque salle. Rejoins ensuite la console de <b>Sormiou</b> pour
                 valider ta sortie.
               </p>
-              <p>
+              <p className="race-desktop-controls">
                 <b>ZQSD / WASD / flèches</b> : marcher · <b>E</b> : borne proche · <b>M</b> : carte.
+              </p>
+              <p className="race-touch-controls">
+                Sur téléphone, utilise les flèches tactiles pour marcher, glisse sur le décor pour
+                regarder et appuie sur Interagir près d’une borne.
               </p>
               <p>
                 Tu as 15 minutes de jeu pour aller de 09:00 à 16:00. Chaque erreur te retire 10

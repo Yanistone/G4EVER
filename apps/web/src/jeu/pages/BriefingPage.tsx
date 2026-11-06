@@ -69,6 +69,10 @@ export function BriefingPage({ data, onStart }: BriefingPageProps) {
                 <Keycap>Échap</Keycap> Pause
               </span>
             </div>
+            <p className="briefing-touch-help">
+              Sur téléphone, glisse sur l’écran pour regarder, utilise les flèches pour marcher et
+              le bouton Interagir près des objets.
+            </p>
             <button type="button" className="game-button briefing-start" onClick={onStart}>
               {data.startLabel}
             </button>

@@ -24,7 +24,7 @@ export function CampusMinimap({ position, solvedRoomIds, targetRoomId, camera }:
   return (
     <span className="campus-mini">
       <span className="mini-title">
-        PLAN DU CAMPUS <small>M · AGRANDIR</small>
+        PLAN DU CAMPUS <small>AGRANDIR</small>
       </span>
       <svg
         viewBox="0 70 1600 1030"
@@ -129,7 +129,7 @@ export function CampusNavigator({
           <h1>PLAN DU CAMPUS</h1>
         </div>
         <button className="r-btn r-btn-gold" onClick={onBack}>
-          ← RETOUR AU JEU · M / ÉCHAP
+          ← RETOUR AU JEU
         </button>
       </header>
       <div className="navigator-layout">

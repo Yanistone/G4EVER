@@ -1,5 +1,6 @@
 import type { EscapeDocument } from "../game/escape"
 import { useEffect, useRef, useState } from "react"
+import type { PointerEvent as ReactPointerEvent } from "react"
 import { WORLD_ROOMS, getRoomAt } from "../game/world"
 import { isMapKey } from "../game/shortcuts"
 import type { PlayerPosition } from "../types/game"
@@ -46,10 +47,16 @@ export function ExplorePage(p: ExplorePageProps) {
     latest = useRef(p)
   latest.current = p
   const resumeAfterOverlay = useRef(false)
+  const touchLook = useRef<{ pointerId: number; x: number; y: number } | null>(null)
   const [ready, setReady] = useState(false),
     [error, setError] = useState(""),
     [locked, setLocked] = useState(false),
     [target, setTarget] = useState<Interaction | null>(null)
+  const [touchDevice, setTouchDevice] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      (window.matchMedia("(pointer: coarse)").matches || (navigator.maxTouchPoints ?? 0) > 0),
+  )
   const [items, setItems] = useState<string[]>(() => readInventory(key)),
     [inventory, setInventory] = useState(false),
     [settings, setSettings] = useState(false),
@@ -76,6 +83,23 @@ export function ExplorePage(p: ExplorePageProps) {
     if (runtime.current) runtime.current.openMap()
     else latest.current.onOpenMap()
   }
+  const holdMovement = (code: string, event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.currentTarget.setPointerCapture(event.pointerId)
+    runtime.current?.press(code)
+  }
+  const releaseMovement = (code: string, event: ReactPointerEvent<HTMLButtonElement>) => {
+    runtime.current?.release(code)
+    if (event.currentTarget.hasPointerCapture(event.pointerId))
+      event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+  useEffect(() => {
+    const query = window.matchMedia("(pointer: coarse)")
+    const update = () => setTouchDevice(query.matches || (navigator.maxTouchPoints ?? 0) > 0)
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
   useEffect(() => {
     const handleMap = (event: KeyboardEvent) => {
       if (
@@ -206,7 +230,7 @@ export function ExplorePage(p: ExplorePageProps) {
   const examine = allDocuments.find((i) => i.id === examined)
   return (
     <div
-      className="fps-page"
+      className={`fps-page${touchDevice ? " has-touch-controls" : ""}`}
       data-testid="exploration"
       data-room={room?.id ?? "corridor"}
       aria-label="Exploration 3D du campus G4"
@@ -216,6 +240,26 @@ export function ExplorePage(p: ExplorePageProps) {
         className="fps-canvas"
         tabIndex={0}
         aria-label="Campus G4 en 3D, vue subjective"
+        onPointerDown={(event) => {
+          if (!touchDevice || !locked || event.pointerType !== "touch") return
+          event.preventDefault()
+          event.currentTarget.setPointerCapture(event.pointerId)
+          touchLook.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY }
+        }}
+        onPointerMove={(event) => {
+          const previous = touchLook.current
+          if (!previous || previous.pointerId !== event.pointerId) return
+          runtime.current?.look(event.clientX - previous.x, event.clientY - previous.y)
+          touchLook.current = { ...previous, x: event.clientX, y: event.clientY }
+        }}
+        onPointerUp={(event) => {
+          if (touchLook.current?.pointerId === event.pointerId) touchLook.current = null
+          if (event.currentTarget.hasPointerCapture(event.pointerId))
+            event.currentTarget.releasePointerCapture(event.pointerId)
+        }}
+        onPointerCancel={() => {
+          touchLook.current = null
+        }}
       />
       <div className="fps-vignette" />
       <header className="fps-top">
@@ -274,7 +318,7 @@ export function ExplorePage(p: ExplorePageProps) {
       </div>
       {target && locked && (
         <div className="fps-interaction">
-          <kbd>E</kbd>
+          <kbd>{touchDevice ? "↗" : "E"}</kbd>
           <div>
             <small>
               {target.kind === "npc"
@@ -294,9 +338,69 @@ export function ExplorePage(p: ExplorePageProps) {
           <span className="enter-arrow">↗</span>
           <div>
             <strong>Entrer dans le campus</strong>
-            <small>Clique pour capturer la souris · Échap pour la libérer</small>
+            <small>
+              {touchDevice
+                ? "Glisse pour regarder · utilise les commandes tactiles pour marcher"
+                : "Clique pour capturer la souris · Échap pour la libérer"}
+            </small>
           </div>
         </button>
+      )}
+      {touchDevice && locked && p.active && !blocked && (
+        <div className="fps-touch-controls" aria-label="Commandes tactiles du campus">
+          <div className="fps-touch-pad">
+            <button
+              type="button"
+              aria-label="Avancer"
+              onPointerDown={(event) => holdMovement("KeyW", event)}
+              onPointerUp={(event) => releaseMovement("KeyW", event)}
+              onPointerCancel={(event) => releaseMovement("KeyW", event)}
+              onLostPointerCapture={() => runtime.current?.release("KeyW")}
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              aria-label="Aller à gauche"
+              onPointerDown={(event) => holdMovement("KeyA", event)}
+              onPointerUp={(event) => releaseMovement("KeyA", event)}
+              onPointerCancel={(event) => releaseMovement("KeyA", event)}
+              onLostPointerCapture={() => runtime.current?.release("KeyA")}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              aria-label="Reculer"
+              onPointerDown={(event) => holdMovement("KeyS", event)}
+              onPointerUp={(event) => releaseMovement("KeyS", event)}
+              onPointerCancel={(event) => releaseMovement("KeyS", event)}
+              onLostPointerCapture={() => runtime.current?.release("KeyS")}
+            >
+              ↓
+            </button>
+            <button
+              type="button"
+              aria-label="Aller à droite"
+              onPointerDown={(event) => holdMovement("KeyD", event)}
+              onPointerUp={(event) => releaseMovement("KeyD", event)}
+              onPointerCancel={(event) => releaseMovement("KeyD", event)}
+              onLostPointerCapture={() => runtime.current?.release("KeyD")}
+            >
+              →
+            </button>
+          </div>
+          {target && (
+            <button
+              type="button"
+              className="fps-touch-interact"
+              aria-label="Interagir avec l’élément visé"
+              onClick={() => runtime.current?.interact()}
+            >
+              INTERAGIR
+            </button>
+          )}
+        </div>
       )}
       {!ready && !error && (
         <div className="fps-loading">

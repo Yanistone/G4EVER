@@ -52,6 +52,8 @@ export function createCampusRuntime(
     { preserveDrawingBuffer: true, stencil: true, powerPreference: "high-performance" },
     true,
   )
+  const touchInput =
+    window.matchMedia("(pointer: coarse)").matches || (navigator.maxTouchPoints ?? 0) > 0
   let settings = readSettings(),
     state = initial,
     disposed = false,
@@ -192,6 +194,12 @@ export function createCampusRuntime(
     canvas.focus()
     controller.stop()
     mouseLook.reset()
+    if (touchInput) {
+      freeLook = true
+      cb.lock(true)
+      cb.toast("Glisse sur l’écran pour regarder. Utilise les flèches pour marcher.")
+      return
+    }
     enterPending = true
     try {
       const p = canvas.requestPointerLock()
@@ -232,7 +240,11 @@ export function createCampusRuntime(
         )
       } catch {}
       cb.toast(
-        d.desired ? "Porte ouverte · vise le cadre et appuie sur E pour fermer." : "Porte fermée",
+        d.desired
+          ? touchInput
+            ? "Porte ouverte · utilise le bouton Interagir pour fermer."
+            : "Porte ouverte · vise le cadre et appuie sur E pour fermer."
+          : "Porte fermée",
       )
     } else if (target.kind === "station") {
       const room = WORLD_ROOMS.find((r) => r.id === target!.id)!
@@ -257,7 +269,11 @@ export function createCampusRuntime(
       world.items.get(target.id)?.setEnabled(false)
       audio.cue("pickup")
       cb.pickup(target.id)
-      cb.toast("Document ajouté à l’inventaire · I pour examiner")
+      cb.toast(
+        touchInput
+          ? "Document ajouté à l’inventaire."
+          : "Document ajouté à l’inventaire · I pour examiner",
+      )
     }
   }
   if (!backdrop) {
@@ -442,6 +458,15 @@ export function createCampusRuntime(
   return {
     ready,
     enter,
+    look(dx: number, dy: number) {
+      if (locked || freeLook) controller.look(dx, dy, settings.sensitivity)
+    },
+    press(code: string) {
+      if (locked || freeLook) controller.keys.add(code)
+    },
+    release(code: string) {
+      controller.keys.delete(code)
+    },
     openMap() {
       report()
       unlock()

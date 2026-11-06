@@ -11,6 +11,12 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
+  background-color: #2d6bff;
+  background-image: repeating-conic-gradient(
+    from 5deg at 50% 50%,
+    #4a86ff 0deg 10deg,
+    #2d6bff 10deg 20deg
+  );
 }
 .auth-brand {
   position: absolute;

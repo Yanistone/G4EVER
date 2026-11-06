@@ -4,6 +4,7 @@ import { IntroArtwork0 } from "../components/artwork/IntroArtwork"
 export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
   return (
     <div
+      className="intro-page"
       style={{
         width: "100%",
         height: "100%",
@@ -20,6 +21,7 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
       }}
     >
       <div
+        className="intro-header"
         style={{
           position: "absolute",
           left: "0",
@@ -50,6 +52,7 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
         </div>
       </div>
       <div
+        className="intro-artwork"
         style={{
           position: "absolute",
           left: "0",
@@ -61,7 +64,7 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
       >
         <IntroArtwork0 />
       </div>
-      <div style={{ position: "absolute", right: "48px", top: "44px" }}>
+      <div className="intro-skip" style={{ position: "absolute", right: "48px", top: "44px" }}>
         <button
           type="button"
           className="game-button"
@@ -91,6 +94,7 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
         </button>
       </div>
       <div
+        className="intro-card"
         style={{
           position: "absolute",
           left: "110px",
@@ -125,6 +129,7 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
           </div>
         </div>
         <p
+          className="intro-copy"
           style={{
             margin: "0",
             fontSize: "26px",
@@ -137,6 +142,7 @@ export function IntroPage({ data, onNext, onSkip }: IntroPageProps) {
           {data.afterHighlight}
         </p>
         <div
+          className="intro-actions"
           style={{
             display: "flex",
             alignItems: "center",

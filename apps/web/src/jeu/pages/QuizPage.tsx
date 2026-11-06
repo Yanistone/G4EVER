@@ -12,6 +12,7 @@ export function QuizPage({
   const canValidate = question.answers.some((answer) => answer.id === selectedAnswerId) && !pending
   return (
     <div
+      className="quiz-page"
       aria-labelledby="quiz-question"
       style={{
         width: "100%",
@@ -28,10 +29,11 @@ export function QuizPage({
         overflow: "hidden",
       }}
     >
-      <div style={{ position: "absolute", inset: "0", overflow: "hidden" }}>
+      <div className="quiz-art-background" style={{ position: "absolute", inset: "0", overflow: "hidden" }}>
         <QuizArtwork0 />
       </div>
       <div
+        className="quiz-header"
         style={{
           position: "relative",
           display: "flex",
@@ -41,6 +43,7 @@ export function QuizPage({
       >
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           <div
+            className="quiz-art-icon"
             style={{
               width: "84px",
               height: "84px",
@@ -53,6 +56,7 @@ export function QuizPage({
             <QuizArtwork1 />
           </div>
           <div
+            className="quiz-course-label"
             style={{
               padding: "10px 20px",
               border: "4px solid #1B1030",
@@ -69,6 +73,7 @@ export function QuizPage({
           </div>
         </div>
         <div
+          className="quiz-meta"
           style={{
             padding: "10px 20px",
             border: "4px solid #1B1030",
@@ -83,6 +88,7 @@ export function QuizPage({
         </div>
       </div>
       <div
+        className="quiz-prompt"
         style={{
           position: "relative",
           background: "#FFFFFF",
@@ -109,6 +115,7 @@ export function QuizPage({
         </p>
       </div>
       <div
+        className="quiz-answers"
         role="group"
         aria-label="Choisir une réponse"
         style={{
@@ -129,6 +136,7 @@ export function QuizPage({
         ))}
       </div>
       <div
+        className="quiz-controls"
         style={{
           position: "relative",
           display: "flex",
@@ -137,6 +145,7 @@ export function QuizPage({
         }}
       >
         <div
+          className="quiz-progress"
           role="progressbar"
           aria-label="Progression du quiz"
           aria-valuemin={0}
@@ -163,6 +172,7 @@ export function QuizPage({
         <button
           type="button"
           className="game-button"
+          data-quiz-validate
           onClick={onValidate}
           disabled={!canValidate}
           aria-busy={pending}

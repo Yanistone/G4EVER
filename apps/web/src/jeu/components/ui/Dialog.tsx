@@ -6,9 +6,10 @@ interface DialogProps {
   children: ReactNode
   onClose: () => void
   restoreFocusTo?: HTMLElement | null
+  className?: string
 }
 
-export function Dialog({ title, children, onClose, restoreFocusTo }: DialogProps) {
+export function Dialog({ title, children, onClose, restoreFocusTo, className }: DialogProps) {
   const ref = useRef<HTMLDivElement>(null)
   const closeRef = useRef(onClose)
   closeRef.current = onClose
@@ -62,7 +63,7 @@ export function Dialog({ title, children, onClose, restoreFocusTo }: DialogProps
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="dialog-card"
+        className={`dialog-card${className ? ` ${className}` : ""}`}
       >
         <h2 id={titleId}>{title}</h2>
         {children}

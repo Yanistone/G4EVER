@@ -106,7 +106,7 @@ export function App() {
   const feedbackPuzzle = puzzles.find((p) => p.id === submitted?.puzzleId)
 
   useEffect(() => {
-    document.title = `${screenLabels[screen]} — G4 Ever 3D · Local`
+    document.title = "G4 Ever"
     setOverlay(null)
   }, [screen])
   useEffect(() => {
@@ -530,6 +530,7 @@ export function App() {
           title={overlayTitles[overlay]}
           onClose={closeOverlay}
           restoreFocusTo={overlayTrigger.current}
+          className={`dialog-card--${overlay}`}
         >
           {overlay === "options" && (
             <>
@@ -540,7 +541,7 @@ export function App() {
             <>
               <p>Ta progression est sauvegardée automatiquement. La journée est en pause.</p>
               <ThreeSettings />
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 pause-actions">
                 <button className="game-button ui-button" onClick={closeOverlay}>
                   REPRENDRE
                 </button>

@@ -20,10 +20,15 @@ export function ScreenViewport({
 }: ScreenViewportProps) {
   const container = useRef<HTMLElement>(null)
   const [layout, setLayout] = useState({ width, height, scale: 1 })
+  const [responsive, setResponsive] = useState(() =>
+    typeof window !== "undefined" && (window.innerWidth <= 1100 || window.innerHeight <= 640),
+  )
   useLayoutEffect(() => {
     const node = container.current
-    if (!node || fluid) return
+    if (!node) return
     const resize = () => {
+      setResponsive(node.clientWidth <= 1100 || node.clientHeight <= 640)
+      if (fluid) return
       const scale = Math.min(node.clientWidth / width, node.clientHeight / height)
       if (scale <= 0) return
       const next = { width: node.clientWidth / scale, height: node.clientHeight / scale, scale }
@@ -43,13 +48,24 @@ export function ScreenViewport({
   return (
     <main
       ref={container}
-      className={`screen-viewport ${reducedMotion ? "motion-reduced" : ""}`}
+      className={`screen-viewport ${responsive ? "is-responsive" : ""} ${reducedMotion ? "motion-reduced" : ""}`}
       aria-label={label}
     >
       <div
         className="screen-stage"
         style={
-          fluid
+          responsive
+            ? {
+                position: "relative",
+                width: "100%",
+                minHeight: "100dvh",
+                height: "auto",
+                left: 0,
+                top: 0,
+                margin: 0,
+                transform: "none",
+              }
+            : fluid
             ? {
                 position: "absolute",
                 inset: 0,

@@ -1,6 +1,5 @@
 import { useState } from "react"
 import type { PlayerProfile } from "../types/profile"
-import { QuizArtwork0 } from "../components/artwork/QuizArtwork"
 import { LaunchArtwork1 } from "../components/artwork/LaunchArtwork"
 import "../styles/auth.css"
 
@@ -30,7 +29,6 @@ export function AuthPage({
   return (
     <div className="auth-page">
       <div className="auth-rays" aria-hidden="true">
-        <QuizArtwork0 />
       </div>
       <div className="auth-brand">
         <LaunchArtwork1 />

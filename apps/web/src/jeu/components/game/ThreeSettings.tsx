@@ -11,9 +11,9 @@ export function ThreeSettings() {
   return (
     <div className="three-settings">
       <label>
-        Sensibilité souris <output>{s.sensitivity.toFixed(2)}×</output>
+        Sensibilité de la caméra <output>{s.sensitivity.toFixed(2)}×</output>
         <input
-          aria-label="Sensibilité souris"
+          aria-label="Sensibilité de la caméra"
           type="range"
           min=".25"
           max="2.5"
@@ -56,9 +56,13 @@ export function ThreeSettings() {
           <option value="high">Élevée · ombres détaillées</option>
         </select>
       </label>
-      <p className="settings-help">
+      <p className="settings-help settings-help--desktop">
         ZQSD / WASD : marcher · souris : regarder · E : interagir · Maj : courir · Ctrl :
         s’accroupir · M : carte · I : inventaire · Échap : pause.
+      </p>
+      <p className="settings-help settings-help--touch">
+        Sur téléphone, glisse sur le décor pour regarder et utilise les commandes tactiles pour
+        marcher et interagir.
       </p>
     </div>
   )

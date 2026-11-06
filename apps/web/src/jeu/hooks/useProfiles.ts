@@ -5,6 +5,13 @@ const KEY = "g4-ever:profiles:v1"
 const normalizeNickname = (nickname: string) => nickname.trim().normalize("NFC")
 const nicknameKey = (nickname: string) => normalizeNickname(nickname).toLocaleLowerCase("fr")
 
+function createProfileId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  return `local-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`
+}
+
 export function parseProfileStore(value: unknown): ProfileStore {
   const empty: ProfileStore = { profiles: [], activeProfileId: null }
   if (typeof value !== "object" || value === null) return empty
@@ -76,7 +83,7 @@ export function useProfiles() {
       return false
     }
     const profile: PlayerProfile = {
-      id: crypto.randomUUID(),
+      id: createProfileId(),
       nickname: clean,
       createdAt: new Date().toISOString(),
     }

@@ -1,6 +1,12 @@
 export function LaunchArtwork0() {
   return (
-    <svg width={"1280"} height={"720"} viewBox={"0 0 1280 720"} aria-hidden={"true"}>
+    <svg
+      width={"1280"}
+      height={"720"}
+      viewBox={"0 0 1280 720"}
+      preserveAspectRatio={"xMidYMid slice"}
+      aria-hidden={"true"}
+    >
       <g className={"sp-spin"}>
         <g transform={"translate(240 60)"}>
           <g fill={"#4A86FF"}>
