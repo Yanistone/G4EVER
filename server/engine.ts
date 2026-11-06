@@ -37,6 +37,8 @@ export interface InternalPlayer extends RacePlayer {
   lastAttempt: number
   activeQuestionId: string | null
   receipts: Record<string, NonNullable<RaceSnapshot["lastResult"]>>
+  pauseStartedAt?: number | null
+  pausedMilliseconds?: number
 }
 export interface Room {
   scenarioVersion?: number
@@ -120,24 +122,29 @@ function player(name: string, now: number): InternalPlayer {
     lastAttempt: 0,
     activeQuestionId: null,
     receipts: {},
+    pauseStartedAt: null,
+    pausedMilliseconds: 0,
   }
+}
+function playerClockTime(player: InternalPlayer, now: number) {
+  return Math.max(0, (player.pauseStartedAt ?? now) - (player.pausedMilliseconds ?? 0))
 }
 export function advance(room: Room, now: number) {
   if (room.phase === "countdown" && now >= room.startsAt!) room.phase = "playing"
   if (room.phase === "playing")
     for (const p of room.players) {
+      const playerNow = playerClockTime(p, now)
       if (
         !p.left &&
         p.finishedAt === null &&
-        (now >= room.endsAt! ||
-          campusMinuteAt(room.startsAt!, now, p.penaltyMinutes ?? 0) >= DAY_END)
+        (remainingMilliseconds(room.startsAt!, playerNow, p.penaltyMinutes ?? 0) <= 0 ||
+          campusMinuteAt(room.startsAt!, playerNow, p.penaltyMinutes ?? 0) >= DAY_END)
       )
         p.timedOut = true
     }
   if (
     room.phase === "playing" &&
-    (now >= room.endsAt! ||
-      room.players.filter((p) => !p.left).every((p) => p.finishedAt !== null || p.timedOut))
+    room.players.filter((p) => !p.left).every((p) => p.finishedAt !== null || p.timedOut)
   )
     room.phase = "finished"
 }
@@ -169,6 +176,8 @@ export function snapshot(
     timedOut: p.timedOut ?? false,
     hints: p.hints,
     finishedAt: p.finishedAt,
+    pauseStartedAt: p.pauseStartedAt ?? null,
+    pausedMilliseconds: p.pausedMilliseconds ?? 0,
     position: p.position,
     left: p.left,
   }))
@@ -275,6 +284,8 @@ export async function transact(
       participant.penaltyMinutes ??= participant.mistakes * WRONG_ANSWER_MINUTES
       participant.timedOut ??= false
       participant.lockouts ??= {}
+      participant.pauseStartedAt ??= null
+      participant.pausedMilliseconds ??= 0
       if (!canWalkAt(participant.position)) {
         participant.position = {
           ...(ROOM_SPAWNS[getRoomAt(participant.position)?.id ?? "cafeteria"] ?? START_POSITION),
@@ -300,6 +311,11 @@ export async function transact(
     if (!me || me.left)
       throw new GameError("Ta session de salon a expiré. Rejoins une nouvelle partie.", 401)
     me.lastSeen = now
+    if (
+      me.pauseStartedAt !== null &&
+      !["pause", "resume", "state", "leave"].includes(action)
+    )
+      throw new GameError("La partie est en pause. Reprends pour continuer.", 409)
     const currentHost = room.players.find((p) => p.id === room.hostId)
     if (!currentHost || currentHost.left || now - currentHost.lastSeen > 30000) {
       room.hostId = room.players.find((p) => !p.left && now - p.lastSeen < 12000)?.id ?? room.hostId
@@ -335,7 +351,25 @@ export async function transact(
       room.endsAt = room.startsAt + room.durationMinutes * 60000
       for (const p of active) p.lastMove = room.startsAt
     }
-    if (action === "move" && room.phase === "playing" && me.finishedAt === null && !me.timedOut) {
+    if (action === "pause") {
+      if (room.phase !== "playing" || me.finishedAt !== null || me.timedOut)
+        throw new GameError("La partie ne peut pas être mise en pause maintenant.", 409)
+      me.pauseStartedAt ??= now
+    }
+    if (action === "resume") {
+      if (me.pauseStartedAt !== null) {
+        me.pausedMilliseconds = (me.pausedMilliseconds ?? 0) + Math.max(0, now - me.pauseStartedAt)
+        me.pauseStartedAt = null
+        me.lastMove = now
+      }
+    }
+    if (
+      action === "move" &&
+      room.phase === "playing" &&
+      me.finishedAt === null &&
+      !me.timedOut &&
+      me.pauseStartedAt === null
+    ) {
       const pos = data.position as { x: number; y: number } | undefined
       if (
         pos &&
@@ -354,9 +388,11 @@ export async function transact(
       if (action === "finish") {
         if (station?.id !== "sormiou" || me.solvedRoomIds.length !== 5)
           throw new GameError("Répare les cinq modules puis rejoins la console de Sormiou.")
-        me.finishedAt = now
+        const playerNow = playerClockTime(me, now)
+        me.finishedAt = playerNow
         me.score +=
-          Math.floor(remainingMilliseconds(room.startsAt!, now, me.penaltyMinutes) / 1000) * 2
+          Math.floor(remainingMilliseconds(room.startsAt!, playerNow, me.penaltyMinutes) / 1000) *
+          2
         if (!room.winnerId) {
           room.winnerId = me.id
         }
@@ -414,9 +450,10 @@ export async function transact(
             }
           }
           if (action === "answer") {
-            if ((me.lockouts?.[q.id] ?? 0) > now)
+            const playerNow = playerClockTime(me, now)
+            if ((me.lockouts?.[q.id] ?? 0) > playerNow)
               throw new GameError(
-                `Ce terminal est bloqué encore ${Math.ceil((me.lockouts![q.id] - now) / 1000)} secondes.`,
+                `Ce terminal est bloqué encore ${Math.ceil((me.lockouts![q.id] - playerNow) / 1000)} secondes.`,
                 429,
               )
             if (me.activeQuestionId !== q.id)
@@ -436,7 +473,7 @@ export async function transact(
             )
               throw new GameError("Saisis un code de 1 à 32 caractères.")
             me.lastAttempt = now
-            const timeBefore = campusMinuteAt(room.startsAt!, now, me.penaltyMinutes)
+            const timeBefore = campusMinuteAt(room.startsAt!, playerNow, me.penaltyMinutes)
             const correct =
               q.kind === "code"
                 ? typeof data.answerText === "string" &&
@@ -465,7 +502,8 @@ export async function transact(
               me.mistakes++
               me.penaltyMinutes += WRONG_ANSWER_MINUTES
               me.wrong[q.id] = (me.wrong[q.id] ?? 0) + 1
-              if (me.wrong[q.id] % 3 === 0) (me.lockouts ??= {})[q.id] = now + PUZZLE_LOCK_MS
+              if (me.wrong[q.id] % 3 === 0)
+                (me.lockouts ??= {})[q.id] = playerNow + PUZZLE_LOCK_MS
             }
             lastResult = {
               correct,
@@ -475,7 +513,7 @@ export async function transact(
               scoreDelta: delta,
               penaltyMinutes: correct ? 0 : WRONG_ANSWER_MINUTES,
               timeBefore,
-              timeAfter: campusMinuteAt(room.startsAt!, now, me.penaltyMinutes),
+              timeAfter: campusMinuteAt(room.startsAt!, playerNow, me.penaltyMinutes),
             }
             if (correct) me.receipts[q.id] = lastResult
           }

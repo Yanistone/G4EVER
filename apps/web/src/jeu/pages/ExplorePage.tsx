@@ -37,7 +37,7 @@ export interface ExplorePageProps {
   canAffordHelp?: boolean
   onJournal?: () => void
   inventoryKey?: string
-  raceInfo?: { code: string; remaining: string; score: number; rank: string; onBoard: () => void }
+  raceInfo?: { code: string; score: number; rank: string; onBoard: () => void }
 }
 export function ExplorePage(p: ExplorePageProps) {
   const key = p.inventoryKey ?? "campus"
@@ -45,7 +45,7 @@ export function ExplorePage(p: ExplorePageProps) {
     runtime = useRef<CampusRuntime | null>(null),
     latest = useRef(p)
   latest.current = p
-  const resumeAfterMap = useRef(false)
+  const resumeAfterOverlay = useRef(false)
   const [ready, setReady] = useState(false),
     [error, setError] = useState(""),
     [locked, setLocked] = useState(false),
@@ -132,7 +132,7 @@ export function ExplorePage(p: ExplorePageProps) {
               inventory: () => setInventory(true),
               target: setTarget,
               lock: (value) => {
-                if (value) resumeAfterMap.current = false
+                if (value) resumeAfterOverlay.current = false
                 setLocked(value)
               },
               toast: setToast,
@@ -183,8 +183,11 @@ export function ExplorePage(p: ExplorePageProps) {
     })
   }, [p.active, p.playerPosition, p.solvedRoomIds, items, blocked, ready])
   useEffect(() => {
-    if (p.mapOpen) resumeAfterMap.current = true
-    else if (resumeAfterMap.current && p.active && ready && !blocked) runtime.current?.enter()
+    if (p.mapOpen || !p.active) resumeAfterOverlay.current = true
+    else if (resumeAfterOverlay.current && ready && !blocked) {
+      resumeAfterOverlay.current = false
+      runtime.current?.enter()
+    }
   }, [p.mapOpen, p.active, ready, blocked])
   useEffect(() => {
     if (!toast) return
@@ -234,7 +237,6 @@ export function ExplorePage(p: ExplorePageProps) {
           <span className="live-dot" />
           <small>HORLOGE DU CAMPUS</small>
           <b>{p.gameTime}</b>
-          {p.raceInfo && <small>{p.raceInfo.remaining} restantes</small>}
         </div>
       </header>
       <div className="fps-objective">
@@ -287,7 +289,7 @@ export function ExplorePage(p: ExplorePageProps) {
           </div>
         </div>
       )}
-      {!locked && p.active && !blocked && ready && !resumeAfterMap.current && (
+      {!locked && p.active && !blocked && ready && !resumeAfterOverlay.current && (
         <button className="fps-enter" onClick={() => runtime.current?.enter()}>
           <span className="enter-arrow">↗</span>
           <div>

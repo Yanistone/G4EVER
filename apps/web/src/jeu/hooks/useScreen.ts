@@ -7,8 +7,15 @@ function readScreen(): ScreenId {
 }
 
 export function useScreen() {
-  const [screen, setScreen] = useState<ScreenId>(readScreen)
+  const [screen, setScreen] = useState<ScreenId>("launch")
   useEffect(() => {
+    if (window.location.hash !== "#launch") {
+      window.history.replaceState(
+        window.history.state,
+        "",
+        `${window.location.pathname}${window.location.search}#launch`,
+      )
+    }
     const update = () => setScreen(readScreen())
     window.addEventListener("hashchange", update)
     return () => window.removeEventListener("hashchange", update)

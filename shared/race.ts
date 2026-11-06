@@ -24,6 +24,8 @@ export interface RacePlayer {
   timedOut: boolean
   hints: number
   finishedAt: number | null
+  pauseStartedAt?: number | null
+  pausedMilliseconds?: number
   position: { x: number; y: number }
   left: boolean
 }
