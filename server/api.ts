@@ -35,6 +35,8 @@ export async function handleApi(request: Request, repository: Repository): Promi
         "ready",
         "start",
         "move",
+        "pause",
+        "resume",
         "open",
         "answer",
         "hint",

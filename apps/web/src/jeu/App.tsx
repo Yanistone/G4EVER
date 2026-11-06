@@ -114,7 +114,8 @@ export function App() {
   }, [screen, profiles.profile, navigate])
   useEffect(() => {
     if (session.event === "reboot") {
-      if (screen !== "explore") {
+      if (screen !== "explore" && screen !== "puzzle") return
+      if (screen === "puzzle") {
         navigate("explore")
         return
       }
@@ -313,7 +314,7 @@ export function App() {
     : { ...mockCampusData, playerPosition: referencePosition }
   const pages = {
     launch: (
-      <LaunchPage data={launchData} onStart={() => navigate(profiles.profile ? "menu" : "auth")} />
+      <LaunchPage data={launchData} onStart={() => navigate("auth")} />
     ),
     auth: (
       <AuthPage

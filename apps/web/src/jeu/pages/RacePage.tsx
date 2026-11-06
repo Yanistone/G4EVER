@@ -88,6 +88,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
     () => !!sessionStorage.getItem("g4-ever:race-help"),
   )
   const initialized = useRef("")
+  const restoredPause = useRef(false)
   const me = state?.players.find((p) => p.id === state.meId)
   const inventoryKey =
     state && me ? "race:" + state.code + ":" + state.round + ":" + me.id : "race:pending"
@@ -129,21 +130,37 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
       sessionStorage.setItem("g4-ever:race-help", "seen")
     }
   }, [state?.phase])
+  useEffect(() => {
+    if (me?.pauseStartedAt != null) {
+      if (!restoredPause.current) {
+        restoredPause.current = true
+        setDialog("pause")
+      }
+    } else {
+      restoredPause.current = false
+    }
+  }, [me?.pauseStartedAt])
   const offset = useRef(0)
   useEffect(() => {
     if (state) offset.current = state.serverNow - Date.now()
   }, [state])
   const time = now + offset.current
+  const playerTime = me
+    ? (me.pauseStartedAt ?? time) - (me.pausedMilliseconds ?? 0)
+    : time
   const remaining = state?.startsAt
-    ? remainingMilliseconds(state.startsAt, me?.finishedAt ?? time, me?.penaltyMinutes ?? 0)
+    ? remainingMilliseconds(state.startsAt, me?.finishedAt ?? playerTime, me?.penaltyMinutes ?? 0)
     : 0
   const campusMinute = me?.timedOut
     ? DAY_END
     : state?.startsAt
-      ? campusMinuteAt(state.startsAt, me?.finishedAt ?? time, me?.penaltyMinutes ?? 0)
+      ? campusMinuteAt(state.startsAt, me?.finishedAt ?? playerTime, me?.penaltyMinutes ?? 0)
       : 540
   const campusTime = formatCampusClock(campusMinute)
-  const lockedSeconds = Math.max(0, Math.ceil(((question?.lockedUntil ?? 0) - time) / 1000))
+  const lockedSeconds = Math.max(
+    0,
+    Math.ceil(((question?.lockedUntil ?? 0) - playerTime) / 1000),
+  )
   const expired = !!me?.timedOut || (state?.phase === "playing" && remaining <= 0)
   const move = (position: { x: number; y: number }) => {
     setLocalPosition(position)
@@ -225,6 +242,17 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
     if (!question) return
     const result = await race.act("hint", { questionId: question.id })
     if (result) setQuestion(result.questions.find((q) => q.id === question.id) ?? question)
+  }
+  const pauseGame = async () => {
+    const result = await race.act("pause")
+    if (result) setDialog("pause")
+  }
+  const resumeGame = async () => {
+    const result = await race.act("resume")
+    if (result) {
+      if (question) setQuestion(result.questions.find((q) => q.id === question.id) ?? question)
+      setDialog(null)
+    }
   }
   const exit = async () => {
     await race.leave()
@@ -582,6 +610,7 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
           <div className="race-exploration" inert={view === "map"}>
             <ExplorePage
               helpCost="Un indice coûte 100 points, une seule fois par verrou. Le chrono continue."
+              canAffordHelp={me.score >= 100}
               onAskHelp={async (roomId) => {
                 const result = await race.act("assist", { roomId })
                 return result?.questions.find((q) => q.roomId === roomId)?.hint
@@ -590,7 +619,6 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
               escapeDocuments={raceDocuments}
               raceInfo={{
                 code: state.code,
-                remaining: clock(remaining),
                 score: me.score,
                 rank: `${state.ranking.findIndex((p) => p.id === me.id) + 1}/${state.players.filter((p) => !p.left).length}`,
                 onBoard: () => setDialog("board"),
@@ -599,11 +627,16 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
               onMove={move}
               mapOpen={view === "map"}
               onOpenMap={() => setView("map")}
-              onPause={() => setDialog("pause")}
+              onPause={() => void pauseGame()}
               onInteract={interact}
               solvedRoomIds={me.solvedRoomIds}
               active={
-                view === "world" && state.phase === "playing" && !dialog && connected && !pending
+                view === "world" &&
+                state.phase === "playing" &&
+                me.pauseStartedAt == null &&
+                !dialog &&
+                connected &&
+                !pending
               }
               gameTime={campusTime}
               loopNumber={state.round}
@@ -723,10 +756,14 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                 <div className="question-actions">
                   <button
                     className="r-btn r-btn-ghost"
-                    disabled={pending || !!question.hint}
+                    disabled={pending || !!question.hint || me.score < 100}
                     onClick={hint}
                   >
-                    {question.hint ? "Indice affiché" : "Un indice ? −100 pts"}
+                    {question.hint
+                      ? "Indice affiché"
+                      : me.score < 100
+                        ? "100 pts requis"
+                        : "Un indice ? −100 pts"}
                   </button>
                   <span>
                     Bonne réponse : jusqu’à +1 000 pts · Erreur : −10 min campus et −150 pts
@@ -796,7 +833,8 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
       )}
       {!connected && (
         <div className="race-connection" role="status">
-          Connexion interrompue · reconnexion automatique… Le temps serveur continue.
+          Connexion interrompue · reconnexion automatique…{" "}
+          {me.pauseStartedAt != null ? "La pause reste active." : "Le temps continue."}
         </div>
       )}
       {error && (
@@ -820,7 +858,15 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
             }[dialog]
           }
           onClose={() => {
+            if (dialog === "exit" && me.pauseStartedAt != null) {
+              setDialog("pause")
+              return
+            }
             if (dialog === "help") setCampusEntered(true)
+            if (dialog === "pause" || (dialog === "help" && me.pauseStartedAt != null)) {
+              void resumeGame()
+              return
+            }
             setDialog(null)
           }}
         >
@@ -835,15 +881,16 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
                 <b>ZQSD / WASD / flèches</b> : marcher · <b>E</b> : borne proche · <b>M</b> : carte.
               </p>
               <p>
-                Tu as 15 minutes réelles pour aller de 09:00 à 16:00. Chaque erreur te retire 10
+                Tu as 15 minutes de jeu pour aller de 09:00 à 16:00. Chaque erreur te retire 10
                 minutes campus. Trois erreurs sur le même verrou le bloquent 30 secondes. Le temps
-                continue pendant les questions et les fenêtres.
+                continue pendant les questions et les fenêtres, mais s’arrête dans le menu Pause.
               </p>
               <button
                 className="r-btn r-btn-gold"
                 onClick={() => {
                   setCampusEntered(true)
-                  setDialog(null)
+                  if (me.pauseStartedAt != null) void resumeGame()
+                  else setDialog(null)
                 }}
               >
                 C’EST PARTI !
@@ -852,10 +899,10 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
           )}
           {dialog === "pause" && (
             <>
-              <p>Tu peux souffler, mais la course continue pour tout le monde.</p>
+              <p>Le chronomètre est suspendu pour toi. Les autres joueurs continuent leur course.</p>
               <ThreeSettings />
               <div className="dialog-race-actions">
-                <button className="r-btn r-btn-gold" onClick={() => setDialog(null)}>
+                <button className="r-btn r-btn-gold" onClick={() => void resumeGame()}>
                   REPRENDRE
                 </button>
                 <button className="r-btn r-btn-ghost" onClick={() => setDialog("help")}>
