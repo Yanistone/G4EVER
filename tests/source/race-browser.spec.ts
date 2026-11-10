@@ -115,9 +115,9 @@ test("evidence code opens a second lock, then repairs the room and updates the m
   await page.getByRole("button", { name: "VALIDER LA RÉPONSE →" }).click()
   await expect(page.getByText("MODULE DÉVERROUILLÉ", { exact: true })).toBeVisible()
   await page.getByRole("button", { name: "RETOURNER EXPLORER →" }).click()
-  await expect(page.locator(".fragment-dots")).toContainText("1/5")
+  await expect(page.locator(".fps-progress")).toContainText("1/5")
   await page.keyboard.press("m")
-  await expect(page.locator(".navigator-status")).toContainText("1/5 fragments récupérés")
+  await expect(page.locator(".navigator-status")).toContainText("1/5 salles terminées")
   await expect(
     page.locator(".navigator-list").getByRole("listitem", { name: "Distributeurs", exact: true }),
   ).toBeInViewport()

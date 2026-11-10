@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import type { PointerEvent as ReactPointerEvent } from "react"
 import { WORLD_ROOMS, getRoomAt } from "../game/world"
 import { isMapKey } from "../game/shortcuts"
+import { relativeBearing, waypointTo } from "../game/guidance"
 import type { PlayerPosition } from "../types/game"
 import type { CampusRuntime } from "../three/runtime"
 import type { Interaction } from "../three/world"
@@ -16,6 +17,7 @@ import {
 import { Dialog } from "../components/ui/Dialog"
 import { ThreeSettings } from "../components/game/ThreeSettings"
 import "../styles/immersive.css"
+import "../styles/experience.css"
 export interface ExplorePageProps {
   playerPosition: PlayerPosition
   onMove: (p: PlayerPosition) => void
@@ -31,7 +33,12 @@ export interface ExplorePageProps {
   loopNumber: number
   hintCount: number
   objectiveLabel?: string
+  objectiveRoom?: string
   targetRoomId?: string
+  /** Prévenu quand le joueur entre dans le campus (souris capturée) ou en sort. */
+  onEngage?: (engaged: boolean) => void
+  timeLabel?: string
+  urgent?: boolean
   escapeDocuments?: readonly EscapeDocument[]
   onAskHelp?: (roomId: string) => Promise<string | undefined>
   helpCost?: string
@@ -145,6 +152,7 @@ export function ExplorePage(p: ExplorePageProps) {
               position: q.playerPosition,
               solved: q.solvedRoomIds,
               unlockedRoomIds: q.unlockedRoomIds,
+              targetRoomId: q.targetRoomId,
               inventory: itemRef.current,
               documents: latest.current.escapeDocuments ?? readDocuments(key),
             },
@@ -158,7 +166,9 @@ export function ExplorePage(p: ExplorePageProps) {
               lock: (value) => {
                 if (value) resumeAfterOverlay.current = false
                 setLocked(value)
+                latest.current.onEngage?.(value)
               },
+              journal: () => latest.current.onJournal?.(),
               toast: setToast,
               talk: (name, text, roomId) => setTalk({ name, text, roomId }),
               pickup: (id) => {
@@ -203,9 +213,48 @@ export function ExplorePage(p: ExplorePageProps) {
       position: p.playerPosition,
       solved: p.solvedRoomIds,
       unlockedRoomIds: p.unlockedRoomIds,
+      targetRoomId: p.targetRoomId,
       inventory: items,
     })
-  }, [p.active, p.playerPosition, p.solvedRoomIds, items, blocked, ready])
+  }, [
+    p.active,
+    p.playerPosition,
+    p.solvedRoomIds,
+    p.unlockedRoomIds?.join(","),
+    p.targetRoomId,
+    items,
+    blocked,
+    ready,
+  ])
+  // Boussole : mise à jour directe du DOM à chaque image, sans re-rendu React.
+  const compass = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    let frame = 0
+    const tick = () => {
+      frame = requestAnimationFrame(tick)
+      const node = compass.current
+      const pose = runtime.current?.pose()
+      const roomId = latest.current.targetRoomId
+      if (!node || !pose || !roomId) return
+      const way = waypointTo(pose, roomId)
+      if (!way) return
+      const angle = (relativeBearing(pose, pose.yaw, way.point) * 180) / Math.PI
+      node.style.setProperty("--bearing", angle.toFixed(1) + "deg")
+      node.dataset.step = way.step
+      const label = node.querySelector("[data-compass-label]")
+      const text =
+        way.step === "terminal"
+          ? way.near
+            ? "Tu y es : vise le terminal et appuie sur E"
+            : `Terminal · ${way.meters} m`
+          : way.step === "exit"
+            ? `Sors de la salle · ${way.meters} m`
+            : `Rejoins la porte · ${way.meters} m`
+      if (label && label.textContent !== text) label.textContent = text
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [])
   useEffect(() => {
     if (p.mapOpen || !p.active) resumeAfterOverlay.current = true
     else if (resumeAfterOverlay.current && ready && !blocked) {
@@ -221,7 +270,6 @@ export function ExplorePage(p: ExplorePageProps) {
   const room = getRoomAt(p.playerPosition),
     complete = p.progress?.solved ?? p.solvedRoomIds.length,
     total = p.progress?.total ?? 5
-  const missionRooms = p.progress?.missionRooms
   const close = () => {
     setInventory(false)
     setTalk(null)
@@ -278,10 +326,11 @@ export function ExplorePage(p: ExplorePageProps) {
             <strong>{room?.label ?? "Passerelles du campus"}</strong>
           </div>
         </div>
-        <div className="fps-clock">
+        <div className={`fps-clock${p.urgent ? " is-urgent" : ""}${locked ? "" : " is-paused"}`}>
           <span className="live-dot" />
-          <small>HORLOGE DU CAMPUS</small>
+          <small>{locked || p.raceInfo ? "HORLOGE DU CAMPUS" : "JOURNÉE EN PAUSE"}</small>
           <b>{p.gameTime}</b>
+          {p.timeLabel && <em>{p.timeLabel}</em>}
         </div>
       </header>
       <div className="fps-objective">
@@ -292,31 +341,24 @@ export function ExplorePage(p: ExplorePageProps) {
               ? "Vous pouvez sortir par la porte de Sormiou"
               : "Restaurer les cinq modules du campus")}
         </p>
-        <div className="fragment-dots">
-          {p.progress
-            ? Array.from({ length: total }, (_, i) => {
-                const roomName = missionRooms?.[i]
-                const label = roomName ?? `Mission ${i + 1}`
-                return (
-                  <span
-                    key={i}
-                    className={i < complete ? "done" : ""}
-                    title={`Mission ${i + 1} · ${label}`}
-                    aria-label={`Mission ${i + 1}, ${label}`}
-                  >
-                    {i < complete ? `✓ ${label}` : label}
-                  </span>
-                )
-              })
-            : WORLD_ROOMS.filter((r) => r.kind === "puzzle").map((r) => (
-                <span
-                  key={r.id}
-                  className={p.solvedRoomIds.includes(r.id) ? "done" : ""}
-                  title={r.label}
-                >
-                  {p.solvedRoomIds.includes(r.id) ? `✓ ${r.label}` : r.label}
-                </span>
-              ))}
+        {p.objectiveRoom && <span className="fps-objective-room">{p.objectiveRoom}</span>}
+        {p.targetRoomId && (
+          <div className="fps-compass" ref={compass} aria-hidden="true">
+            <i className="fps-compass-arrow">➤</i>
+            <span data-compass-label>Repère la balise</span>
+          </div>
+        )}
+        <div
+          className="fps-progress"
+          role="progressbar"
+          aria-label="Énigmes résolues"
+          aria-valuemin={0}
+          aria-valuemax={total}
+          aria-valuenow={complete}
+        >
+          {Array.from({ length: total }, (_, i) => (
+            <span key={i} className={i < complete ? "done" : i === complete ? "current" : ""} />
+          ))}
           <b>
             {complete}/{total}
           </b>
@@ -348,6 +390,11 @@ export function ExplorePage(p: ExplorePageProps) {
           <span className="enter-arrow">↗</span>
           <div>
             <strong>Entrer dans le campus</strong>
+            {p.targetRoomId && !p.raceInfo && (
+              <small className="fps-enter-tip">
+                Suis la balise lumineuse : elle mène à ton prochain objectif.
+              </small>
+            )}
             <small>
               {touchDevice
                 ? "Glisse pour regarder · utilise les commandes tactiles pour marcher"
@@ -430,7 +477,7 @@ export function ExplorePage(p: ExplorePageProps) {
               setInventory(true)
             }}
           >
-            <kbd>I</kbd>Inventaire <span>{items.length + complete}</span>
+            <kbd>I</kbd>Inventaire <span>{items.length}</span>
           </button>
           {p.onJournal && (
             <button
@@ -439,7 +486,7 @@ export function ExplorePage(p: ExplorePageProps) {
                 p.onJournal?.()
               }}
             >
-              Souvenirs
+              <kbd>J</kbd>Carnet
             </button>
           )}
           <button
@@ -487,7 +534,7 @@ export function ExplorePage(p: ExplorePageProps) {
             </button>
           ) : (
             <span>
-              G4-OS <b>●</b> {p.hintCount} souvenirs conservés
+              G4-OS <b>●</b> {p.hintCount} souvenir{p.hintCount > 1 ? "s" : ""} au carnet
             </span>
           )}
         </div>

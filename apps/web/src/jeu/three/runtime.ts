@@ -15,7 +15,7 @@ import { buildWorld, doorIntersectsPosition } from "./world"
 import type { Interaction } from "./world"
 import { createNpcs } from "./npc"
 import { CampusAudio } from "./audio"
-import { readSettings } from "./settings"
+import { readSettings, saveSettings } from "./settings"
 import type { GameSettings } from "./settings"
 export interface RuntimeState {
   epoch?: number
@@ -25,6 +25,8 @@ export interface RuntimeState {
   inventory: readonly string[]
   documents?: readonly EscapeDocument[]
   unlockedRoomIds?: readonly string[]
+  /** Salle de l'objectif en cours : une balise lumineuse signale son terminal. */
+  targetRoomId?: string
 }
 export interface RuntimeCallbacks {
   move: (p: PlayerPosition) => void
@@ -38,6 +40,7 @@ export interface RuntimeCallbacks {
   talk: (name: string, text: string, roomId?: string) => void
   pickup: (id: string) => void
   error: (text: string) => void
+  journal?: () => void
 }
 export function createCampusRuntime(
   canvas: HTMLCanvasElement,
@@ -159,7 +162,9 @@ export function createCampusRuntime(
     if (doorIntersectsPosition(d, initial.position)) d.desired = d.openness = 1
   for (const [id, root] of world.items) root.setEnabled(!state.inventory.includes(id))
   let target: Interaction | null = null,
-    lastDraw = 0
+    lastDraw = 0,
+    autoQualityDone = false
+  const fpsSamples: number[] = []
   const handlers: { node: EventTarget; name: string; fn: EventListener }[] = []
   function listen(node: EventTarget, name: string, fn: EventListener) {
     node.addEventListener(name, fn)
@@ -251,17 +256,16 @@ export function createCampusRuntime(
             : "Porte ouverte · vise le cadre et appuie sur E pour fermer."
           : "Porte fermée",
       )
-      if (d.roomId === "sormiou" && d.desired) {
-        window.setTimeout(() => cb.interact("sormiou-exit"), 600)
-      }
     } else if (target.kind === "station") {
       const room = WORLD_ROOMS.find((r) => r.id === target!.id)!
       if (
         Math.hypot(
           room.interactionPosition.x - controller.position.x,
           room.interactionPosition.y - controller.position.y,
-        ) > INTERACTION_RADIUS
+        ) >
+        INTERACTION_RADIUS * 1.7
       ) {
+        // Le rayon de visée garantit déjà la ligne de vue : on tolère un ou deux pas d'écart.
         cb.toast("Approche-toi de l’ordinateur pour utiliser le terminal.")
         return
       }
@@ -354,6 +358,12 @@ export function createCampusRuntime(
         unlock()
         cb.inventory()
       }
+      if (e.code === "KeyJ" && cb.journal) {
+        e.preventDefault()
+        report()
+        unlock()
+        cb.journal()
+      }
       if (e.code === "Escape") {
         report()
         unlock()
@@ -411,7 +421,20 @@ export function createCampusRuntime(
       if (time - lastReport > 0.2 && controller.moving) report()
     }
     for (const npc of npcs) npc.update(dt, time, controller.position, world.doors)
-    world.update(dt, time, state.solved)
+    world.update(dt, time, state.solved, backdrop ? undefined : state.targetRoomId)
+    if (!backdrop && state.active && settings.quality !== "eco" && !autoQualityDone) {
+      fpsSamples.push(engine.getFps())
+      if (fpsSamples.length > 240) fpsSamples.shift()
+      if (time > 8 && fpsSamples.length >= 240) {
+        const average = fpsSamples.reduce((a, b) => a + b, 0) / fpsSamples.length
+        if (average < 26) {
+          // Machine modeste : on passe en qualité économique pour garder un jeu fluide.
+          autoQualityDone = true
+          saveSettings({ ...settings, quality: "eco" })
+          cb.toast("Qualité graphique réduite automatiquement pour garder le jeu fluide.")
+        }
+      }
+    }
     if (!backdrop && time - lastSense > 0.1) {
       lastSense = time
       const ray = camera.getForwardRay(4.8)
@@ -475,6 +498,9 @@ export function createCampusRuntime(
     release(code: string) {
       controller.keys.delete(code)
     },
+    pose() {
+      return { x: controller.position.x, y: controller.position.y, yaw: controller.yaw }
+    },
     openMap() {
       report()
       unlock()
@@ -505,6 +531,15 @@ export function createCampusRuntime(
               : door.roomId === "sormiou"
           )
             door.desired = 0
+      if (next.epoch === state.epoch && next.unlockedRoomIds && state.unlockedRoomIds) {
+        const opened = next.unlockedRoomIds.filter((id) => !state.unlockedRoomIds!.includes(id))
+        // Une porte qui vient d'être déverrouillée s'ouvre d'elle-même : la récompense se voit.
+        for (const door of world.doors)
+          if (opened.includes(door.roomId)) {
+            door.desired = 1
+            audio.cue("door")
+          }
+      }
       state = next
       for (const [id, root] of world.items) root.setEnabled(!state.inventory.includes(id))
     },

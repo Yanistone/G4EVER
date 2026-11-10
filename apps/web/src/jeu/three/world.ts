@@ -2,7 +2,7 @@ import { addFurniture } from "./furniture"
 import { addCampusIdentity } from "./campusIdentity"
 import { fitDoorPart } from "./slidingDoor"
 import type { SlidingDoorPart } from "./slidingDoor"
-import { DOCUMENT_HEIGHTS } from "../game/escape"
+import { DOCUMENT_HEIGHTS, STATION_TARGETS } from "../game/escape"
 import { photographicMaterial, addRealism } from "./realism"
 import type { EscapeDocument } from "../game/escape"
 import { addArchitecturalDetail } from "./detail"
@@ -72,7 +72,7 @@ export interface CampusWorld {
   shadow: ShadowGenerator
   glow: GlowLayer
   materials: Map<string, PBRMaterial>
-  update: (dt: number, time: number, solved: readonly string[]) => void
+  update: (dt: number, time: number, solved: readonly string[], target?: string) => void
 }
 export function material(
   scene: Scene,
@@ -151,24 +151,6 @@ export function buildWorld(
     m.position.set(x, y, z)
     m.material = mat(c, e)
     m.receiveShadows = true
-    return m
-  }
-  const cylinder = (
-    name: string,
-    x: number,
-    y: number,
-    z: number,
-    r: number,
-    h: number,
-    c: string,
-  ) => {
-    const m = MeshBuilder.CreateCylinder(
-      name,
-      { diameter: r * 2, height: h, tessellation: 12 },
-      scene,
-    )
-    m.position.set(x, y, z)
-    m.material = mat(c)
     return m
   }
   function screen(
@@ -665,20 +647,40 @@ export function buildWorld(
     }
   })
   const stations = new Map<string, Mesh>()
+  const beacons = new Map<
+    string,
+    { core: Mesh; ring: Mesh; beam: Mesh; halo: Mesh; base: number }
+  >()
   WORLD_ROOMS.forEach((r) => {
     const p = r.interactionPosition,
       c = ROOM_COLORS[r.id]
+    // La balise flotte au-dessus du terminal visé, pas à l'endroit où se tient le joueur.
+    const aim = STATION_TARGETS[r.id] ?? { ...p, height: 1.1 }
+    const base = aim.height + 0.62
     const ring = MeshBuilder.CreateTorus(
       "hologram-" + r.id,
-      { diameter: 0.36, thickness: 0.02, tessellation: 24 },
+      { diameter: 0.34, thickness: 0.022, tessellation: 24 },
       scene,
     )
-    ring.position.set(p.x * SCALE, 1.6, p.y * SCALE)
+    ring.position.set(aim.x * SCALE, base, aim.y * SCALE)
     ring.rotation.x = Math.PI / 2
     ring.material = mat(c, true)
-    const core = MeshBuilder.CreatePolyhedron("station-" + r.id, { type: 1, size: 0.12 }, scene)
+    const core = MeshBuilder.CreatePolyhedron("station-" + r.id, { type: 1, size: 0.1 }, scene)
     core.position.copyFrom(ring.position)
     core.material = mat(c, true)
+    const beam = MeshBuilder.CreateCylinder(
+      "hologram-beam-" + r.id,
+      { diameterTop: 0.012, diameterBottom: 0.05, height: 0.55, tessellation: 10 },
+      scene,
+    )
+    beam.position.set(aim.x * SCALE, base - 0.36, aim.y * SCALE)
+    const beamMaterial = new StandardMaterial("hologram-beam-material-" + r.id, scene)
+    beamMaterial.emissiveColor = Color3.FromHexString(c)
+    beamMaterial.disableLighting = true
+    beamMaterial.alpha = 0.55
+    beam.material = beamMaterial
+    beam.isPickable = false
+    beam.isVisible = false
     const interaction: Interaction = {
       id: r.id,
       kind: "station",
@@ -692,9 +694,16 @@ export function buildWorld(
     ring.isVisible = false
     ring.isPickable = false
     stations.set(r.id, core)
-    const halo = cylinder("station-anchor", p.x * SCALE, 0.025, p.y * SCALE, 0.32, 0.025, c)
+    const halo = MeshBuilder.CreateTorus(
+      "hologram-halo-" + r.id,
+      { diameter: 0.7, thickness: 0.035, tessellation: 32 },
+      scene,
+    )
+    halo.position.set(p.x * SCALE, 0.03, p.y * SCALE)
+    halo.material = mat(c, true)
     halo.isPickable = false
     halo.isVisible = false
+    beacons.set(r.id, { core, ring, beam, halo, base })
   })
   const items = new Map<string, TransformNode>()
   for (const item of [...COLLECTIBLES, ...documents]) {
@@ -842,7 +851,7 @@ export function buildWorld(
     shadow,
     glow,
     materials,
-    update(dt, time, solved) {
+    update(dt, time, solved, target) {
       for (const d of doors) {
         d.openness += (d.desired - d.openness) * Math.min(1, dt * 7)
         d.leaves.forEach((l, i) => {
@@ -860,10 +869,18 @@ export function buildWorld(
             )
         })
       }
-      for (const [id, core] of stations) {
-        core.rotation.y = time * 0.6
-        core.position.y = 1.6 + Math.sin(time * 2) * 0.05
-        core.material = mat(solved.includes(id) ? COLORS.green : ROOM_COLORS[id], true)
+      for (const [id, b] of beacons) {
+        const shown = id === target
+        b.core.isVisible = b.ring.isVisible = b.beam.isVisible = b.halo.isVisible = shown
+        if (!shown) continue
+        const bob = Math.sin(time * 2.2) * 0.05
+        b.core.rotation.y = time * 1.4
+        b.core.position.y = b.base + bob
+        b.ring.position.y = b.base + bob
+        b.ring.scaling.setAll(1 + Math.sin(time * 3) * 0.12)
+        b.beam.position.y = b.base - 0.36 + bob
+        b.halo.scaling.setAll(0.85 + ((time * 0.8) % 1) * 0.5)
+        b.core.material = mat(solved.includes(id) ? COLORS.green : ROOM_COLORS[id], true)
       }
     },
   }

@@ -96,13 +96,16 @@ export function CampusNavigator({
   position,
   solvedRoomIds,
   targetRoomId,
+  unlockedRoomIds,
   onBack,
 }: {
   position: PlayerPosition
   solvedRoomIds: readonly string[]
   targetRoomId?: string
+  unlockedRoomIds?: readonly string[]
   onBack: () => void
 }) {
+  const locked = (id: string) => !!unlockedRoomIds && !unlockedRoomIds.includes(id)
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (
@@ -177,11 +180,13 @@ export function CampusNavigator({
                   >
                     {solvedRoomIds.includes(room.id)
                       ? "RÉPARÉ ✓"
-                      : room.kind === "final"
-                        ? "SORTIE ★"
-                        : room.kind === "hint"
-                          ? "INDICE ?"
-                          : "MODULE " + numbers[room.id]}
+                      : locked(room.id)
+                        ? "VERROUILLÉ"
+                        : room.kind === "final"
+                          ? "SERVEURS ⚡"
+                          : room.kind === "hint"
+                            ? "INDICE ?"
+                            : "MODULE " + numbers[room.id]}
                   </text>
                 </g>
               </g>
@@ -210,7 +215,7 @@ export function CampusNavigator({
           <div className="navigator-status">
             <span>TU ES ICI</span>
             <strong>{current?.label ?? "Couloirs du campus"}</strong>
-            <small>{solvedRoomIds.length}/5 fragments récupérés</small>
+            <small>{solvedRoomIds.length}/5 salles terminées</small>
           </div>
           <p>Repère les salles, puis rejoins-les à pied par les couloirs et les portes.</p>
           <div className="navigator-list" role="list" aria-label="Salles du campus">
@@ -225,7 +230,11 @@ export function CampusNavigator({
                 <span>
                   <strong>{room.label}</strong>
                   <small>
-                    {solvedRoomIds.includes(room.id) ? "Module réparé" : MISSIONS[room.id].title}
+                    {solvedRoomIds.includes(room.id)
+                      ? "Salle terminée"
+                      : locked(room.id)
+                        ? "🔒 Verrouillée"
+                        : MISSIONS[room.id].title}
                   </small>
                 </span>
               </article>
@@ -248,7 +257,7 @@ export function CampusNavigator({
         </span>
         <span>
           <i className="map-key key-pink" />
-          Console de sortie
+          Salle serveur
         </span>
         <b>COULOIRS ET PORTES · DÉPLACEMENT À PIED</b>
       </footer>
