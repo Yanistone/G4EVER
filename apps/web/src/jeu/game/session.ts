@@ -1,19 +1,16 @@
-import {
-  DAY_START,
-  DAY_END,
-  CAMPUS_MINUTES_PER_SECOND,
-  WRONG_ANSWER_MINUTES,
-  PUZZLE_LOCK_MS,
-} from "../../../../../shared/clock"
+import { DAY_START, DAY_END, CAMPUS_MINUTES_PER_SECOND } from "../../../../../shared/clock"
 export { DAY_START, DAY_END, CAMPUS_MINUTES_PER_SECOND }
 import type { PlayerPosition } from "../types/game"
 import { canWalkAt, START_POSITION } from "./world"
-import { SCENARIO, availablePuzzle } from "../../../../../shared/scenario"
+import { SCENARIO, SORMIOU_THRESHOLD, availablePuzzle } from "../../../../../shared/scenario"
+import { isDifficulty, rulesFor } from "./difficulty"
+import type { Difficulty } from "./difficulty"
 
 export interface AdventureSession {
   version: 2
   challengeSeed?: string
   profileId: string
+  difficulty: Difficulty
   started: boolean
   gameMinute: number
   loopNumber: number
@@ -21,11 +18,13 @@ export interface AdventureSession {
   mistakes: number
   solvedRoomIds: string[]
   solvedPuzzleIds: string[]
+  /** Énigmes résolues au moins une fois : le joueur s'en souvient d'une boucle à l'autre. */
   memoryIds: string[]
   knownHintIds: string[]
   hintLevels: Record<string, number>
   hintUses: number
   errorCounts: Record<string, number>
+  /** Conservé pour la compatibilité des sauvegardes : le terminal n'est plus jamais bloqué. */
   lockouts: Record<string, number>
   trustedLea: boolean
   procedureValidated: boolean
@@ -37,11 +36,16 @@ export interface AdventureSession {
   updatedAt: string
 }
 export const INITIAL_POSITION: PlayerPosition = { ...START_POSITION }
-export function createSession(profileId: string, unlockedEndings: number[] = []): AdventureSession {
+export function createSession(
+  profileId: string,
+  unlockedEndings: number[] = [],
+  difficulty: Difficulty = "classic",
+): AdventureSession {
   return {
     version: 2,
     challengeSeed: "scenario2",
     profileId,
+    difficulty,
     started: false,
     gameMinute: DAY_START,
     loopNumber: 1,
@@ -79,6 +83,17 @@ export function formatDuration(seconds: number) {
     .toString()
     .padStart(2, "0")}`
 }
+function solvedRooms(solvedPuzzleIds: readonly string[]) {
+  return [
+    ...new Set(
+      SCENARIO.filter((p) =>
+        SCENARIO.filter((other) => other.roomId === p.roomId).every((other) =>
+          solvedPuzzleIds.includes(other.id),
+        ),
+      ).map((p) => p.roomId),
+    ),
+  ]
+}
 export function advanceTime(
   session: AdventureSession,
   minutes: number,
@@ -93,7 +108,10 @@ export function advanceTime(
     realSeconds < 0
   )
     return session
-  const next = session.gameMinute + minutes
+  // En mode Détente, l'horloge reste figée : seules les secondes jouées sont comptées.
+  const next = rulesFor(session.difficulty).loopMinutes
+    ? session.gameMinute + minutes
+    : session.gameMinute
   if (next < DAY_END - 0.000001)
     return { ...session, gameMinute: next, playedSeconds: session.playedSeconds + realSeconds }
   return {
@@ -114,19 +132,10 @@ export function advanceTime(
 export function solvePuzzle(session: AdventureSession, id: string): AdventureSession {
   if (availablePuzzle(session.solvedPuzzleIds)?.id !== id || session.ending) return session
   const solvedPuzzleIds = [...session.solvedPuzzleIds, id]
-  const solvedRoomIds = [
-    ...new Set(
-      SCENARIO.filter((p) =>
-        SCENARIO.filter((other) => other.roomId === p.roomId).every((other) =>
-          solvedPuzzleIds.includes(other.id),
-        ),
-      ).map((p) => p.roomId),
-    ),
-  ]
   return {
     ...session,
     solvedPuzzleIds,
-    solvedRoomIds,
+    solvedRoomIds: solvedRooms(solvedPuzzleIds),
     memoryIds: [...new Set([...session.memoryIds, id])],
     procedureValidated: id === "correctif" || session.procedureValidated,
   }
@@ -134,21 +143,36 @@ export function solvePuzzle(session: AdventureSession, id: string): AdventureSes
 export function recordError(
   session: AdventureSession,
   id: string,
-  now = Date.now(),
+  _now = Date.now(),
 ): AdventureSession {
-  if ((session.lockouts[id] ?? 0) > now || session.ending) return session
+  void _now
+  if (session.ending) return session
   const errors = (session.errorCounts[id] ?? 0) + 1
   return advanceTime(
     {
       ...session,
       mistakes: session.mistakes + 1,
       errorCounts: { ...session.errorCounts, [id]: errors },
-      lockouts: { ...session.lockouts, [id]: errors % 3 === 0 ? now + PUZZLE_LOCK_MS : 0 },
+      lockouts: {},
     },
-    WRONG_ANSWER_MINUTES,
+    rulesFor(session.difficulty).wrongAnswerMinutes,
   )
 }
-export function revealHint(session: AdventureSession, id: string, level: 1 | 2): AdventureSession {
+/** Coût, en minutes de campus, d'un niveau d'indice pour cette énigme. */
+export function hintCost(session: AdventureSession, id: string, level: 1 | 2 | 3) {
+  const p = SCENARIO.find((p) => p.id === id)
+  const free =
+    level === 1 &&
+    session.trustedLea &&
+    !!p &&
+    ["planning", "script", "differences"].includes(p.kind)
+  return free ? 0 : rulesFor(session.difficulty).hintCosts[level - 1]
+}
+export function revealHint(
+  session: AdventureSession,
+  id: string,
+  level: 1 | 2 | 3,
+): AdventureSession {
   const p = SCENARIO.find((p) => p.id === id)
   if (
     !p ||
@@ -156,8 +180,6 @@ export function revealHint(session: AdventureSession, id: string, level: 1 | 2):
     availablePuzzle(session.solvedPuzzleIds)?.id !== id
   )
     return session
-  const free =
-    level === 1 && session.trustedLea && ["planning", "script", "differences"].includes(p.kind)
   return advanceTime(
     {
       ...session,
@@ -165,8 +187,26 @@ export function revealHint(session: AdventureSession, id: string, level: 1 | 2):
       hintLevels: { ...session.hintLevels, [id]: level },
       hintUses: session.hintUses + 1,
     },
-    free ? 0 : level === 1 ? 5 : 10,
+    hintCost(session, id, level),
   )
+}
+export function trustLea(session: AdventureSession): AdventureSession {
+  if (session.trustedLea) return session
+  return advanceTime({ ...session, trustedLea: true }, rulesFor(session.difficulty).leaHelpMinutes)
+}
+/** La coupure de courant de Sormiou n'est possible qu'après cinq énigmes. */
+export function canCutPower(session: AdventureSession) {
+  return !session.ending && session.solvedPuzzleIds.length >= SORMIOU_THRESHOLD
+}
+export function finishSession(session: AdventureSession, ending: 1 | 2): AdventureSession {
+  if (session.ending) return session
+  if (ending === 1 && !session.solvedPuzzleIds.includes("correctif")) return session
+  if (ending === 2 && !canCutPower(session)) return session
+  return {
+    ...session,
+    ending,
+    unlockedEndings: [...new Set([...session.unlockedEndings, ending])],
+  }
 }
 const record = (v: unknown): v is Record<string, unknown> =>
   typeof v === "object" && v !== null && !Array.isArray(v)
@@ -187,8 +227,9 @@ export function readSession(
     const endings = Array.isArray(v.unlockedEndings)
       ? v.unlockedEndings.filter((n): n is number => n === 1 || n === 2)
       : []
+    const difficulty = isDifficulty(v.difficulty) ? v.difficulty : "classic"
     if (v.version === 1)
-      return { ...createSession(profileId, endings), started: v.started === true }
+      return { ...createSession(profileId, endings, difficulty), started: v.started === true }
     if (
       typeof v.started !== "boolean" ||
       typeof v.gameMinute !== "number" ||
@@ -211,7 +252,7 @@ export function readSession(
       !Number.isFinite(v.playerPosition.y) ||
       ![null, 1, 2].includes(v.ending as number | null)
     )
-      return createSession(profileId, endings)
+      return createSession(profileId, endings, difficulty)
     const ids = SCENARIO.map((p) => p.id)
     const solved: string[] = []
     for (const p of SCENARIO) {
@@ -220,19 +261,18 @@ export function readSession(
     }
     const position = v.playerPosition as unknown as PlayerPosition
     return {
-      ...createSession(profileId, endings),
+      ...createSession(profileId, endings, difficulty),
       ...v,
       version: 2,
       profileId,
+      difficulty,
+      lockouts: {},
       solvedPuzzleIds: solved,
-      solvedRoomIds: [
-        ...new Set(
-          SCENARIO.filter((p) =>
-            SCENARIO.filter((q) => q.roomId === p.roomId).every((q) => solved.includes(q.id)),
-          ).map((p) => p.roomId),
-        ),
-      ],
-      memoryIds: v.memoryIds.filter((id) => ids.includes(id)),
+      solvedRoomIds: solvedRooms(solved),
+      memoryIds: [...new Set([...v.memoryIds.filter((id) => ids.includes(id)), ...solved])],
+      hintLevels: Object.fromEntries(
+        Object.entries(v.hintLevels).filter(([, level]) => level >= 1 && level <= 3),
+      ),
       playerPosition: canWalkAt(position) ? { ...position } : { ...INITIAL_POSITION },
       procedureValidated: solved.includes("correctif"),
       unlockedEndings: endings,

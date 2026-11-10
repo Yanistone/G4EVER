@@ -13,8 +13,9 @@ import {
   revealHint,
   advanceTime,
   readSession,
-  CAMPUS_MINUTES_PER_SECOND,
+  finishSession,
 } from "../../apps/web/src/jeu/game/session"
+import { campusRate } from "../../apps/web/src/jeu/game/difficulty"
 import { QUESTION_BANK } from "../../shared/questions"
 test("les huit énigmes sont liées et leurs réponses respectent les fiches", () => {
   const answers = ["5", "3142", "5|29", "B", "11|Tests", "4", "43", "CDBA"]
@@ -64,35 +65,65 @@ test("la table et le correctif ont chacun une seule solution", () => {
     permutations(["A", "B", "C", "D"]).filter((row) => validateScenario("correctif", row.join(""))),
   ).toEqual([["C", "D", "B", "A"]])
 })
-test("quinze minutes réelles déclenchent le reboot et gardent les souvenirs", () => {
+test("vingt minutes réelles (mode Classique) déclenchent le reboot et gardent les souvenirs", () => {
   let s = { ...createSession("horloge", [1]), started: true }
   s = solvePuzzle(s, "cafe-9h")
-  expect(advanceTime(s, 899 * CAMPUS_MINUTES_PER_SECOND, 899).loopNumber).toBe(1)
-  const next = advanceTime(s, 900 * CAMPUS_MINUTES_PER_SECOND, 900)
+  const rate = campusRate("classic")
+  expect(advanceTime(s, 1199 * rate, 1199).loopNumber).toBe(1)
+  const next = advanceTime(s, 1200 * rate, 1200)
   expect(next.gameMinute).toBe(540)
   expect(next.loopNumber).toBe(2)
   expect(next.solvedPuzzleIds).toEqual([])
   expect(next.memoryIds).toEqual(["cafe-9h"])
   expect(next.unlockedEndings).toEqual([1])
-  expect(next.playedSeconds).toBe(900)
+  expect(next.playedSeconds).toBe(1200)
+  expect(campusRate("expert")).toBeGreaterThan(rate)
 })
-test("indices, aide de Léa, pénalités et blocage de trente secondes", () => {
+test("en mode Détente, l'horloge reste figée et rien n'est pénalisé", () => {
+  let s = { ...createSession("detente", [], "relax"), started: true }
+  expect(campusRate("relax")).toBe(0)
+  s = advanceTime(s, 500, 3600)
+  expect(s.gameMinute).toBe(540)
+  expect(s.loopNumber).toBe(1)
+  expect(s.playedSeconds).toBe(3600)
+  s = recordError(s, "cafe-9h")
+  s = revealHint(s, "cafe-9h", 3)
+  expect(s.gameMinute).toBe(540)
+  expect(s.mistakes).toBe(1)
+})
+test("trois niveaux d'indice, aide de Léa et erreurs sans blocage", () => {
   let s = { ...createSession("aide"), started: true }
   s = revealHint(s, "cafe-9h", 1)
   expect(s.gameMinute).toBe(545)
   expect(revealHint(s, "cafe-9h", 1)).toEqual(s)
   s = revealHint(s, "cafe-9h", 2)
   expect(s.gameMinute).toBe(555)
+  s = revealHint(s, "cafe-9h", 3)
+  expect(s.gameMinute).toBe(580)
+  expect(s.hintUses).toBe(3)
   for (let i = 0; i < 3; i++) s = recordError(s, "cafe-9h", 1000 + i)
-  expect(s.gameMinute).toBe(585)
-  expect(s.lockouts["cafe-9h"]).toBe(31002)
-  expect(recordError(s, "cafe-9h", 2000)).toEqual(s)
-  expect(recordError(s, "cafe-9h", 31003).mistakes).toBe(4)
+  expect(s.gameMinute).toBe(610)
+  expect(s.lockouts).toEqual({})
+  expect(recordError(s, "cafe-9h", 2000).mistakes).toBe(4)
   let lea = { ...createSession("lea"), started: true }
   for (const p of SCENARIO.slice(0, 4)) lea = solvePuzzle(lea, p.id)
   lea.trustedLea = true
   expect(revealHint(lea, "planning-g4", 1).gameMinute).toBe(540)
   expect(revealHint(lea, "planning-g4", 2).gameMinute).toBe(550)
+})
+test("deux fins : le correctif après huit énigmes, la coupure après cinq", () => {
+  let s = { ...createSession("fins"), started: true }
+  for (const p of SCENARIO.slice(0, 4)) s = solvePuzzle(s, p.id)
+  expect(finishSession(s, 2).ending).toBeNull()
+  expect(finishSession(s, 1).ending).toBeNull()
+  s = solvePuzzle(s, SCENARIO[4].id)
+  expect(unlockedRooms(s.solvedPuzzleIds)).toContain("sormiou")
+  expect(finishSession(s, 2).ending).toBe(2)
+  for (const p of SCENARIO.slice(5)) s = solvePuzzle(s, p.id)
+  const done = finishSession(s, 1)
+  expect(done.ending).toBe(1)
+  expect(done.unlockedEndings).toEqual([1])
+  expect(finishSession(done, 2)).toEqual(done)
 })
 test("les anciennes sauvegardes migrent et les nouvelles progressions restent cohérentes", () => {
   const storage = (v: unknown) => ({ getItem: () => JSON.stringify(v) })

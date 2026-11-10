@@ -56,7 +56,12 @@ export const QUESTION_BANK: readonly BankQuestion[] = [
     "5",
     "CAFÉ DE 9h00\nObserve les deux étagères dans le terminal et compte les tasses bleues, y compris derrière le plateau.",
   ),
-  quiz(1, ["3142", "2143", "1342", "3412"], 0, SEATING_RULES.join("\n")),
+  {
+    ...quiz(1, ["3142", "2143", "1342", "3412"], 0, SEATING_RULES.join("\n")),
+    // En course, la table est un QCM : l'énoncé de l'aventure (placer les élèves) ne s'applique pas.
+    prompt:
+      "Retrouve les places de chacun. Quel code donnent les numéros dans l’ordre Noah, Léa, Yanis, Inès ?",
+  },
   {
     ...code(2, "29", "SOUVENIR DU CAFÉ : n = 5\n\n" + ALGORITHM),
     prompt: "Avec n = 5, quel total affiche le programme ?",

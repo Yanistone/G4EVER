@@ -25,7 +25,7 @@ export const puzzles: readonly AdventurePuzzle[] = SCENARIO.map((p, index) => ({
 export const vendingClue =
   "Le carnet conserve tes souvenirs d’une boucle à l’autre. Le café de 9h00 est ton point de départ."
 export const sormiouClue =
-  "Après cinq énigmes, la porte finale de Sormiou se déverrouille. Ouvre-la pour quitter le campus."
+  "Après cinq énigmes, la salle serveur de Sormiou s’ouvre. Son disjoncteur arrête la boucle, mais laisse G4-OS en panne."
 
 export const introScenes: readonly IntroData[] = [
   {
@@ -65,7 +65,7 @@ export const introScenes: readonly IntroData[] = [
       "Explore le campus, résous les huit énigmes et conserve tes souvenirs. Le terminal du ",
     highlight: "Co-working",
     afterHighlight:
-      " permettra d’appliquer le correctif. Tu as quinze minutes réelles pour sauver la journée. Cette fois, il faut que la journée dépasse 16 h 00.",
+      " permettra d’appliquer le correctif. Cette fois, il faut que la journée dépasse 16 h 00.",
     sceneNumber: 4,
     totalScenes: 4,
   },

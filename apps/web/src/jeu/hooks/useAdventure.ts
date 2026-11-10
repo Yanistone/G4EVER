@@ -3,13 +3,16 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   advanceTime,
   createSession,
+  finishSession,
   readSession,
   solvePuzzle,
   recordError,
   revealHint,
-  CAMPUS_MINUTES_PER_SECOND,
+  trustLea as acceptLea,
 } from "../game/session"
 import type { AdventureSession } from "../game/session"
+import { campusRate } from "../game/difficulty"
+import type { Difficulty } from "../game/difficulty"
 import type { PlayerPosition } from "../types/game"
 
 export function useAdventure(profileId: string | null, running: boolean) {
@@ -53,11 +56,11 @@ export function useAdventure(profileId: string | null, running: boolean) {
     let last = performance.now()
     const tick = () => {
       const now = performance.now()
-      const seconds = (now - last) / 1000
+      const seconds = Math.min(1, (now - last) / 1000)
       last = now
       if (document.visibilityState === "visible")
         setSession((previous) =>
-          advanceTime(previous, seconds * CAMPUS_MINUTES_PER_SECOND, seconds),
+          advanceTime(previous, seconds * campusRate(previous.difficulty), seconds),
         )
     }
     const visibility = () => {
@@ -70,9 +73,13 @@ export function useAdventure(profileId: string | null, running: boolean) {
       document.removeEventListener("visibilitychange", visibility)
     }
   }, [running, profileId])
-  const begin = () =>
+  const begin = (difficulty?: Difficulty) =>
     setSession((previous) => ({
-      ...createSession(profileId ?? "guest", previous.unlockedEndings),
+      ...createSession(
+        profileId ?? "guest",
+        previous.unlockedEndings,
+        difficulty ?? previous.difficulty ?? "classic",
+      ),
       started: true,
       challengeSeed: freshCampaignSeed(previous.challengeSeed),
     }))
@@ -83,24 +90,16 @@ export function useAdventure(profileId: string | null, running: boolean) {
   )
   const solve = (puzzleId: string) => setSession((previous) => solvePuzzle(previous, puzzleId))
   const fail = (puzzleId: string) => setSession((previous) => recordError(previous, puzzleId))
-  const rememberHint = (puzzleId: string, level: 1 | 2 = 1) =>
+  const rememberHint = (puzzleId: string, level: 1 | 2 | 3 = 1) =>
     setSession((previous) => revealHint(previous, puzzleId, level))
-  const trustLea = () =>
-    setSession((previous) =>
-      previous.trustedLea ? previous : advanceTime({ ...previous, trustedLea: true }, 10),
-    )
+  const trustLea = () => setSession((previous) => acceptLea(previous))
   const collectClue = () =>
     setSession((previous) => ({
       ...previous,
       hasVendingClue: true,
       knownHintIds: [...new Set([...previous.knownHintIds, "vending"])],
     }))
-  const finish = (ending: 1 | 2) =>
-    setSession((previous) => ({
-      ...previous,
-      ending,
-      unlockedEndings: [...new Set([...previous.unlockedEndings, ending])],
-    }))
+  const finish = (ending: 1 | 2) => setSession((previous) => finishSession(previous, ending))
   const dismissEvent = () => setSession((previous) => ({ ...previous, event: null }))
   return {
     session,
