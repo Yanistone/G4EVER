@@ -997,3 +997,22 @@
     font-size: 20px;
   }
 }
+
+/* Réponse choisie : les boutons utilisent aria-pressed (et non la classe .selected). */
+.terminal-answers > button[aria-pressed="true"] {
+  border-color: #1b1030;
+  background: #fff1af;
+  box-shadow:
+    0 4px 0 #1b1030,
+    0 0 0 3px #ffd93b;
+}
+.terminal-answers > button[aria-pressed="true"] > b {
+  background: #ff3e7f;
+  color: white;
+}
+.terminal-answers > button[aria-pressed="true"]::after {
+  content: "✓";
+  margin-left: auto;
+  font: 22px "Lilita One";
+  color: #1b1030;
+}
