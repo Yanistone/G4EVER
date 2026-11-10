@@ -66,6 +66,12 @@ export function BriefingPage({ data, onStart }: BriefingPageProps) {
                 <Keycap>E</Keycap> Interagir
               </span>
               <span className="briefing-control">
+                <Keycap>M</Keycap> Plan
+              </span>
+              <span className="briefing-control">
+                <Keycap>J</Keycap> Carnet
+              </span>
+              <span className="briefing-control">
                 <Keycap>Échap</Keycap> Pause
               </span>
             </div>

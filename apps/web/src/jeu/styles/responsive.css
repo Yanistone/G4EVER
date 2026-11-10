@@ -25,7 +25,7 @@
 
 .screen-viewport.is-responsive
   .screen-content
-  > :not(.campus-world-layer, .campus-map-layer, .fps-page, .game-page, .race-play) {
+  > :not(.campus-world-layer, .campus-map-layer, .fps-page, .game-page, .race-play, .game-banner) {
   width: 100% !important;
   height: auto !important;
   min-height: 100dvh;

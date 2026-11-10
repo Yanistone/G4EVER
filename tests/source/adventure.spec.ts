@@ -56,6 +56,7 @@ test("local profile registration, saving, logout and login", async ({ page }) =>
   await page.getByRole("button", { name: "CRÉER ET JOUER" }).click()
   await expect(page).toHaveURL(/#menu$/)
   await page.getByRole("button", { name: "NOUVELLE PARTIE", exact: true }).click()
+  await page.getByRole("listitem", { name: "Mode Classique" }).click()
   await page.getByRole("button", { name: /^PASSER/ }).click()
   await page.getByRole("button", { name: "LANCER LA JOURNÉE" }).click()
   await expect(page.getByTestId("exploration")).toBeVisible()

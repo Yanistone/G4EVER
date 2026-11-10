@@ -61,7 +61,7 @@ button {
   top: 50%;
   transform-origin: center;
 }
-.screen-stage .screen-content > * {
+.screen-stage .screen-content > :not(.game-banner) {
   width: 100%;
   height: 100%;
 }

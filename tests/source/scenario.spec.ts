@@ -61,10 +61,19 @@ test("les huit énigmes du PDF se jouent depuis les terminaux du campus 3D", asy
       await page.getByLabel("Nombre de tasses bleues").fill("5")
       await page.screenshot({ path: ".runtime/verification-cafe.png" })
     }
-    if (p.kind === "seating") await page.getByLabel("Code Noah, Léa, Yanis, Inès").fill("3142")
+    if (p.kind === "seating") {
+      for (const [seat, student] of [
+        ["Place 1", "Léa"],
+        ["Place 2", "Inès"],
+        ["Place 3", "Noah"],
+        ["Place 4", "Yanis"],
+      ])
+        await page.getByLabel(seat, { exact: true }).selectOption(student)
+      await expect(page.locator(".seating-code")).toContainText("3 1 4 2")
+    }
     if (p.kind === "algorithm") {
       await page.getByRole("button", { name: "Carnet de souvenirs" }).click()
-      await expect(page.getByRole("dialog", { name: "TES SOUVENIRS" })).toContainText(
+      await expect(page.getByRole("dialog", { name: "CARNET DE SOUVENIRS" })).toContainText(
         "5 tasses bleues",
       )
       await page.getByRole("button", { name: "FERMER", exact: true }).click()
@@ -74,25 +83,35 @@ test("les huit énigmes du PDF se jouent depuis les terminaux du campus 3D", asy
     if (p.kind === "log") await page.getByRole("button", { name: /B Service indisponible/ }).click()
     if (p.kind === "planning") {
       await page.getByRole("button", { name: /Accepter l’aide/ }).click()
-      await expect(page.getByRole("button", { name: /Indice léger/ })).toContainText("gratuit")
+      await expect(page.getByRole("button", { name: /Coup de pouce/ })).toContainText("gratuit")
       await page.getByLabel("Durée minimale (jours)").fill("11")
-      await page.getByLabel("Tâche supprimée").fill("Tests")
+      await page.getByLabel("Tâche supprimée").selectOption("C")
     }
     if (p.kind === "script") await page.getByRole("button", { name: /4 heure = heure - 1/ }).click()
     if (p.kind === "differences") {
-      await expect(page.getByRole("img", { name: /Vue de la salle/ })).toHaveCount(2)
-      await page.getByLabel("Code ligne et différences").fill("43")
+      const views = page.getByRole("img", { name: /Vue de la salle/ })
+      await expect(views).toHaveCount(2)
+      const after = views.nth(1)
+      const box = (await after.boundingBox())!
+      // Clic sur l'horloge, l'écran et la chaise de la vue « après » (coordonnées de l'image 360 × 235).
+      for (const [x, y] of [
+        [280, 50],
+        [220, 112],
+        [226, 190],
+      ])
+        await page.mouse.click(box.x + (x / 360) * box.width, box.y + (y / 235) * box.height)
+      await expect(page.locator(".difference-list")).toContainText("3 différences trouvées")
+      await page.getByLabel("Code du Co-working").fill("43")
       await page.screenshot({ path: ".runtime/verification-differences.png" })
     }
     if (p.kind === "patch") {
-      await expect(page.getByRole("button", { name: "Appliquer le correctif" })).toBeDisabled()
       await page.getByRole("button", { name: "Monter C", exact: true }).click()
       await page.getByRole("button", { name: "Monter C", exact: true }).click()
       await page.getByRole("button", { name: "Monter D", exact: true }).click()
       await page.getByRole("button", { name: "Monter D", exact: true }).click()
       await page.getByRole("button", { name: "Monter B", exact: true }).click()
       await page.getByRole("button", { name: "Valider la procédure" }).click()
-      await expect(page.getByRole("button", { name: "Appliquer le correctif" })).toBeEnabled()
+      await expect(page.getByText("G4-OS est réparé")).toBeVisible()
       await page.screenshot({ path: ".runtime/verification-correctif.png" })
       await page.getByRole("button", { name: "Appliquer le correctif" }).click()
       await expect(page).toHaveURL(/#end$/)
@@ -100,8 +119,9 @@ test("les huit énigmes du PDF se jouent depuis les terminaux du campus 3D", asy
       await expect(page.locator(".ending-stats")).toContainText("8/8")
     } else {
       await page.getByRole("button", { name: "Valider la réponse →" }).click()
-      await expect(page).toHaveURL(/#success$/)
-      await page.getByRole("button", { name: "CONTINUER ▸", exact: true }).click()
+      await expect(page.getByText("ÉNIGME RÉSOLUE")).toBeVisible()
+      await page.getByRole("button", { name: /Continuer l’exploration/ }).click()
+      await expect(page).toHaveURL(/#explore$/)
     }
     await expect
       .poll(() =>

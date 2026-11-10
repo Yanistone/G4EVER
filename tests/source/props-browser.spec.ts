@@ -38,7 +38,7 @@ test("vending glass and the server front remain usable through the actual scene 
   await lookAt(page, STATION_TARGETS.vending, STATION_TARGETS.vending.height)
   await expect(page.locator(".fps-interaction")).toContainText("Inspecter le distributeur")
   await page.keyboard.press("e")
-  await expect(page.getByRole("dialog", { name: "SOUVENIR CONSERVÉ" })).toBeVisible()
+  await expect(page.getByRole("dialog", { name: "LE TICKET DES DISTRIBUTEURS" })).toBeVisible()
   await page.evaluate(() =>
     sessionStorage.setItem("fixture-prop-position", JSON.stringify({ x: 830, y: 920 })),
   )
@@ -69,6 +69,6 @@ test("quality can change in pause and exploration still resumes", async ({ page 
   await lookAt(page, STATION_TARGETS.vending, STATION_TARGETS.vending.height)
   await expect(page.locator(".fps-interaction")).toContainText("Inspecter le distributeur")
   await page.keyboard.press("e")
-  await expect(page.getByRole("dialog", { name: "SOUVENIR CONSERVÉ" })).toBeVisible()
+  await expect(page.getByRole("dialog", { name: "LE TICKET DES DISTRIBUTEURS" })).toBeVisible()
   expect(errors).toEqual([])
 })

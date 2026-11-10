@@ -7,9 +7,20 @@ interface DialogProps {
   onClose: () => void
   restoreFocusTo?: HTMLElement | null
   className?: string
+  /** Le titre reste lu par les lecteurs d'écran mais n'est pas affiché. */
+  hideTitle?: boolean
+  hideClose?: boolean
 }
 
-export function Dialog({ title, children, onClose, restoreFocusTo, className }: DialogProps) {
+export function Dialog({
+  title,
+  children,
+  onClose,
+  restoreFocusTo,
+  className,
+  hideTitle,
+  hideClose,
+}: DialogProps) {
   const ref = useRef<HTMLDivElement>(null)
   const closeRef = useRef(onClose)
   closeRef.current = onClose
@@ -65,13 +76,17 @@ export function Dialog({ title, children, onClose, restoreFocusTo, className }: 
         aria-labelledby={titleId}
         className={`dialog-card${className ? ` ${className}` : ""}`}
       >
-        <h2 id={titleId}>{title}</h2>
+        <h2 id={titleId} className={hideTitle ? "visually-hidden" : undefined}>
+          {title}
+        </h2>
         {children}
-        <div className="dialog-actions">
-          <button className="game-button ui-button" onClick={onClose}>
-            FERMER
-          </button>
-        </div>
+        {!hideClose && (
+          <div className="dialog-actions">
+            <button className="game-button ui-button" onClick={onClose}>
+              FERMER
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

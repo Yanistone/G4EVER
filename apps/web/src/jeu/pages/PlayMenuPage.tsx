@@ -6,6 +6,7 @@ import "../styles/immersive.css"
 interface Props {
   nickname: string
   canContinue: boolean
+  progress?: string
   onRace: () => void
   onCampaign: () => void
   onContinue: () => void
@@ -35,32 +36,32 @@ export function PlayMenuPage(p: Props) {
           <em>de ton cerveau.</em>
         </h1>
         <p>
-          Une boucle temporelle. Huit énigmes à résoudre en quinze minutes.
+          Une journée qui recommence sans fin à 16h00. Huit énigmes, deux fins.
           <br />
-          Explore le campus, trouve les indices et ouvre la sortie.
+          Explore le campus en 3D, fouille, déduis… et brise la boucle.
         </p>
         <div className="immersive-modes">
-          <button className="immersive-play" onClick={p.onRace}>
+          <button className="immersive-play" aria-label="NOUVELLE PARTIE" onClick={p.onCampaign}>
             <span>01</span>
             <div>
-              <small>SOLO OU ENTRE AMIS</small>
-              <strong>La course au reboot</strong>
-              <p>Un code. Le même départ. Le premier s’échappe.</p>
-            </div>
-            <b>↗</b>
-          </button>
-          <button className="immersive-story" aria-label="NOUVELLE PARTIE" onClick={p.onCampaign}>
-            <span>02</span>
-            <div>
-              <small>AVENTURE NARRATIVE</small>
+              <small>ESCAPE GAME · SOLO · 20 À 40 MIN</small>
               <strong>Briser la boucle</strong>
+              <p>L’aventure complète. Trois modes, du plus détendu au plus corsé.</p>
             </div>
             <b>→</b>
+          </button>
+          <button className="immersive-story" onClick={p.onRace}>
+            <span>02</span>
+            <div>
+              <small>ENTRE AMIS · EN LIGNE</small>
+              <strong>La course au reboot</strong>
+            </div>
+            <b>↗</b>
           </button>
         </div>
         <nav className="immersive-menu-links">
           <button aria-label="CONTINUER" disabled={!p.canContinue} onClick={p.onContinue}>
-            Continuer l’histoire
+            Continuer l’histoire{p.progress ? ` · ${p.progress}` : ""}
           </button>
           <button aria-label="OPTIONS" onClick={p.onOptions}>
             Paramètres
@@ -77,7 +78,7 @@ export function PlayMenuPage(p: Props) {
         <i />
       </aside>
       <footer className="immersive-footer">
-        <span>EXPLORATION FPS · ÉNIGMES INFORMATIQUES · 7 ESPACES</span>
+        <span>ESCAPE GAME 3D · ÉNIGMES DE LOGIQUE ET D’INFORMATIQUE · 7 ESPACES</span>
         <button onClick={p.onQuit}>QUITTER ↗</button>
       </footer>
     </div>

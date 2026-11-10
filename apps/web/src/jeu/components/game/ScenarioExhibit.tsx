@@ -1,5 +1,6 @@
 import type { ScenarioKind } from "../../../../../../shared/scenario"
 import { ALGORITHM, ERROR_LOG, SCRIPT, SEATING_RULES } from "../../../../../../shared/scenario"
+import { RoomSnapshots } from "./DifferenceHunt"
 export function ScenarioExhibit({ kind }: { kind: ScenarioKind }) {
   if (kind === "cups")
     return (
@@ -58,70 +59,7 @@ export function ScenarioExhibit({ kind }: { kind: ScenarioKind }) {
         <path d="M500 180h60M500 188h60" stroke="#dfe5eb" strokeWidth="2" />
       </svg>
     )
-  if (kind === "differences")
-    return (
-      <div className="scenario-comparison">
-        {[false, true].map((after) => (
-          <figure key={String(after)}>
-            <figcaption>{after ? "APRÈS" : "AVANT"}</figcaption>
-            <svg
-              className="scenario-exhibit"
-              viewBox="0 0 360 235"
-              role="img"
-              aria-label={
-                after
-                  ? "Vue de la salle après le redémarrage"
-                  : "Vue de la salle avant le redémarrage"
-              }
-            >
-              <rect width="360" height="235" rx="12" fill="#e9dbc9" />
-              <path d="M0 175h360v60H0" fill="#cba77f" />
-              <rect
-                x="25"
-                y="35"
-                width="85"
-                height="80"
-                fill="#87bed1"
-                stroke="#fcfaf3"
-                strokeWidth="8"
-              />
-              <path d="M67 35v80M25 75h85" stroke="#fcfaf3" strokeWidth="5" />
-              <circle cx="280" cy="50" r="27" fill="#fff" stroke="#4c5775" strokeWidth="5" />
-              <path
-                d={after ? "M280 31v19l-16 10" : "M280 31v19l-16 0"}
-                stroke="#36425d"
-                strokeWidth="4"
-                fill="none"
-              />
-              <rect x="138" y="139" width="158" height="12" fill="#986b40" />
-              <path d="M151 151v60M283 151v60" stroke="#684628" strokeWidth="9" />
-              <rect
-                x="185"
-                y="90"
-                width="70"
-                height="45"
-                rx="4"
-                fill={after ? "#202738" : "#39baca"}
-                stroke="#273149"
-                strokeWidth="6"
-              />
-              <path d="M220 135v6" stroke="#273149" strokeWidth="7" />
-              <g transform={after ? "translate(47 0)" : ""}>
-                <rect x="155" y="165" width="48" height="9" rx="3" fill="#d67371" />
-                <path
-                  d="M159 174v42M198 174v42M158 163v-31h42v31"
-                  stroke="#4d5367"
-                  strokeWidth="7"
-                  fill="none"
-                />
-              </g>
-              <rect x="37" y="160" width="31" height="40" rx="5" fill="#727e66" />
-              <path d="M52 161v-32M52 145l-16-12M52 142l16-19" stroke="#4c7954" strokeWidth="8" />
-            </svg>
-          </figure>
-        ))}
-      </div>
-    )
+  if (kind === "differences") return <RoomSnapshots />
   if (kind === "seating")
     return (
       <>

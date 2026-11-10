@@ -19,25 +19,38 @@ export interface AdventurePuzzle {
   clue: string
 }
 
+export interface PuzzleResult {
+  status: "correct" | "wrong"
+  /** Change à chaque tentative pour relancer l'animation. */
+  key: number
+  message: string
+  fromMemory?: boolean
+  unlockedLabels?: readonly string[]
+}
+
 export interface PuzzlePageProps {
   puzzle: AdventurePuzzle
   selectedAnswerId: string | null
   onSelectAnswer: (answerId: string) => void
   onValidate: () => void
   onLeave: () => void
-  requiredDocumentFound?: boolean
-  pending?: boolean
+  result: PuzzleResult | null
+  remembered: boolean
+  onUseMemory: () => void
   loopNumber: number
   solvedCount: number
-  hintLevel?: number
-  onHint?: (level: 1 | 2) => void
-  freeLightHint?: boolean
-  lockedUntil?: number
+  total: number
+  hintLevel: number
+  /** Coût en minutes de campus de chaque niveau d'indice (0 : gratuit). */
+  hintCosts: readonly [number, number, number]
+  onHint: (level: 1 | 2 | 3) => void
   trustedLea?: boolean
+  leaCost: number
   onTrustLea?: () => void
   onJournal?: () => void
-  onComplete?: (ending: 1 | 2) => void
-  procedureValidated?: boolean
+  onApplyFix?: () => void
   notice?: string
   gameTime?: string
+  timeLabel: string
+  wrongAnswerMinutes: number
 }

@@ -1,7 +1,13 @@
 import type { EndPageProps } from "../types/quiz"
 import { CampusBackdrop } from "../components/game/CampusBackdrop"
 import "../styles/immersive.css"
-export function EndPage({ result: r, onReplay, onMenu, onCredits }: EndPageProps) {
+export function EndPage({
+  result: r,
+  onReplay,
+  onMenu,
+  onCredits,
+  difficultyLabel,
+}: EndPageProps & { difficultyLabel?: string }) {
   return (
     <div className="immersive-ending" aria-label="Fin de partie">
       <CampusBackdrop />
@@ -44,8 +50,12 @@ export function EndPage({ result: r, onReplay, onMenu, onCredits }: EndPageProps
           </span>
         </div>
         {r.score !== undefined && (
-          <p>
-            Score : {r.score.toLocaleString("fr-FR")} points · Rang {r.rank}
+          <p className="ending-score">
+            <b className={`ending-rank rank-${r.rank}`}>{r.rank}</b>
+            <span>
+              {r.score.toLocaleString("fr-FR")} points
+              {difficultyLabel ? ` · mode ${difficultyLabel}` : ""}
+            </span>
           </p>
         )}
         <div className="ending-actions">
@@ -56,7 +66,7 @@ export function EndPage({ result: r, onReplay, onMenu, onCredits }: EndPageProps
         <small>
           {r.otherEndingUnlocked
             ? "Les deux issues ont été découvertes."
-            : `Une autre issue t’attend : ${r.lockedEndingTitle}.`}
+            : `Une autre issue t’attend. ${r.lockedEndingDescription}`}
         </small>
       </section>
     </div>
