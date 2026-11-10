@@ -3,6 +3,7 @@ import { addCampusIdentity } from "./campusIdentity"
 import { fitDoorPart } from "./slidingDoor"
 import type { SlidingDoorPart } from "./slidingDoor"
 import { DOCUMENT_HEIGHTS, STATION_TARGETS } from "../game/escape"
+import { EXTRA_SPOTS } from "../game/spots"
 import { photographicMaterial, addRealism } from "./realism"
 import type { EscapeDocument } from "../game/escape"
 import { addArchitecturalDetail } from "./detail"
@@ -649,13 +650,23 @@ export function buildWorld(
   const stations = new Map<string, Mesh>()
   const beacons = new Map<
     string,
-    { core: Mesh; ring: Mesh; beam: Mesh; halo: Mesh; base: number }
+    { core: Mesh; ring: Mesh; beam: Mesh; halo: Mesh; base: number; roomId: string }
   >()
-  WORLD_ROOMS.forEach((r) => {
-    const p = r.interactionPosition,
-      c = ROOM_COLORS[r.id]
-    // La balise flotte au-dessus du terminal visé, pas à l'endroit où se tient le joueur.
-    const aim = STATION_TARGETS[r.id] ?? { ...p, height: 1.1 }
+  const anchors = [
+    ...WORLD_ROOMS.map((r) => ({
+      id: r.id,
+      roomId: r.id,
+      label: r.interactionLabel,
+      position: r.interactionPosition,
+      target: STATION_TARGETS[r.id] ?? { ...r.interactionPosition, height: 1.1 },
+    })),
+    ...EXTRA_SPOTS,
+  ]
+  anchors.forEach((r) => {
+    const p = r.position,
+      c = ROOM_COLORS[r.roomId]
+    // La balise flotte au-dessus de l'objet visé, pas à l'endroit où se tient le joueur.
+    const aim = r.target
     const base = aim.height + 0.62
     const ring = MeshBuilder.CreateTorus(
       "hologram-" + r.id,
@@ -684,8 +695,8 @@ export function buildWorld(
     const interaction: Interaction = {
       id: r.id,
       kind: "station",
-      label: r.interactionLabel,
-      roomId: r.id,
+      label: r.label,
+      roomId: r.roomId,
     }
     core.metadata = { interaction }
     ring.metadata = { interaction }
@@ -693,7 +704,7 @@ export function buildWorld(
     core.isPickable = false
     ring.isVisible = false
     ring.isPickable = false
-    stations.set(r.id, core)
+    if (r.id === r.roomId) stations.set(r.id, core)
     const halo = MeshBuilder.CreateTorus(
       "hologram-halo-" + r.id,
       { diameter: 0.7, thickness: 0.035, tessellation: 32 },
@@ -703,7 +714,7 @@ export function buildWorld(
     halo.material = mat(c, true)
     halo.isPickable = false
     halo.isVisible = false
-    beacons.set(r.id, { core, ring, beam, halo, base })
+    beacons.set(r.id, { core, ring, beam, halo, base, roomId: r.roomId })
   })
   const items = new Map<string, TransformNode>()
   for (const item of [...COLLECTIBLES, ...documents]) {
@@ -732,9 +743,14 @@ export function buildWorld(
     items.set(item.id, root)
   }
 
+  const spotInteraction = (id: string): Interaction => {
+    const spot = EXTRA_SPOTS.find((s) => s.id === id)!
+    return { id, kind: "station", label: spot.label, roomId: spot.roomId }
+  }
+  // Énigme « Le journal d'erreur » : le tableau de Sugiton devient un objet à examiner.
   screen(
     "logic-whiteboard",
-    "SUGITON / JOURNAL G4-OS",
+    "SUGITON / JOURNAL G4-OS · 16:00",
     5.94,
     1.9,
     3.35,
@@ -742,7 +758,21 @@ export function buildWorld(
     0.8,
     COLORS.cyan,
     Math.PI,
+  ).metadata = { interaction: spotInteraction("classroom-board") }
+  // Énigme « Avant / après » : un panneau de captures au mur de Mont Ventoux.
+  const photos = screen(
+    "gaming-photos",
+    "AVANT / APRÈS · CAPTURES 16:00",
+    35.75,
+    1.75,
+    3.36,
+    2.2,
+    0.62,
+    COLORS.pink,
+    Math.PI,
   )
+  photos.metadata = { interaction: spotInteraction("gaming-photos") }
+  box("gaming-photos-frame", 35.75, 1.75, 3.33, 2.34, 0.76, 0.04, "#2A2F3A").isPickable = false
   screen(
     "cowork-whiteboard",
     "SAUVEGARDER / CORRIGER / TESTER / DEPLOYER",
@@ -759,8 +789,12 @@ export function buildWorld(
   const sky = scene.getMeshByName("daylight-sky")
   if (sky) glow.addExcludedMesh(sky as Mesh)
   addCampusIdentity(scene)
+  // Énigme « Le café de 9h00 » : l'étagère des tasses se vise et s'examine directement.
+  const shelfInteraction = { interaction: spotInteraction("cafeteria-shelf") }
+  box("scenario-shelf-panel", 19.3, 1.72, 10.82, 3.95, 0.95, 0.04, "#CDB89C").metadata =
+    shelfInteraction
   for (const y of [1.45, 1.95])
-    box("scenario-shelf", 19.3, y, 11.2, 3.8, 0.07, 0.45, "#72533B").isPickable = false
+    box("scenario-shelf", 19.3, y, 11.2, 3.8, 0.07, 0.45, "#72533B").metadata = shelfInteraction
   const cupColors = [
     "#2888D5",
     "#E66865",
@@ -783,7 +817,7 @@ export function buildWorld(
     )
     cup.position.set(x, y, 11.22)
     cup.material = mat(color)
-    cup.isPickable = false
+    cup.metadata = shelfInteraction
     const handle = MeshBuilder.CreateTorus(
       "scenario-cup-handle-" + i,
       { diameter: 0.12, thickness: 0.025, tessellation: 12 },
@@ -880,7 +914,10 @@ export function buildWorld(
         b.ring.scaling.setAll(1 + Math.sin(time * 3) * 0.12)
         b.beam.position.y = b.base - 0.36 + bob
         b.halo.scaling.setAll(0.85 + ((time * 0.8) % 1) * 0.5)
-        b.core.material = mat(solved.includes(id) ? COLORS.green : ROOM_COLORS[id], true)
+        b.core.material = mat(
+          solved.includes(b.roomId) ? COLORS.green : ROOM_COLORS[b.roomId],
+          true,
+        )
       }
     },
   }

@@ -8,6 +8,7 @@ import { Scene } from "@babylonjs/core/scene.js"
 import { UniversalCamera } from "@babylonjs/core/Cameras/universalCamera.js"
 import { Vector3 } from "@babylonjs/core/Maths/math.vector.js"
 import { WORLD_ROOMS, INTERACTION_RADIUS } from "../game/world"
+import { spotById } from "../game/spots"
 import type { PlayerPosition } from "../types/game"
 import { FpsController } from "./controller"
 import { MouseLook } from "./mouseLook"
@@ -25,7 +26,8 @@ export interface RuntimeState {
   inventory: readonly string[]
   documents?: readonly EscapeDocument[]
   unlockedRoomIds?: readonly string[]
-  /** Salle de l'objectif en cours : une balise lumineuse signale son terminal. */
+  /** Point d'interaction de l'objectif en cours (salle ou emplacement d'énigme) :
+   * une balise lumineuse le signale. */
   targetRoomId?: string
 }
 export interface RuntimeCallbacks {
@@ -257,21 +259,26 @@ export function createCampusRuntime(
           : "Porte fermée",
       )
     } else if (target.kind === "station") {
-      const room = WORLD_ROOMS.find((r) => r.id === target!.id)!
+      const spot = spotById(target.id)
+      if (!spot) return
       if (
         Math.hypot(
-          room.interactionPosition.x - controller.position.x,
-          room.interactionPosition.y - controller.position.y,
+          spot.position.x - controller.position.x,
+          spot.position.y - controller.position.y,
         ) >
         INTERACTION_RADIUS * 1.7
       ) {
         // Le rayon de visée garantit déjà la ligne de vue : on tolère un ou deux pas d'écart.
-        cb.toast("Approche-toi de l’ordinateur pour utiliser le terminal.")
+        cb.toast(
+          spot.id === spot.roomId
+            ? "Approche-toi de l’ordinateur pour utiliser le terminal."
+            : "Approche-toi pour examiner de plus près.",
+        )
         return
       }
       unlock()
       audio.cue("pickup")
-      cb.interact(room.id)
+      cb.interact(spot.id)
     } else if (target.kind === "npc") {
       const npc = npcs.find((n) => n.id === target!.id)!
       audio.cue("talk")

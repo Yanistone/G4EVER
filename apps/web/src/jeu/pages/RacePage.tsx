@@ -1,4 +1,5 @@
 import { ScenarioExhibit } from "../components/game/ScenarioExhibit"
+import { spotRoom } from "../game/spots"
 import {
   GAME_DURATION_MINUTES,
   DAY_END,
@@ -161,7 +162,9 @@ export function RacePage({ nickname, onExit }: { nickname: string; onExit: () =>
     setLocalPosition(position)
     race.move(position)
   }
-  const interact = async (roomId: string) => {
+  const interact = async (spotId: string) => {
+    // Les emplacements d'énigme de l'aventure (étagère, tableau…) ouvrent la question de leur salle.
+    const roomId = spotRoom(spotId)
     if (!state || !me) return
     if (roomId === "sormiou") {
       setDialog("terminal")

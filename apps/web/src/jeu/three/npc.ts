@@ -237,13 +237,13 @@ export function createNpcs(
         if (s.role === "guardian")
           return "Je garde la salle serveur. Après cinq énigmes, le disjoncteur général devient accessible : le couper arrête la boucle, mais laisse G4-OS en panne. La vraie réparation se fait au Co-working. En course, cette console valide l’arrivée."
         if (s.roomId === "classroom")
-          return "Le terminal de Sugiton attend le nombre de tasses du café : c’est sa valeur n. Ensuite, lis le journal d’erreur. Pas besoin d’être développeur : le mémo à droite de l’énigme explique tout."
+          return "Le terminal de Sugiton attend le nombre de tasses du café : c’est sa valeur n. Ensuite, va lire le journal d’erreur affiché au tableau. Pas besoin d’être développeur : le mémo à droite de l’énigme explique tout."
         if (s.roomId === "cowork")
           return "Les quatre cartes décrivent la réparation. Protège d’abord les données, et vérifie toujours un correctif avant de le déployer. C’est justement ce qui a manqué vendredi."
         if (s.roomId === "amphitheater")
           return "Je suis Léa. Le planning montre ce qui a été sacrifié pour livrer trop vite. Au terminal, tu peux accepter mon aide : le premier indice sera gratuit ici et à Mont Ventoux."
         if (s.role === "special")
-          return "À Mont Ventoux, suis la valeur de l’heure dans le script, puis compare les deux images. Le numéro de ligne et le nombre de différences formeront un code."
+          return "À Mont Ventoux, la borne d’arcade affiche le script : suis la valeur de l’heure. Compare ensuite les captures avant / après accrochées au mur. Le numéro de ligne et le nombre de différences formeront un code."
         return "Le café de 9h00 est le début de la chaîne : observe les étagères, puis retrouve la place de chacun à table. Suis la balise lumineuse. M ouvre le plan, J ton carnet."
       },
       update(dt, time, player, doors) {

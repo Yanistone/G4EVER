@@ -50,6 +50,7 @@ import { formatClock, formatDuration, hintCost, canCutPower } from "./game/sessi
 import { DIFFICULTIES, campusRate, rulesFor } from "./game/difficulty"
 import type { Difficulty, DifficultyRules } from "./game/difficulty"
 import { WORLD_ROOMS } from "./game/world"
+import { PUZZLE_SPOT_IDS, spotById } from "./game/spots"
 import { playCue } from "./game/sfx"
 import "./styles/adventure.css"
 import "./styles/experience.css"
@@ -298,38 +299,42 @@ export function App() {
     setClue({ title, text })
     openOverlay("clue")
   }
-  const interact = (roomId: string) => {
-    if (roomId === "vending") {
+  const interact = (spotId: string) => {
+    if (spotId === "vending") {
       collectClue()
       playCue("memory")
       showClue("LE TICKET DES DISTRIBUTEURS", vendingClue)
       return
     }
-    if (roomId === "sormiou") {
+    if (spotId === "sormiou") {
       openOverlay("terminal")
       return
     }
-    if (roomId === "sormiou-exit") return
-    if (roomId === "cowork" && session.solvedPuzzleIds.includes("correctif")) {
+    if (spotId === "sormiou-exit") return
+    if (spotId === "cowork" && session.solvedPuzzleIds.includes("correctif")) {
       // Procédure validée mais correctif pas encore appliqué : on rouvre l'écran final.
       setCurrentPuzzleId("correctif")
       setResult({ status: "correct", key: Date.now(), message: "" })
       navigate("puzzle")
       return
     }
-    const roomPuzzles = puzzles.filter((p) => p.roomId === roomId)
-    const puzzle = roomPuzzles.find((p) => !session.solvedPuzzleIds.includes(p.id))
+    // Chaque énigme a son propre emplacement : on retrouve celle qui se trouve ici.
+    const puzzle = puzzles.find((p) => PUZZLE_SPOT_IDS[p.id] === spotId)
     if (!puzzle) {
       showClue(
-        `${roomLabel(roomId).toUpperCase()} · TERMINÉ`,
-        roomPuzzles.map((p) => p.clue).join("\n\n") || "Rien de plus à trouver ici.",
+        `${roomLabel(spotById(spotId)?.roomId ?? spotId).toUpperCase()}`,
+        "Rien de plus à trouver ici.",
       )
+      return
+    }
+    if (session.solvedPuzzleIds.includes(puzzle.id)) {
+      showClue(`${puzzle.title.toUpperCase()} · RÉSOLUE`, puzzle.clue)
       return
     }
     if (nextPuzzle?.id !== puzzle.id) {
       showClue(
         "PAS ENCORE…",
-        `Ce terminal attend une information que tu n’as pas encore. Commence par « ${nextPuzzle?.title} » (${nextPuzzle?.room}).`,
+        `Il te manque une information pour t’occuper de ça. Commence par « ${nextPuzzle?.title} » (${nextPuzzle?.room}) : suis la balise lumineuse.`,
       )
       return
     }
@@ -510,6 +515,7 @@ export function App() {
         }
         objectiveRoom={nextPuzzle?.room ?? "Co-working"}
         targetRoomId={targetRoomId}
+        targetSpotId={nextPuzzle ? PUZZLE_SPOT_IDS[nextPuzzle.id] : "cowork"}
         onJournal={() => openOverlay("journal")}
         inventoryKey={inventoryKey}
         escapeDocuments={escapeDocuments}

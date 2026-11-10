@@ -1,4 +1,3 @@
-import { STATION_TARGETS } from "../../apps/web/src/jeu/game/escape"
 import { test, expect } from "@playwright/test"
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine.js"
 import { Scene } from "@babylonjs/core/scene.js"
@@ -193,8 +192,9 @@ test("3D world, real raycast terminal, NPC animation, inventory, settings and pa
   const npcBefore = await canvas.getAttribute("data-npcs")
   await page.waitForTimeout(900)
   expect(await canvas.getAttribute("data-npcs")).not.toEqual(npcBefore)
-  await lookAt(page, STATION_TARGETS.cafeteria, STATION_TARGETS.cafeteria.height)
-  await expect(page.locator(".fps-interaction")).toContainText("Activer la borne", {
+  // Le café de 9h00 se joue à l'étagère des tasses, pas à la borne du réfectoire.
+  await lookAt(page, { x: 772, y: 449 }, 1.85)
+  await expect(page.locator(".fps-interaction")).toContainText("Observer l’étagère des tasses", {
     timeout: 15000,
   })
   await page.keyboard.press("e")

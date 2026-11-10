@@ -4,6 +4,7 @@ import type { PointerEvent as ReactPointerEvent } from "react"
 import { WORLD_ROOMS, getRoomAt } from "../game/world"
 import { isMapKey } from "../game/shortcuts"
 import { relativeBearing, waypointTo } from "../game/guidance"
+import { spotById } from "../game/spots"
 import type { PlayerPosition } from "../types/game"
 import type { CampusRuntime } from "../three/runtime"
 import type { Interaction } from "../three/world"
@@ -35,6 +36,8 @@ export interface ExplorePageProps {
   objectiveLabel?: string
   objectiveRoom?: string
   targetRoomId?: string
+  /** Emplacement précis de l'objectif (balise et boussole) ; par défaut, le terminal de la salle. */
+  targetSpotId?: string
   /** Prévenu quand le joueur entre dans le campus (souris capturée) ou en sort. */
   onEngage?: (engaged: boolean) => void
   timeLabel?: string
@@ -152,7 +155,7 @@ export function ExplorePage(p: ExplorePageProps) {
               position: q.playerPosition,
               solved: q.solvedRoomIds,
               unlockedRoomIds: q.unlockedRoomIds,
-              targetRoomId: q.targetRoomId,
+              targetRoomId: q.targetSpotId ?? q.targetRoomId,
               inventory: itemRef.current,
               documents: latest.current.escapeDocuments ?? readDocuments(key),
             },
@@ -213,7 +216,7 @@ export function ExplorePage(p: ExplorePageProps) {
       position: p.playerPosition,
       solved: p.solvedRoomIds,
       unlockedRoomIds: p.unlockedRoomIds,
-      targetRoomId: p.targetRoomId,
+      targetRoomId: p.targetSpotId ?? p.targetRoomId,
       inventory: items,
     })
   }, [
@@ -222,6 +225,7 @@ export function ExplorePage(p: ExplorePageProps) {
     p.solvedRoomIds,
     p.unlockedRoomIds?.join(","),
     p.targetRoomId,
+    p.targetSpotId,
     items,
     blocked,
     ready,
@@ -236,7 +240,8 @@ export function ExplorePage(p: ExplorePageProps) {
       const pose = runtime.current?.pose()
       const roomId = latest.current.targetRoomId
       if (!node || !pose || !roomId) return
-      const way = waypointTo(pose, roomId)
+      const spot = spotById(latest.current.targetSpotId ?? roomId)
+      const way = waypointTo(pose, roomId, spot?.position)
       if (!way) return
       const angle = (relativeBearing(pose, pose.yaw, way.point) * 180) / Math.PI
       node.style.setProperty("--bearing", angle.toFixed(1) + "deg")
@@ -245,8 +250,8 @@ export function ExplorePage(p: ExplorePageProps) {
       const text =
         way.step === "terminal"
           ? way.near
-            ? "Tu y es : vise le terminal et appuie sur E"
-            : `Terminal · ${way.meters} m`
+            ? "Tu y es : vise la balise et appuie sur E"
+            : `Objectif · ${way.meters} m`
           : way.step === "exit"
             ? `Sors de la salle · ${way.meters} m`
             : `Rejoins la porte · ${way.meters} m`
@@ -379,7 +384,9 @@ export function ExplorePage(p: ExplorePageProps) {
                   ? "DOCUMENT"
                   : target.kind === "door"
                     ? "ACCÈS"
-                    : "TERMINAL"}
+                    : target.roomId && target.id !== target.roomId
+                      ? "À EXAMINER"
+                      : "TERMINAL"}
             </small>
             <strong>{target.label}</strong>
           </div>

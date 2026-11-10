@@ -22,10 +22,15 @@ const dist = (a: PlayerPosition, b: PlayerPosition) => Math.hypot(a.x - b.x, a.y
 
 /** Prochain point de passage vers le terminal d'une salle, en deux étapes au plus :
  * sortir de la salle courante, puis rejoindre la porte de la salle visée. */
-export function waypointTo(position: PlayerPosition, roomId: string): Waypoint | null {
+export function waypointTo(
+  position: PlayerPosition,
+  roomId: string,
+  /** Point d'interaction précis dans la salle (par défaut, son terminal). */
+  spot?: PlayerPosition,
+): Waypoint | null {
   const room = WORLD_ROOMS.find((r) => r.id === roomId)
   if (!room) return null
-  const terminal = room.interactionPosition
+  const terminal = spot ?? room.interactionPosition
   const meters = Math.round(dist(position, terminal) * SCALE)
   const near = dist(position, terminal) <= NEAR
   const here = getRoomAt(position)

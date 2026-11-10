@@ -1,10 +1,12 @@
 import { test, expect } from "@playwright/test"
 import { SCENARIO } from "../../shared/scenario"
 import { createSession } from "../../apps/web/src/jeu/game/session"
-import { canWalkAt, getNearbyInteraction, WORLD_ROOMS } from "../../apps/web/src/jeu/game/world"
-import { STATION_TARGETS } from "../../apps/web/src/jeu/game/escape"
+import { canWalkAt, getRoomAt } from "../../apps/web/src/jeu/game/world"
+import { spotForPuzzle } from "../../apps/web/src/jeu/game/spots"
 import { enterCampus, lookAt } from "./fps-helpers"
-test("les huit énigmes du PDF se jouent depuis les terminaux du campus 3D", async ({ page }) => {
+test("les huit énigmes se jouent chacune à son propre emplacement du campus 3D", async ({
+  page,
+}) => {
   test.setTimeout(300000)
   const errors: string[] = []
   page.on("pageerror", (e) => errors.push(e.message))
@@ -40,21 +42,27 @@ test("les huit énigmes du PDF se jouent depuis les terminaux du campus 3D", asy
   await expect(page).toHaveURL(/#explore$/)
   for (let i = 0; i < SCENARIO.length; i++) {
     const p = SCENARIO[i]
-    const room = WORLD_ROOMS.find((r) => r.id === p.roomId)!
+    const spot = spotForPuzzle(p.id)!
     const positions = []
     for (let dx = -60; dx <= 60; dx += 10)
       for (let dy = -60; dy <= 60; dy += 10) {
-        const pos = { x: room.interactionPosition.x + dx, y: room.interactionPosition.y + dy }
-        if (canWalkAt(pos) && getNearbyInteraction(pos)?.id === room.id) positions.push(pos)
+        const pos = { x: spot.position.x + dx, y: spot.position.y + dy }
+        if (canWalkAt(pos) && getRoomAt(pos)?.id === spot.roomId && Math.hypot(dx, dy) <= 70)
+          positions.push(pos)
       }
+    positions.sort(
+      (a, b) =>
+        Math.hypot(a.x - spot.position.x, a.y - spot.position.y) -
+        Math.hypot(b.x - spot.position.x, b.y - spot.position.y),
+    )
     await page.evaluate(
       (pos) => sessionStorage.setItem("test-position", JSON.stringify(pos)),
       positions[0],
     )
     await page.reload()
     await enterCampus(page)
-    await lookAt(page, STATION_TARGETS[room.id], STATION_TARGETS[room.id].height)
-    await expect(page.locator(".fps-interaction")).toBeVisible()
+    await lookAt(page, spot.target, spot.target.height)
+    await expect(page.locator(".fps-interaction")).toContainText(spot.label)
     await page.keyboard.press("e")
     await expect(page.getByRole("dialog", { name: p.title, exact: true })).toBeVisible()
     if (p.kind === "cups") {
