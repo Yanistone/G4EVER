@@ -399,11 +399,9 @@ export async function transact(
         const q = room.deck.find((q) => q.roomId === roomId && !me!.answeredIds.includes(q.id))
         if (!q) throw new GameError("Ce module est déjà réparé.")
         if (!me.hintIds.includes(q.id)) {
-          if (me.score < 100)
-            throw new GameError("Il te faut au moins 100 points pour acheter un indice.", 409)
           me.hintIds.push(q.id)
           me.hints++
-          const paid = 100
+          const paid = Math.min(100, Math.max(0, me.score))
           me.score -= paid
           ;(me.hintPaid ??= {})[q.id] = paid
         }
@@ -436,11 +434,9 @@ export async function transact(
             if (me.activeQuestionId !== q.id)
               throw new GameError("Ouvre la borne avant de demander un indice.")
             if (!me.hintIds.includes(q.id)) {
-              if (me.score < 100)
-                throw new GameError("Il te faut au moins 100 points pour acheter un indice.", 409)
               me.hintIds.push(q.id)
               me.hints++
-              const paid = 100
+              const paid = Math.min(100, Math.max(0, me.score))
               me.score -= paid
               ;(me.hintPaid ??= {})[q.id] = paid
             }
